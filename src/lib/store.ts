@@ -25,6 +25,8 @@ import type {
   ScoredJob,
 } from "./types";
 import { DEFAULT_HIRE_PROFILE } from "./types";
+import { extractContactsFromJob } from "./extractContacts";
+import { stripHtml } from "./text";
 import { parseHarvestPayload } from "./harvest/parsePaste";
 
 function startOfUtcDay(iso = new Date().toISOString()): string {
@@ -80,7 +82,10 @@ export function withScores(
   const ctx = buildPriorityContext(jobs, profile, individuals);
   return jobs
     .map((j) => {
-      const job = enrichJobProofs(j);
+      const job = enrichJobProofs({
+        ...j,
+        description: stripHtml(j.description || ""),
+      });
       return { ...job, scores: scoreJob(job, ctx, profile) };
     })
     .sort(
@@ -153,7 +158,7 @@ export async function createJob(input: CreateJobInput): Promise<Job> {
     region: input.region,
     location: input.location ?? null,
     remote: input.remote ?? null,
-    description: input.description.trim(),
+    description: stripHtml(input.description).trim(),
     salary: input.salary ?? null,
     url: input.url?.trim() || null,
     channel: input.channel ?? (input.url ? "other" : "none"),
@@ -330,7 +335,7 @@ export async function importHarvestJobs(text: string) {
       skipped += 1;
       continue;
     }
-    existing.unshift(job);
+    existing.unshift({ ...job, description: stripHtml(job.description) });
     seen.add(key(job));
     added += 1;
   }
@@ -340,20 +345,74 @@ export async function importHarvestJobs(text: string) {
 
 /** Append already-normalized jobs (MAX LIVE batches). */
 export async function ingestJobsBatch(jobs: Job[]) {
-  if (!jobs.length) return { added: 0 };
+  if (!jobs.length) return { added: 0, individualsAdded: 0 };
+  const cleaned = jobs.map((j) => ({
+    ...j,
+    description: stripHtml(j.description),
+  }));
   const existing = await readRawJobs();
   const key = (j: Job) =>
     `${j.company.toLowerCase()}|${j.role.toLowerCase()}|${(j.url || "").toLowerCase()}`;
   const seen = new Set(existing.map(key));
   let added = 0;
-  for (const job of jobs) {
+  const fresh: Job[] = [];
+  for (const job of cleaned) {
     if (seen.has(key(job))) continue;
     existing.unshift(job);
     seen.add(key(job));
+    fresh.push(job);
     added += 1;
   }
   await writeRawJobs(existing);
-  return { added };
+
+  let individualsAdded = 0;
+  if (fresh.length) {
+    const indRows = await readRawIndividuals();
+    const emailSeen = new Set(
+      indRows
+        .map((i) => (i.email || "").toLowerCase())
+        .filter(Boolean),
+    );
+    const nameCoSeen = new Set(
+      indRows.map(
+        (i) => `${i.name.toLowerCase()}|${i.company.toLowerCase()}`,
+      ),
+    );
+    const now = new Date().toISOString();
+    for (const job of fresh) {
+      for (const c of extractContactsFromJob(job)) {
+        if (c.email && emailSeen.has(c.email.toLowerCase())) continue;
+        const nk = `${c.name.toLowerCase()}|${c.company.toLowerCase()}`;
+        if (nameCoSeen.has(nk) && !c.email) continue;
+        const row = enrichIndividual({
+          id: `ind_${randomUUID().slice(0, 8)}`,
+          name: c.name,
+          kind: c.kind,
+          title: c.title,
+          company: c.company,
+          region: c.region,
+          email: c.email,
+          linkedin: c.linkedin,
+          linkedJobId: job.id,
+          targetRole: c.targetRole,
+          notes: c.notes,
+          status: "new",
+          source: `extract:${job.source || "job"}`,
+          emailedAt: null,
+          followUpAt: null,
+          createdAt: now,
+          updatedAt: now,
+        });
+        indRows.unshift(row);
+        if (c.email) emailSeen.add(c.email.toLowerCase());
+        nameCoSeen.add(nk);
+        individualsAdded += 1;
+      }
+    }
+    if (individualsAdded) await writeRawIndividuals(indRows);
+  }
+
+  return { added, individualsAdded };
 }
 
 export function quotaSnapshot(
@@ -386,6 +445,7 @@ export async function deskPayload(
   profile: HireProfile = DEFAULT_HIRE_PROFILE,
 ) {
   const jobsRaw = await readJobs();
+  await backfillIndividualsFromJobs(jobsRaw);
   const indRaw = await readIndividuals();
   return {
     jobs: withScores(jobsRaw, profile, indRaw),
@@ -393,4 +453,51 @@ export async function deskPayload(
     quota: quotaSnapshot(jobsRaw, indRaw, profile),
     profile,
   };
+}
+
+/** One-shot extract contacts from jobs already in DB (no fake seed). */
+async function backfillIndividualsFromJobs(jobs: Job[]) {
+  if (!jobs.length) return;
+  const indRows = await readRawIndividuals();
+  const before = indRows.length;
+  const emailSeen = new Set(
+    indRows.map((i) => (i.email || "").toLowerCase()).filter(Boolean),
+  );
+  const nameCoSeen = new Set(
+    indRows.map((i) => `${i.name.toLowerCase()}|${i.company.toLowerCase()}`),
+  );
+  const now = new Date().toISOString();
+  for (const job of jobs) {
+    for (const c of extractContactsFromJob(job)) {
+      if (c.email && emailSeen.has(c.email.toLowerCase())) continue;
+      const nk = `${c.name.toLowerCase()}|${c.company.toLowerCase()}`;
+      if (nameCoSeen.has(nk) && !c.email) continue;
+      // Prefer contacts that give an email or linkedin — skip nameless noise
+      if (!c.email && !c.linkedin && c.kind === "other") continue;
+      indRows.unshift(
+        enrichIndividual({
+          id: `ind_${randomUUID().slice(0, 8)}`,
+          name: c.name,
+          kind: c.kind,
+          title: c.title,
+          company: c.company,
+          region: c.region,
+          email: c.email,
+          linkedin: c.linkedin,
+          linkedJobId: job.id,
+          targetRole: c.targetRole,
+          notes: c.notes,
+          status: "new",
+          source: `backfill:${job.source || "job"}`,
+          emailedAt: null,
+          followUpAt: null,
+          createdAt: now,
+          updatedAt: now,
+        }),
+      );
+      if (c.email) emailSeen.add(c.email.toLowerCase());
+      nameCoSeen.add(nk);
+    }
+  }
+  if (indRows.length > before) await writeRawIndividuals(indRows);
 }

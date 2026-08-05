@@ -11,7 +11,10 @@ data/jobs.json
 data/individuals.json
 data/harvest-live.json
 data/harvest-quotas.json
+data/activities.json
 data/*.tmp
 secrets/
 *firebase*adminsdk*.json
 
+
+all_code.txt

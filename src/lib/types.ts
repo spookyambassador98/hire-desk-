@@ -146,7 +146,9 @@ export type AppView =
   | "individuals"
   | "applied"
   | "harvest"
-  | "templates";
+  | "templates"
+  | "history"
+  | "admin";
 
 export type ScoredJob = Job & {
   scores: JobScores;

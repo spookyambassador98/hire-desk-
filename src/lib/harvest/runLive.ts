@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { envNum } from "@/lib/env";
 import { computeFit, enrichJobProofs } from "@/lib/scoring";
+import { stripHtml } from "@/lib/text";
 import type { Job } from "@/lib/types";
 import {
   getStopAbortSignal,
@@ -45,7 +46,9 @@ function hitToJob(hit: JobHit, segment: HireSegment): Job {
     region: hit.region,
     location: hit.location,
     remote: hit.remote,
-    description: hit.description || `${hit.role} at ${hit.company}`,
+    description: hit.description
+      ? stripHtml(hit.description)
+      : `${hit.role} at ${hit.company}`,
     salary:
       hit.salaryMin != null || hit.salaryMax != null
         ? {

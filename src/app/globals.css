@@ -368,6 +368,8 @@ body::after {
   padding: 0.48rem 0.75rem;
   border-radius: 1px;
   cursor: pointer;
+  position: relative;
+  isolation: isolate;
   transition:
     color 0.25s var(--ease),
     border-color 0.25s var(--ease),
@@ -383,15 +385,34 @@ body::after {
 
 .hd-nav button.active {
   color: #031018;
-  background: linear-gradient(120deg, var(--cyan), #9af0ff);
+  background: transparent;
   border-color: transparent;
   font-weight: 700;
-  box-shadow: var(--glow-cyan);
+  box-shadow: none;
 }
 
 .hd-nav button.active.us {
+  background: transparent;
+  box-shadow: none;
+}
+
+.hd-nav-pill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 1px;
+  background: linear-gradient(120deg, var(--cyan), #9af0ff);
+  box-shadow: var(--glow-cyan);
+}
+
+.hd-nav-pill.us {
   background: linear-gradient(120deg, var(--gold), var(--gold-hot));
   box-shadow: var(--glow-gold);
+}
+
+.hd-nav-label {
+  position: relative;
+  z-index: 1;
 }
 
 .hd-quota {
@@ -1114,3 +1135,194 @@ body::after {
   flex-wrap: wrap;
   gap: 0.35rem;
 }
+
+.job-card--click {
+  cursor: pointer;
+}
+
+.hire-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.hire-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  cursor: pointer;
+}
+
+.hire-modal-panel {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 96vw);
+  max-height: 92vh;
+  overflow: auto;
+  border-radius: 4px;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  border: 1px solid var(--line);
+  background: linear-gradient(160deg, rgba(8, 16, 28, 0.96), rgba(4, 8, 14, 0.98));
+  box-shadow:
+    0 0 0 1px rgba(94, 231, 255, 0.12),
+    0 28px 80px rgba(0, 0, 0, 0.55),
+    var(--glow-cyan);
+}
+
+.hire-modal-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.hire-modal-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+
+.hire-modal-title {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  line-height: 1.1;
+  color: var(--gold);
+}
+
+.hire-modal-desc {
+  margin: 1.15rem 0 0;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(234, 243, 255, 0.88);
+  max-height: 42vh;
+  overflow: auto;
+}
+
+.hire-modal-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+@media (min-width: 720px) {
+  .hire-modal-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.hire-modal-section {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hire-modal-x {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  width: 2.2rem;
+  height: 2.2rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.hire-modal-x:hover {
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+.hd-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hd-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+}
+
+.hd-stat {
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.22);
+  padding: 0.75rem 0.85rem;
+  font-family: var(--font-mono);
+}
+
+.hd-stat span {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hd-stat b {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.15rem;
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.hd-hist-day {
+  border: 1px solid var(--line);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.65rem;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.hd-hist-day h3 {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.hd-hist-day ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hd-hist-day li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.75rem;
+  align-items: baseline;
+  padding: 0.4rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+}
+
+.hd-hist-day li em {
+  color: var(--muted);
+  font-style: normal;
+  font-size: 0.78rem;
+}
+
+.hd-hist-day li time {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+

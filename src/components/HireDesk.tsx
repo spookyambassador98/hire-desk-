@@ -1,12 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AddIndividualModal } from "@/components/AddIndividualModal";
 import { AddJobModal } from "@/components/AddJobModal";
+import { AdminPanel } from "@/components/AdminPanel";
 import { HarvestPanel } from "@/components/HarvestPanel";
-import { IndividualCard } from "@/components/IndividualCard";
-import { JobCard } from "@/components/JobCard";
+import { HistoryPanel } from "@/components/HistoryPanel";
+import {
+  IndividualCardFace,
+  IndividualPopup,
+} from "@/components/IndividualPopup";
+import { JobCardFace, JobPopup } from "@/components/JobPopup";
+import type { HireActivity } from "@/lib/activity";
 import { sortAppliedWithFollowUps } from "@/lib/followUp";
 import { TEMPLATES } from "@/lib/templates";
 import type {
@@ -30,9 +36,13 @@ const NAV: Array<{ id: AppView; label: string; us?: boolean }> = [
   { id: "america", label: "America", us: true },
   { id: "individuals", label: "Individuals" },
   { id: "applied", label: "Applied" },
+  { id: "history", label: "History" },
   { id: "harvest", label: "Harvest" },
   { id: "templates", label: "Templates" },
+  { id: "admin", label: "Admin" },
 ];
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 export function HireDesk({
   initialJobs,
@@ -43,9 +53,21 @@ export function HireDesk({
   const [jobs, setJobs] = useState(initialJobs);
   const [individuals, setIndividuals] = useState(initialIndividuals);
   const [quota, setQuota] = useState(initialQuota);
+  const [activities, setActivities] = useState<HireActivity[]>([]);
   const [addJobOpen, setAddJobOpen] = useState(false);
   const [addIndOpen, setAddIndOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [selectedIndId, setSelectedIndId] = useState<string | null>(null);
+
+  const selectedJob = useMemo(
+    () => jobs.find((j) => j.id === selectedJobId) || null,
+    [jobs, selectedJobId],
+  );
+  const selectedInd = useMemo(
+    () => individuals.find((i) => i.id === selectedIndId) || null,
+    [individuals, selectedIndId],
+  );
 
   function flash(msg: string) {
     setToast(msg);
@@ -61,6 +83,38 @@ export function HireDesk({
     if (data.individuals) setIndividuals(data.individuals);
     if (data.quota) setQuota(data.quota);
   }
+
+  const reloadActivities = useCallback(async () => {
+    try {
+      const res = await fetch("/api/activities", { cache: "no-store" });
+      const data = (await res.json()) as { activities?: HireActivity[] };
+      if (Array.isArray(data.activities)) setActivities(data.activities);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  async function track(
+    type: HireActivity["type"],
+    entityId?: string | null,
+    entityLabel?: string | null,
+    detail?: string | null,
+  ) {
+    try {
+      await fetch("/api/activities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, entityId, entityLabel, detail }),
+      });
+      void reloadActivities();
+    } catch {
+      /* ignore */
+    }
+  }
+
+  useEffect(() => {
+    void reloadActivities();
+  }, [reloadActivities]);
 
   async function reload() {
     const res = await fetch("/api/jobs");
@@ -82,8 +136,10 @@ export function HireDesk({
       flash("Status update failed");
       return;
     }
+    const job = jobs.find((j) => j.id === id);
     applyPayload(await res.json());
     flash(`Status → ${status}`);
+    void track("status_change", id, job?.company || id, status);
   }
 
   async function onJobDelete(id: string) {
@@ -94,6 +150,7 @@ export function HireDesk({
       return;
     }
     applyPayload(await res.json());
+    setSelectedJobId(null);
     flash("Deleted");
   }
 
@@ -107,8 +164,10 @@ export function HireDesk({
       flash("Status update failed");
       return;
     }
+    const ind = individuals.find((i) => i.id === id);
     applyPayload(await res.json());
     flash(`Individual → ${status}`);
+    void track("status_change", id, ind?.name || id, status);
   }
 
   async function onIndDelete(id: string) {
@@ -119,6 +178,7 @@ export function HireDesk({
       return;
     }
     applyPayload(await res.json());
+    setSelectedIndId(null);
     flash("Deleted");
   }
 
@@ -126,6 +186,13 @@ export function HireDesk({
     try {
       await navigator.clipboard.writeText(text);
       flash(`Copied · ${label}`);
+      const type = label.toLowerCase().includes("brief")
+        ? "copy_brief"
+        : label.toLowerCase().includes("email") ||
+            label.toLowerCase().includes("fu")
+          ? "copy_email"
+          : "copy_apply";
+      void track(type, null, label, null);
     } catch {
       flash("Clipboard blocked");
     }
@@ -147,7 +214,7 @@ export function HireDesk({
       individuals.filter(
         (i) =>
           ["new", "queued"].includes(i.status) &&
-          i.scores.access.score >= 40,
+          (i.email || i.linkedin || i.scores.access.score >= 25),
       ),
     [individuals],
   );
@@ -171,6 +238,20 @@ export function HireDesk({
   const euQueue = queueJobs.filter((j) => j.region === "europe").length;
   const usQueue = queueJobs.filter((j) => j.region === "america").length;
 
+  function openJob(id: string) {
+    setSelectedIndId(null);
+    setSelectedJobId(id);
+    const j = jobs.find((x) => x.id === id);
+    void track("view", id, j ? `${j.company} · ${j.role}` : id, null);
+  }
+
+  function openInd(id: string) {
+    setSelectedJobId(null);
+    setSelectedIndId(id);
+    const i = individuals.find((x) => x.id === id);
+    void track("view", id, i?.name || id, "individual");
+  }
+
   return (
     <motion.div
       className="hd-shell"
@@ -182,7 +263,7 @@ export function HireDesk({
         className="hd-top"
         initial={{ y: -24, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.55, ease: EASE }}
       >
         <div className="hd-brand">
           APEX // <span>HIRE</span> <em>DESK</em>
@@ -195,7 +276,14 @@ export function HireDesk({
               className={`${view === n.id ? "active" : ""} ${n.us && view === n.id ? "us" : ""}`}
               onClick={() => setView(n.id)}
             >
-              {n.label}
+              {view === n.id && (
+                <motion.span
+                  className={`hd-nav-pill${n.us ? " us" : ""}`}
+                  layoutId="hire-nav-pill"
+                  transition={{ type: "spring", stiffness: 380, damping: 34 }}
+                />
+              )}
+              <span className="hd-nav-label">{n.label}</span>
             </button>
           ))}
           <button
@@ -221,125 +309,154 @@ export function HireDesk({
       </motion.header>
 
       <main className="hd-main">
-        {view === "queue" && (
-          <div className="hd-dual">
-            <motion.div
-              className="hd-rail eu"
-              initial={{ opacity: 0, x: -28 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <h2>Europe rail</h2>
-              <p>
-                {euQueue} jobs · quota left {quota.europe.remaining} (target
-                8–12)
-              </p>
-            </motion.div>
-            <motion.div
-              className="hd-rail us"
-              initial={{ opacity: 0, x: 28 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.55, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <h2>America rail</h2>
-              <p>
-                {usQueue} jobs · quota left {quota.america.remaining} (target
-                8–12)
-              </p>
-            </motion.div>
-          </div>
-        )}
-
-        {view === "queue" && queueIndividuals.length > 0 && (
-          <div className="hd-rail" style={{ marginBottom: "0.85rem" }}>
-            <h2>Individuals today</h2>
-            <p>
-              {queueIndividuals.length} ready · email quota left{" "}
-              {quota.individuals.remaining}/{quota.individuals.quota}
-            </p>
-          </div>
-        )}
-
-        {view === "harvest" ? (
-          <HarvestPanel onImported={() => void reload()} onFlash={flash} />
-        ) : view === "templates" ? (
-          <div className="tpl-list">
-            {TEMPLATES.map((t) => (
-              <div key={t.id} className="tpl-card">
-                <h4>
-                  {t.name}
-                  {t.kind === "individual" ? " · direct" : ""}
-                </h4>
-                <pre>{t.body}</pre>
-                <div
-                  className="job-actions"
-                  style={{ border: "none", paddingTop: "0.75rem" }}
-                >
-                  <button
-                    type="button"
-                    className="primary"
-                    onClick={() => onCopy(t.body, t.name)}
-                  >
-                    Copy skeleton
-                  </button>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={view}
+            initial={{ opacity: 0, y: 14, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
+            transition={{ duration: 0.32, ease: EASE }}
+          >
+            {view === "queue" && (
+              <div className="hd-dual">
+                <div className="hd-rail eu">
+                  <h2>Europe rail</h2>
+                  <p>
+                    {euQueue} jobs · quota left {quota.europe.remaining} (target
+                    8–12)
+                  </p>
+                </div>
+                <div className="hd-rail us">
+                  <h2>America rail</h2>
+                  <p>
+                    {usQueue} jobs · quota left {quota.america.remaining}{" "}
+                    (target 8–12)
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : view === "individuals" || view === "queue" ? (
-          <div className="hd-list">
-            {view === "queue" &&
-              queueJobs.map((job, i) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  index={i}
-                  rank={i + 1}
-                  onStatus={onJobStatus}
-                  onCopy={onCopy}
-                  onDelete={onJobDelete}
-                />
-              ))}
-            {(view === "individuals" ? individuals : queueIndividuals).map(
-              (ind, i) => (
-                <IndividualCard
-                  key={ind.id}
-                  individual={ind}
-                  index={i}
-                  rank={view === "queue" ? i + 1 : undefined}
-                  onStatus={onIndStatus}
-                  onCopy={onCopy}
-                  onDelete={onIndDelete}
-                />
-              ),
             )}
-            {view === "individuals" && individuals.length === 0 && (
-              <div className="empty">No individuals — add HR / senior email</div>
+
+            {view === "queue" && queueIndividuals.length > 0 && (
+              <div className="hd-rail" style={{ marginBottom: "0.85rem" }}>
+                <h2>Individuals today</h2>
+                <p>
+                  {queueIndividuals.length} ready · email quota left{" "}
+                  {quota.individuals.remaining}/{quota.individuals.quota}
+                </p>
+              </div>
             )}
-            {view === "queue" &&
-              queueJobs.length === 0 &&
-              queueIndividuals.length === 0 && (
-                <div className="empty">Queue empty — harvest or add</div>
-              )}
-          </div>
-        ) : visibleJobs.length === 0 ? (
-          <div className="empty">No vacancies in this view</div>
-        ) : (
-          <div className="hd-list">
-            {visibleJobs.map((job, i) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                index={i}
-                showFollowUp={view === "applied"}
-                onStatus={onJobStatus}
-                onCopy={onCopy}
-                onDelete={onJobDelete}
+
+            {view === "harvest" ? (
+              <HarvestPanel
+                onImported={() => void reload()}
+                onFlash={flash}
               />
-            ))}
-          </div>
-        )}
+            ) : view === "templates" ? (
+              <div className="tpl-list">
+                {TEMPLATES.map((t) => (
+                  <div key={t.id} className="tpl-card">
+                    <h4>
+                      {t.name}
+                      {t.kind === "individual" ? " · direct" : ""}
+                    </h4>
+                    <pre>{t.body}</pre>
+                    <div
+                      className="job-actions"
+                      style={{ border: "none", paddingTop: "0.75rem" }}
+                    >
+                      <button
+                        type="button"
+                        className="primary"
+                        onClick={() => onCopy(t.body, t.name)}
+                      >
+                        Copy skeleton
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : view === "history" ? (
+              <HistoryPanel
+                activities={activities}
+                jobs={jobs}
+                individuals={individuals}
+              />
+            ) : view === "admin" ? (
+              <AdminPanel
+                jobs={jobs}
+                individuals={individuals}
+                quota={quota}
+              />
+            ) : view === "individuals" || view === "queue" ? (
+              <div className="hd-list">
+                {view === "queue" &&
+                  queueJobs.map((job, i) => (
+                    <JobCardFace
+                      key={job.id}
+                      job={job}
+                      index={i}
+                      rank={i + 1}
+                      onOpen={() => openJob(job.id)}
+                    />
+                  ))}
+                {(view === "individuals" ? individuals : queueIndividuals).map(
+                  (ind, i) => (
+                    <IndividualCardFace
+                      key={ind.id}
+                      individual={ind}
+                      index={i}
+                      rank={view === "queue" ? i + 1 : undefined}
+                      onOpen={() => openInd(ind.id)}
+                    />
+                  ),
+                )}
+                {view === "individuals" && individuals.length === 0 && (
+                  <div className="empty">
+                    No individuals yet — run MAX LIVE (emails extracted from
+                    postings) or + Add HR / senior
+                  </div>
+                )}
+                {view === "queue" &&
+                  queueJobs.length === 0 &&
+                  queueIndividuals.length === 0 && (
+                    <div className="empty">Queue empty — harvest or add</div>
+                  )}
+              </div>
+            ) : visibleJobs.length === 0 ? (
+              <div className="empty">No vacancies in this view</div>
+            ) : (
+              <div className="hd-list">
+                {visibleJobs.map((job, i) => (
+                  <JobCardFace
+                    key={job.id}
+                    job={job}
+                    index={i}
+                    showFollowUp={view === "applied"}
+                    onOpen={() => openJob(job.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
+
+      <JobPopup
+        job={selectedJob}
+        open={!!selectedJob}
+        onClose={() => setSelectedJobId(null)}
+        onStatus={onJobStatus}
+        onCopy={onCopy}
+        onDelete={onJobDelete}
+      />
+      <IndividualPopup
+        individual={selectedInd}
+        open={!!selectedInd}
+        onClose={() => setSelectedIndId(null)}
+        onStatus={onIndStatus}
+        onCopy={onCopy}
+        onDelete={onIndDelete}
+      />
 
       <AddJobModal
         open={addJobOpen}
