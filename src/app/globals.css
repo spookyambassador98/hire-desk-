@@ -529,13 +529,15 @@ body::after {
 }
 
 .hd-main--harvest {
-  max-width: min(1760px, 100%);
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .harvest-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 1.25rem;
   align-items: start;
   width: 100%;
 }
@@ -551,7 +553,9 @@ body::after {
   position: sticky;
   top: 0.85rem;
   align-self: start;
+  width: 290px;
   max-height: calc(100vh - 5.5rem);
+  justify-self: end;
 }
 
 .hire-live-rail .hire-max__ops {
@@ -564,6 +568,10 @@ body::after {
   max-height: calc(100vh - 28rem);
 }
 
+.hire-max__engine .hire-max__quotas {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
 @media (max-width: 1100px) {
   .harvest-stage {
     grid-template-columns: 1fr;
@@ -571,7 +579,9 @@ body::after {
 
   .hire-live-rail {
     position: static;
+    width: 100%;
     max-height: none;
+    justify-self: stretch;
   }
 
   .hire-live-rail .hire-max__feed {
