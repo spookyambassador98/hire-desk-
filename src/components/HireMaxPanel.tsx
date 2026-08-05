@@ -471,47 +471,41 @@ export function HireMaxPanel({ onFilled }: Props) {
               <AnimatePresence initial={false}>
                 {intake.map((hit, idx) => {
                   const r = (hit.region || "europe") as Region;
-                  const depth = Math.min(idx, 8);
                   const isFlash = flashId === hit.id;
+                  const company = (hit.company || "").trim() || "—";
+                  const role = (hit.role || "").trim() || "—";
                   return (
-                    <motion.div
+                    <motion.article
                       key={`${hit.id}-${hit.at}`}
                       className={`hire-max__hit${isFlash ? " is-flash" : ""}`}
-                      style={{
-                        opacity: 1 - depth * 0.06,
-                        filter: `brightness(${1 - depth * 0.035})`,
-                      }}
-                      initial={{ opacity: 0, y: -14, x: 6 }}
-                      animate={{ opacity: 1 - depth * 0.06, y: 0, x: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
-                      transition={{ duration: 0.38, ease: EASE }}
-                      layout
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.28, ease: EASE }}
                     >
-                      <div className="hire-max__hit-corners" aria-hidden />
                       <div className="hire-max__hit-top">
                         <span className={`job-chip ${regionClass(r)}`}>
                           {trRegion(r)}
                         </span>
-                        <time>{fmtAgo(hit.at)}</time>
+                        <div className="hire-max__hit-meta">
+                          <span className="hire-max__hit-score">
+                            {t("score.fit")} {hit.fit ?? "—"}
+                          </span>
+                          <span className="hire-max__hit-score hire-max__hit-score--pri">
+                            {t("score.pri")} {hit.pri ?? "—"}
+                          </span>
+                          <time>{fmtAgo(hit.at)}</time>
+                        </div>
                       </div>
-                      <div className="hire-max__hit-co">{hit.company}</div>
+                      <div className="hire-max__hit-co">{company}</div>
                       <div className="hire-max__hit-role">
-                        <IntakeRole text={hit.role} />
+                        <IntakeRole text={role} />
                       </div>
                       <div className="hire-max__hit-src">
                         {shortSource(hit.source)}
+                        {idx === 0 ? " · NEW" : ""}
                       </div>
-                      <div className="hire-max__hit-scores">
-                        <span>
-                          {t("score.fit")}{" "}
-                          <strong>{hit.fit ?? "—"}</strong>
-                        </span>
-                        <span>
-                          {t("score.pri")}{" "}
-                          <strong>{hit.pri ?? "—"}</strong>
-                        </span>
-                      </div>
-                    </motion.div>
+                    </motion.article>
                   );
                 })}
               </AnimatePresence>

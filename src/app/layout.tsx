@@ -3,14 +3,14 @@ import { IBM_Plex_Mono, Manrope, Syne } from "next/font/google";
 import "./globals.css";
 
 const display = Syne({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["600", "700", "800"],
   variable: "--font-display",
   display: "swap",
 });
 
 const body = Manrope({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin", "latin-ext", "cyrillic"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-body",
   display: "swap",
