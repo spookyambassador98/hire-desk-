@@ -1835,14 +1835,23 @@ body::after {
   color: var(--gold);
 }
 
-.hire-modal-desc {
+.hire-modal-prose {
   margin: 1.15rem 0 0;
-  white-space: pre-wrap;
-  font-size: 0.95rem;
-  line-height: 1.65;
-  color: rgba(234, 243, 255, 0.88);
-  max-height: 42vh;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 68ch;
+}
+
+.hire-modal-desc {
+  margin: 0;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.98rem;
+  font-weight: 450;
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+  color: rgba(236, 244, 255, 0.9);
+  text-wrap: pretty;
 }
 
 .hire-modal-grid {

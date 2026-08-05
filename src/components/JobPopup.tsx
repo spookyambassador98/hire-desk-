@@ -11,7 +11,7 @@ import { useI18n } from "@/lib/i18n";
 import { jobPostedAt, regionClass } from "@/lib/regions";
 import type { JobStatus, ScoredJob } from "@/lib/types";
 import { renderApply, renderTemplate } from "@/lib/templates";
-import { previewText, stripHtml } from "@/lib/text";
+import { descriptionParagraphs, previewText, stripHtml } from "@/lib/text";
 
 type Props = {
   job: ScoredJob | null;
@@ -144,9 +144,15 @@ export function JobPopup({
               </button>
             </div>
 
-            <p className="hire-modal-desc">
-              {stripHtml(tr.description || job.description)}
-            </p>
+            <div className="hire-modal-prose">
+              {descriptionParagraphs(tr.description || job.description).map(
+                (para, i) => (
+                  <p key={i} className="hire-modal-desc">
+                    {para}
+                  </p>
+                ),
+              )}
+            </div>
 
             {job.proofProjects && job.proofProjects.length > 0 && (
               <div className="job-proof" style={{ marginTop: "1rem" }}>

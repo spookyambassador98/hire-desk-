@@ -34,6 +34,62 @@ export function previewText(raw: string, max = 220): string {
   return `${t.slice(0, max).trim()}…`;
 }
 
+/**
+ * Break job description walls into readable paragraphs.
+ * Uses blank lines when present; otherwise packs sentences into short blocks.
+ */
+export function descriptionParagraphs(raw: string): string[] {
+  const text = stripHtml(raw)
+    .replace(/\r\n/g, "\n")
+    .replace(/[ \t]+\n/g, "\n")
+    .trim();
+  if (!text) return [];
+
+  let parts = text
+    .split(/\n{2,}/)
+    .map((p) => p.replace(/\n+/g, " ").replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  // Single long blob (typical after HTML strip / translate) → sentence packs
+  if (parts.length === 1 && (parts[0]?.length ?? 0) > 260) {
+    const sentences = parts[0]!.split(
+      /(?<=[.!?…])\s+(?=[A-ZА-ЯЁІЇЄҐÜÖÄ0-9«"„])/u,
+    ).filter((s) => s.trim());
+    const chunks: string[] = [];
+    let buf = "";
+    for (const s of sentences) {
+      const next = buf ? `${buf} ${s}` : s;
+      if (next.length > 300 && buf) {
+        chunks.push(buf.trim());
+        buf = s;
+      } else {
+        buf = next;
+      }
+    }
+    if (buf.trim()) chunks.push(buf.trim());
+    if (chunks.length > 1) parts = chunks;
+  }
+
+  // Soft-split remaining monsters
+  const out: string[] = [];
+  for (const p of parts) {
+    if (p.length <= 520) {
+      out.push(p);
+      continue;
+    }
+    let rest = p;
+    while (rest.length > 520) {
+      let cut = rest.lastIndexOf(". ", 480);
+      if (cut < 200) cut = rest.lastIndexOf(" ", 480);
+      if (cut < 120) cut = 480;
+      out.push(rest.slice(0, cut + 1).trim());
+      rest = rest.slice(cut + 1).trim();
+    }
+    if (rest) out.push(rest);
+  }
+  return out.length ? out : [text];
+}
+
 /** Infer schedule / work mode chips from job fields + description */
 export function scheduleChips(job: {
   remote: boolean | null;
