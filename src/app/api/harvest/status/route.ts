@@ -15,6 +15,8 @@ import {
 import { enabledSources } from "@/lib/harvest/sources";
 import { proxyPoolSize } from "@/lib/harvest/proxyPool";
 import { env } from "@/lib/env";
+import { probeFirebase } from "@/lib/firebase";
+import { storageLabel } from "@/lib/persistence";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,6 +36,8 @@ export async function GET() {
     };
   });
   const totalToday = quotas.reduce((n, q) => n + q.today, 0);
+  const firebase =
+    storageLabel() === "firebase" ? await probeFirebase() : null;
 
   return NextResponse.json({
     runTarget: HIRE_RUN_TARGET,
@@ -49,6 +53,8 @@ export async function GET() {
       tier: s.tier,
     })),
     proxyPool: proxyPoolSize(),
+    storage: storageLabel(),
+    firebase,
     paused: isHarvestPaused(),
     pauseRemainingMs: pauseRemainingMs(),
     stopRequested: isHarvestStopRequested(),

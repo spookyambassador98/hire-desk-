@@ -1,0 +1,79 @@
+services:
+  - type: web
+    name: hire-desk
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: HIRE_STORAGE
+        value: firebase
+      - key: HIRE_PARSER_MODE
+        value: live
+      - key: HIRE_RUN_TARGET
+        value: "80"
+      - key: HIRE_DAILY_QUOTA
+        value: "40"
+      - key: SOURCES_REMOTIVE
+        value: "1"
+      - key: SOURCES_ARBEITNOW
+        value: "1"
+      - key: SOURCES_REMOTEOK
+        value: "1"
+      - key: SOURCES_HACKERNEWS
+        value: "1"
+      - key: SOURCES_GITHUB
+        value: "1"
+      - key: SOURCES_GREENHOUSE
+        value: "1"
+      - key: SOURCES_ASHBY
+        value: "1"
+      - key: SOURCES_LEVER
+        value: "1"
+      - key: SOURCES_SMARTRECRUITERS
+        value: "1"
+      - key: SOURCES_WORKABLE
+        value: "1"
+      - key: SOURCES_HTML
+        value: "1"
+      - key: SOURCES_TELEGRAM
+        value: "0"
+      - key: SOURCES_LINKEDIN_IMPORT
+        value: "1"
+      - key: HIRE_DESK_ACCESS_CODE
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+      - key: HARVEST_CRON_SECRET
+        sync: false
+      - key: HARVEST_INTERNAL_BASE
+        sync: false
+      - key: PROXY_URLS
+        sync: false
+      - key: PROXY_GATEWAYS
+        sync: false
+      - key: PROXY_GATEWAY_SECRET
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+
+  - type: cron
+    name: hire-desk-harvest-cron
+    runtime: node
+    plan: free
+    schedule: "0 */6 * * *"
+    buildCommand: echo cron
+    startCommand: >
+      node -e "fetch(process.env.RENDER_CRON_URL,{method:'POST',headers:{Authorization:'Bearer '+process.env.HARVEST_CRON_SECRET}}).then(r=>r.text()).then(console.log).catch(e=>{console.error(e);process.exit(1)})"
+    envVars:
+      - key: RENDER_CRON_URL
+        sync: false
+      - key: HARVEST_CRON_SECRET
+        sync: false

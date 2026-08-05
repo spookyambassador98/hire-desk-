@@ -12,7 +12,9 @@ npm run dev
 
 Open http://localhost:3000 (or `START.bat` → port **3011**).
 
-Access code: `HIRE_DESK_ACCESS_CODE` in `.env.local`, default **APEX-HIRE**.
+Access code: set `HIRE_DESK_ACCESS_CODE` in `.env.local` (required).
+
+`data/jobs.sample.json` is **fixtures only** for `npm run score:samples` — not loaded into the app.
 
 ## Scoring (lib)
 
@@ -30,12 +32,12 @@ npm run score:samples
 
 - Queue / Europe / America / Applied / Templates
 - Job cards: Fit · Reach · Priority, proofs, copy apply / brief
-- Manual add + status pipeline + local `data/jobs.json`
+- Manual add + status pipeline + local `data/jobs.json` or `HIRE_STORAGE=firebase`
 
 ## MVP-3 + Individuals + MAX LIVE
 
 - **Individuals** — HR / HM / senior / founder, Access·Leverage·Fit, direct email
-- **Harvest MAX LIVE** — Remotive / Arbeitnow / RemoteOK → Greenhouse / Ashby → HTML+proxy
-- STOP / live log / segment quotas / cron (`HARVEST_AUTO_CRON=1`)
+- **Harvest MAX LIVE** — Remotive / Arbeitnow / RemoteOK / HN / GitHub → Greenhouse / Ashby / Lever / SmartRecruiters / Workable → HTML+proxy / Telegram (opt-in)
+- STOP / live log / segment quotas / external cron (`POST /api/harvest/cron`)
 - LinkedIn **import only** (`data/linkedin_imports.json`)
 - Daily apply quotas EU/US + IND; Applied follow-up D3/D7/D14

@@ -25,7 +25,11 @@ export function AccessGate({ onUnlock }: Props) {
         body: JSON.stringify({ code }),
       });
       if (!res.ok) {
-        setError("Неверный код");
+    setError(
+        res.status === 503
+          ? "Задай HIRE_DESK_ACCESS_CODE в .env.local"
+          : "Неверный код",
+      );
         return;
       }
       sessionStorage.setItem(STORAGE_KEY, "1");

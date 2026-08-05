@@ -4,6 +4,7 @@ out/
 node_modules/
 .env*
 !.env.example
+.env.render.keys
 *.log
 .DS_Store
 data/jobs.json
@@ -11,6 +12,6 @@ data/individuals.json
 data/harvest-live.json
 data/harvest-quotas.json
 data/*.tmp
-
-
+secrets/
+*firebase*adminsdk*.json
 

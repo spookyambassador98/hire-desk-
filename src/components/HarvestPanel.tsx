@@ -10,11 +10,11 @@ type Props = {
 
 const PLACEHOLDER = `[
   {
-    "company": "Acme",
-    "role": "Product Engineer",
+    "company": "",
+    "role": "",
     "region": "europe",
-    "url": "https://...",
-    "description": "..."
+    "url": "",
+    "description": ""
   }
 ]
 
@@ -25,7 +25,7 @@ export function HarvestPanel({ onImported, onFlash }: Props) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
 
-  async function run(payload: { text?: string; useSample?: boolean }) {
+  async function run(payload: { text?: string }) {
     setBusy(true);
     try {
       const res = await fetch("/api/harvest", {
@@ -90,13 +90,6 @@ export function HarvestPanel({ onImported, onFlash }: Props) {
           onClick={() => void run({ text })}
         >
           {busy ? "Importing…" : "Import paste"}
-        </button>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => void run({ useSample: true })}
-        >
-          Import sample pack
         </button>
       </div>
     </div>

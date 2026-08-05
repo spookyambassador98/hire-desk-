@@ -2,18 +2,13 @@ import { NextResponse } from "next/server";
 import {
   createIndividual,
   deskPayload,
-  seedIndividualsFromSamples,
   type CreateIndividualInput,
 } from "@/lib/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  if (searchParams.get("seed") === "1") {
-    await seedIndividualsFromSamples();
-  }
+export async function GET() {
   const payload = await deskPayload();
   return NextResponse.json(payload);
 }

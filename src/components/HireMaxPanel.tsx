@@ -33,6 +33,8 @@ type StatusPayload = {
   quotas: QuotaRow[];
   sources: Array<{ id: string; label: string; tier: string }>;
   proxyPool: number;
+  storage?: "local" | "firebase";
+  firebase?: { ok: boolean; error?: string; projectId?: string } | null;
   paused?: boolean;
   live?: LiveState;
 };
@@ -145,6 +147,7 @@ export function HireMaxPanel({ onFilled }: Props) {
           <p className="hire-max__sub">
             Target ≥{target} · day cap {dayCap} · proxy{" "}
             {status?.proxyPool ? `ON (${status.proxyPool})` : "OFF"} ·{" "}
+            {status?.storage === "firebase" ? "Firebase" : "local"} ·{" "}
             {status?.sources?.length ?? 0} sources
           </p>
         </div>

@@ -1,7 +1,6 @@
 /**
  * Smoke-check Fit / Reach / Priority against sample jobs.
  * Run: npm run score:samples
- * (Node 22+ with --experimental-strip-types)
  */
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";

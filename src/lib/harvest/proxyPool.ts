@@ -1,3 +1,9 @@
+/**
+ * Proxy pool (Lead Desk parity):
+ * 1) Classic HTTP proxies via Undici ProxyAgent
+ * 2) Cloudflare Worker / fetch gateways
+ */
+
 import { env } from "@/lib/env";
 
 let classicUrls: string[] = [];
@@ -52,7 +58,13 @@ function splitUrls(all: string[]) {
   const classic: string[] = [];
   const gateways: string[] = [];
   for (const u of all) {
-    if (isBlockedFreeCfWorker(u)) continue;
+    if (isBlockedFreeCfWorker(u)) {
+      console.warn(
+        "[proxy] skip free CF worker (often blocked by targets) · PROXY_ALLOW_CF_WORKER=1 to force",
+        u,
+      );
+      continue;
+    }
     if (isGatewayUrl(u)) gateways.push(u.replace(/\/$/, ""));
     else classic.push(u);
   }
@@ -89,31 +101,12 @@ async function ensurePool() {
   gatewayUrls = gateways;
   agents = [];
   if (classicUrls.length) {
-    try {
-      const undici = await import("undici");
-      agents = classicUrls.map((uri) => new undici.ProxyAgent(uri));
-    } catch {
-      agents = [];
-    }
+    const undici = await import("undici");
+    agents = classicUrls.map((uri) => new undici.ProxyAgent(uri));
   }
   classicCursor = 0;
   gatewayCursor = 0;
   requestCount = 0;
-}
-
-export async function validateProxy(proxyUrl: string): Promise<boolean> {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch('http://httpbin.org/ip', {
-      signal: controller.signal,
-      headers: { 'User-Agent': randomUserAgent() },
-      // @ts-ignore
-      dispatcher: new (await import('undici')).ProxyAgent(proxyUrl)
-    });
-    clearTimeout(timeout);
-    return res.ok;
-  } catch { return false; }
 }
 
 export function proxyPoolSize() {
@@ -121,7 +114,7 @@ export function proxyPoolSize() {
   return classic.length + gateways.length;
 }
 
-async function getProxyDispatcher(): Promise<unknown | undefined> {
+export async function getProxyDispatcher(): Promise<unknown | undefined> {
   await ensurePool();
   if (!agents.length) return undefined;
   requestCount += 1;
@@ -150,8 +143,10 @@ async function fetchViaGateway(
   const headers = new Headers(init.headers || {});
   headers.delete("host");
   if (secret) headers.set("x-proxy-secret", secret);
+
   const sep = gatewayBase.includes("?") ? "&" : "?";
   const gatewayUrl = `${gatewayBase}${sep}url=${encodeURIComponent(target)}`;
+
   return fetch(gatewayUrl, {
     method: init.method || "GET",
     headers,
@@ -166,24 +161,25 @@ export async function proxiedFetch(
   init: RequestInit = {},
 ): Promise<Response> {
   await ensurePool();
+
   const gateway = nextGateway();
   if (gateway) {
     try {
       return await fetchViaGateway(gateway, input, init);
-    } catch {
-      /* fall through */
+    } catch (err) {
+      console.warn("[proxy] CF gateway failed, trying classic/direct", err);
     }
   }
+
   const dispatcher = await getProxyDispatcher();
-  if (!dispatcher) return fetch(input, init);
-  try {
-    const undici = await import("undici");
-    return undici.fetch(input, {
-      ...init,
-      // @ts-expect-error undici dispatcher
-      dispatcher,
-    }) as unknown as Response;
-  } catch {
+  if (!dispatcher) {
     return fetch(input, init);
   }
+
+  const undici = await import("undici");
+  return undici.fetch(input, {
+    ...init,
+    // @ts-expect-error undici dispatcher
+    dispatcher,
+  }) as unknown as Response;
 }

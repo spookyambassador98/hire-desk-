@@ -161,10 +161,6 @@ export async function runHireMax(
 
   for (const segment of segments) {
     if (isHarvestStopRequested()) break;
-    await sleep(2000 + Math.random() * 3000);
-    if (isHarvestStopRequested()) break;
-    await sleep(2000 + Math.random() * 3000);
-    if (isHarvestStopRequested()) break;
     if (added >= runTarget) break;
 
     const remaining = segmentRemaining(

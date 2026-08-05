@@ -1,7 +1,10 @@
 import { randomUUID } from "node:crypto";
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { parseHarvestPayload } from "./harvest/parsePaste";
+import {
+  readRawIndividuals,
+  readRawJobs,
+  writeRawIndividuals,
+  writeRawJobs,
+} from "./persistence";
 import {
   enrichIndividual,
   scoreIndividual,
@@ -22,54 +25,10 @@ import type {
   ScoredJob,
 } from "./types";
 import { DEFAULT_HIRE_PROFILE } from "./types";
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const JOBS_FILE = path.join(DATA_DIR, "jobs.json");
-const INDIVIDUALS_FILE = path.join(DATA_DIR, "individuals.json");
-const SAMPLE_FILE = path.join(DATA_DIR, "jobs.sample.json");
-const INDIVIDUALS_SAMPLE = path.join(DATA_DIR, "individuals.sample.json");
-
-async function ensureDataDir() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-}
-
-async function readJsonFile<T>(file: string, fallback: T): Promise<T> {
-  await ensureDataDir();
-  try {
-    const raw = await fs.readFile(file, "utf8");
-    return JSON.parse(raw) as T;
-  } catch (err) {
-    const code = (err as NodeJS.ErrnoException).code;
-    if (code === "ENOENT") return fallback;
-    throw err;
-  }
-}
-
-async function writeJsonFile<T>(file: string, data: T) {
-  await ensureDataDir();
-  const tmp = `${file}.${process.pid}.tmp`;
-  await fs.writeFile(tmp, JSON.stringify(data, null, 2), "utf8");
-  await fs.rename(tmp, file);
-}
+import { parseHarvestPayload } from "./harvest/parsePaste";
 
 function startOfUtcDay(iso = new Date().toISOString()): string {
   return iso.slice(0, 10);
-}
-
-async function readRawJobs(): Promise<Job[]> {
-  return readJsonFile<Job[]>(JOBS_FILE, []);
-}
-
-async function writeRawJobs(jobs: Job[]) {
-  await writeJsonFile(JOBS_FILE, jobs);
-}
-
-async function readRawIndividuals(): Promise<Individual[]> {
-  return readJsonFile<Individual[]>(INDIVIDUALS_FILE, []);
-}
-
-async function writeRawIndividuals(rows: Individual[]) {
-  await writeJsonFile(INDIVIDUALS_FILE, rows);
 }
 
 export function appliedTodayCounts(jobs: Job[], day = startOfUtcDay()) {
@@ -146,9 +105,7 @@ export function withIndividualScores(
 }
 
 export async function readJobs(): Promise<Job[]> {
-  const jobs = await readRawJobs();
-  if (jobs.length === 0) return seedFromSamples();
-  return jobs;
+  return readRawJobs();
 }
 
 export async function readScoredJobs(
@@ -160,9 +117,7 @@ export async function readScoredJobs(
 }
 
 export async function readIndividuals(): Promise<Individual[]> {
-  const rows = await readRawIndividuals();
-  if (rows.length === 0) return seedIndividualsFromSamples();
-  return rows;
+  return readRawIndividuals();
 }
 
 export async function readScoredIndividuals(
@@ -171,33 +126,6 @@ export async function readScoredIndividuals(
   const rows = await readIndividuals();
   const jobs = await readRawJobs();
   return withIndividualScores(rows, jobs, profile);
-}
-
-export async function seedFromSamples(): Promise<Job[]> {
-  const raw = await fs.readFile(SAMPLE_FILE, "utf8");
-  const samples = JSON.parse(raw) as Job[];
-  const now = new Date().toISOString();
-  const seeded = samples.map((j) =>
-    enrichJobProofs({ ...j, updatedAt: now }),
-  );
-  await writeRawJobs(seeded);
-  return seeded;
-}
-
-export async function seedIndividualsFromSamples(): Promise<Individual[]> {
-  try {
-    const raw = await fs.readFile(INDIVIDUALS_SAMPLE, "utf8");
-    const samples = JSON.parse(raw) as Individual[];
-    const now = new Date().toISOString();
-    const seeded = samples.map((i) =>
-      enrichIndividual({ ...i, updatedAt: now }),
-    );
-    await writeRawIndividuals(seeded);
-    return seeded;
-  } catch {
-    await writeRawIndividuals([]);
-    return [];
-  }
 }
 
 export type CreateJobInput = {

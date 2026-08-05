@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "score:samples": "node --experimental-strip-types scripts/score-samples.ts"
+    "score:samples": "tsx scripts/score-samples.ts"
   },
   "dependencies": {
     "cheerio": "^1.0.0",
@@ -16,7 +16,8 @@
     "next": "15.5.22",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "undici": "^6.21.0"
+    "undici": "^6.21.0",
+    "firebase-admin": "^14.2.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -27,6 +28,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.22",
     "tailwindcss": "^4",
+    "tsx": "^4.23.7",
     "typescript": "^5"
   }
 }

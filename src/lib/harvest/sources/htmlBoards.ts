@@ -27,8 +27,7 @@ export const htmlBoardsSource: JobSource = {
     for (const url of careerUrls) {
       if (hits.length >= ctx.limit) break;
       try {
-        await new Promise(r => setTimeout(r, 3000 + Math.random() * 4000));
-      const res = await fetchWithRetry(url, {
+        const res = await proxiedFetch(url, {
           headers: {
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
@@ -70,13 +69,10 @@ export const htmlBoardsSource: JobSource = {
 
     // Indeed only with proxies
     if (proxyPoolSize() > 0 && hits.length < ctx.limit) {
-      await new Promise(r => setTimeout(r, 10000 + Math.random() * 5000));
-      await new Promise(r => setTimeout(r, 10000 + Math.random() * 5000));
       const loc = ctx.segment.region === "europe" ? "Europe" : "United States";
       const indeed = `https://www.indeed.com/jobs?q=${encodeURIComponent(kw)}&l=${encodeURIComponent(loc)}`;
       try {
-        await new Promise(r => setTimeout(r, 5000 + Math.random() * 5000));
-      const res = await fetchWithRetry(indeed, {
+        const res = await proxiedFetch(indeed, {
           headers: {
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
