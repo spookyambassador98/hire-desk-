@@ -1,0 +1,259 @@
+APEX // HIRE DESK — полный репорт
+=================================
+
+Статус: только обсуждение, код ещё не писали.
+
+
+ПРОСТЫМИ СЛОВАМИ
+----------------
+
+Hire Desk — это твой Lead Desk, но не для поиска клиентов, а для поиска постоянной работы.
+
+- Вместо лидов → список вакансий
+- Вместо соцсетей → описание / зарплата / ссылка / шанс что возьмут / шаблон отклика
+- Поиск делится на Европу и Америку
+- Цель — стабильная работа (не фриланс)
+- Ты: не классический проггер, а человек который делает цифровые продукты
+
+
+1. ЧТО ЗА ПРОДУКТ
+-----------------
+
+Пайплайн как у Lead Desk:
+
+  найти → оценить → очередь на день → откликнуться → отслеживать
+
+Lead Desk                          →  Hire Desk
+----------------------------------------------
+Компании / лиды                    →  Вакансии
+Beauty / factories                 →  Europe / America
+Соцсети + sales-шаблоны            →  Описание + бабло + ссылка + apply-шаблоны
+Скор «насколько горячий лид»       →  Fit % к твоим проектам
+Статус до deal                     →  Статус до offer
+
+Визуал: Tony Stark / тяжёлый люкс HUD, но другой дизайн, не копия Lead Desk.
+
+
+2. ВСЕ ТВОИ ПРОЕКТЫ
+-------------------
+
+Desktop: C:\Users\bakuw\Desktop\
+
+  myvis / APEX / Leads Club
+    Портфолио + лиды + ops | Упаковка всей линейки
+
+  Ocean Thrive
+    UE5 underwater multiplayer | Vision за web
+
+  Aether POC
+    Multi-agent logistics AI | AI product thinker
+
+  zashiprovannaya-krysa / ТУННЕЛЬ
+    WebRTC video tunnel | Shipped micro-product
+
+Проекты: C:\Users\bakuw\Desktop\проекты\
+
+  Asema Trading
+    Trading-school SaaS | Самый сильный fullstack
+
+  demo_trading_platform
+    Демо-близнец Asema | Портфолио-демо
+
+  cosmo / Orbital C2
+    Live orbital HUD 3D | Wow + realtime
+
+  poltava-foam-portal / FOAMCORE
+    B2B портал завода | Вертикальный продукт
+
+  lead-desk
+    Outreach console | Ops + parsers (база для Hire Desk)
+
+  eyemaster / Art of Look
+    Beauty booking | Vertical SaaS
+
+  santien-portal
+    Partner cabinet | Экосистема Leads Club
+
+Live demos:
+  Orbital:      https://demo-cosmo.vercel.app/
+  Art of Look:  https://demo-beautymaster.vercel.app/
+  Trading:      https://demo-trading-one.vercel.app/
+  FOAMCORE:     https://demo-foamcore.vercel.app/
+  Leads Club:   https://leads-club.vercel.app
+
+
+3. STICKY PITCH (в каждый отклик)
+---------------------------------
+
+I don’t come from a classical CS path. I ship end-to-end digital products
+with AI-native workflows — from industrial portals and trading-school
+platforms to realtime 3D ops consoles. You give the problem; I deliver
+the product.
+
+
+4. КАКИЕ РОЛИ ИСКАТЬ
+--------------------
+
+Брать:
+  - Product Builder / Full-stack Product Engineer
+  - Founding Engineer (early startup)
+  - AI Product / Rapid Prototyping
+  - Creative Technologist
+  - Internal Tools / Ops Platforms Engineer
+
+Не брать / прятать:
+  - FAANG leetcode-only
+  - «5+ years Java only»
+  - Pure backend без продукта
+  - Agency body-shop
+  - Фриланс-биржи
+
+
+5. КАРТОЧКА ВАКАНСИИ
+--------------------
+
+На каждой вакансии сразу видно:
+
+  1. Компания + роль + регион (EU / US)
+  2. Короткое описание
+  3. Зарплата / range
+  4. Ссылка (LinkedIn / careers)
+  5. Fit % — насколько подходит под твои проекты
+  6. Какие 1–2 проекта кидать в отклик
+  7. Готовый шаблон текста
+  8. Статус: new → applied → interview → offer
+
+
+6. ЭКРАНЫ ПРИЛОЖЕНИЯ
+--------------------
+
+  Queue         — что отправить сегодня
+  Europe        — вакансии Европы
+  America       — вакансии Америки
+  Applied       — уже отправил + follow-up
+  Interviews    — куда позвали + brief
+  Offers        — сравнение офферов
+  Templates     — шаблоны писем
+  Portfolio map — какой проект к какой роли
+  Harvest       — импорт/парсер вакансий
+  Admin         — воронка и статистика
+
+Главный экран = сразу список вакансий, не дерево сегментов.
+
+
+7. СКОРИНГ (3 числа)
+--------------------
+
+Не один красивый %, а:
+
+  1. Fit           — совпадение с портфелем и типом роли
+  2. Reachability  — легко ли откликнуться / есть ли контакт
+  3. Priority      — что делать сегодня первым
+
+
+8. КАКОЙ ПРОЕКТ КИДАТЬ КУДА
+---------------------------
+
+  Industrial / B2B portal      →  FOAMCORE
+  EdTech / SaaS / fintech ops  →  Asema
+  3D / HUD / wow UI            →  Orbital C2
+  Beauty / booking             →  Art of Look
+  Ops / automation / scraping  →  Lead Desk
+  Agency / packaging           →  myvis / APEX
+
+
+9. ДНЕВНАЯ ДИСЦИПЛИНА
+---------------------
+
+  - 8–12 заявок Europe
+  - 8–12 заявок America
+  - Follow-up через 5–7 дней тишины
+  - Лог: куда написал / что ответили
+
+Без этого красивый список не помогает устроиться.
+
+
+10. EUROPE VS AMERICA
+---------------------
+
+                    Europe                          America
+  Каналы            LinkedIn, careers, EU boards    LinkedIn, Wellfound, Greenhouse
+  Тон               Короче, formal                  Direct, founder-friendly
+  Флаги             Remote EU / visa?               Remote US / timezone / visa?
+
+
+11. ЧТО ДОБАВИЛИ СВЕРХ ТВОЕЙ ИДЕИ (ускорение найма)
+----------------------------------------------------
+
+  1. Recruiter / hiring manager — кому писать лично
+  2. Follow-up шаблоны на день 3 / 7 / 14
+  3. Interview brief — 3 буллета + какие демо открыть
+  4. Offer tracker — сравнение офферов
+  5. Rejection learning — почему отказ → подкрутка фильтров
+  6. Proof pack — одна страница с лучшими кейсами
+  7. Company signal — product-led вверх / body-shop вниз
+  8. Anti-filter плохих ролей
+  9. Portfolio matcher в карточке
+ 10. Daily queue + квота EU/US
+
+
+12. ВОРОНКА
+-----------
+
+  new → queued → applied → follow_up → replied → interview → offer / rejected
+
+
+13. ЧТО БЕРЁМ ИЗ LEAD DESK / ЧТО МЕНЯЕМ
+---------------------------------------
+
+Берём:  HUD, очередь, Firebase-паттерны, шаблоны UI, cron, parser console.
+
+Меняем: модель (вакансия), сегменты (EU/US), скор (fit), тексты (apply),
+        источники (job boards, не OSM).
+
+
+14. ДИЗАЙН
+----------
+
+Tony Stark / heavy luxury / APEX HUD.
+Новая композиция, не клон Lead Desk.
+Void dark + cyan/gold. Queue-first. Dual rail Europe/America.
+
+
+15. РИСКИ
+---------
+
+  - «Не проггер» на обычный SE = отказ → целимся в product/founding роли
+  - Fit % без честных правил = декорация → прозрачные веса
+  - Скрап LinkedIn хрупкий → импорт + boards + ручной add
+  - Много вакансий без квоты = ноль офферов
+
+
+16. КОГДА ПОЙДЁМ В КОД (фазы)
+-----------------------------
+
+  MVP-1 — оболочка, карточки, Queue, EU/US, ручное добавление, шаблоны
+  MVP-2 — Fit + portfolio matcher
+  MVP-3 — импорт вакансий + квота + follow-up
+  MVP-4 — interview brief, offers, rejection learning
+
+
+ВЕРДИКТ
+-------
+
+Hire Desk — не «ещё один job board».
+
+Это консоль:
+
+  правильная роль
+  → правильный кейс из портфеля
+  → готовый текст
+  → дневная квота EU/US
+  → follow-up до оффера.
+
+
+ДАЛЬШЕ НА ВЫБОР
+---------------
+
+  1. Формула Fit % + черновик шаблонов
+  2. Сразу scaffold проекта (код)

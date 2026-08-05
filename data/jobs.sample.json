@@ -1,0 +1,87 @@
+[
+  {
+    "id": "job_eu_founding",
+    "company": "Nordic Ops Labs",
+    "role": "Founding Engineer — Internal Tools",
+    "region": "europe",
+    "location": "Remote EU",
+    "remote": true,
+    "description": "Early startup building a SaaS ops console for logistics teams. Need a product engineer who ships full-stack (Next.js, TypeScript, realtime) and owns rapid prototyping with AI-native workflows. Series A product-led company.",
+    "salary": {
+      "min": 70000,
+      "max": 95000,
+      "currency": "EUR",
+      "period": "year"
+    },
+    "url": "https://jobs.ashbyhq.com/nordic-ops/founding",
+    "channel": "ashby",
+    "contact": {
+      "name": "Elena Markovic",
+      "role": "Hiring Manager",
+      "channel": "linkedin",
+      "handle": "elena-markovic"
+    },
+    "status": "new",
+    "notes": null,
+    "source": "sample",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-04T10:00:00.000Z",
+    "updatedAt": "2026-08-04T10:00:00.000Z"
+  },
+  {
+    "id": "job_us_product",
+    "company": "Foamline Systems",
+    "role": "Full-stack Product Engineer",
+    "region": "america",
+    "location": "Remote US",
+    "remote": true,
+    "description": "Industrial B2B portal for manufacturing plants — order cabinets, partner access, factory ops. React/Next platform. Looking for someone who has shipped a vertical product end-to-end.",
+    "salary": {
+      "min": 110000,
+      "max": 140000,
+      "currency": "USD",
+      "period": "year"
+    },
+    "url": "https://job-boards.greenhouse.io/foamline/jobs/123",
+    "channel": "greenhouse",
+    "contact": {
+      "name": "Chris Ortega",
+      "role": "Recruiter",
+      "channel": "email",
+      "handle": "chris@foamline.example"
+    },
+    "status": "queued",
+    "notes": null,
+    "source": "sample",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-03T15:30:00.000Z",
+    "updatedAt": "2026-08-03T15:30:00.000Z"
+  },
+  {
+    "id": "job_skip_java",
+    "company": "LegacyBank Corp",
+    "role": "Backend Software Engineer",
+    "region": "america",
+    "location": "NYC hybrid",
+    "remote": false,
+    "description": "Pure backend Java only. 5+ years Java required. Leetcode must. Large enterprise consulting boutique / outstaff style delivery for clients.",
+    "salary": {
+      "min": 130000,
+      "max": 160000,
+      "currency": "USD",
+      "period": "year"
+    },
+    "url": null,
+    "channel": "none",
+    "contact": null,
+    "status": "new",
+    "notes": "Anti-filter expected",
+    "source": "sample",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-01T09:00:00.000Z",
+    "updatedAt": "2026-08-01T09:00:00.000Z"
+  }
+]
