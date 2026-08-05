@@ -117,20 +117,49 @@ export async function probeFirebase(): Promise<{
   ok: boolean;
   error?: string;
   projectId?: string;
+  exhausted?: boolean;
 }> {
   try {
     if (!firebaseConfigured()) {
       return { ok: false, error: "HIRE_STORAGE not firebase or env missing" };
     }
+    const { bumpOpsUsage, clearFirebaseExhausted } =
+      await import("@/lib/opsUsage");
+
+    const cached = (globalThis as typeof globalThis & {
+      __hireFbProbe?: { at: number; result: { ok: boolean; error?: string; projectId?: string; exhausted?: boolean } };
+    }).__hireFbProbe;
+    if (cached && Date.now() - cached.at < 20_000) {
+      return cached.result;
+    }
+
     const fs = firestore();
     await fs.collection("meta").doc("hire_desk").get();
+    await bumpOpsUsage({ reads: 1 });
+    clearFirebaseExhausted();
     const projectId =
       getApps()[0]?.options.projectId ||
       env("FIREBASE_PROJECT_ID") ||
       undefined;
-    return { ok: true, projectId };
+    const result = { ok: true, projectId, exhausted: false };
+    (globalThis as typeof globalThis & {
+      __hireFbProbe?: { at: number; result: typeof result };
+    }).__hireFbProbe = { at: Date.now(), result };
+    return result;
   } catch (err) {
+    const { noteFirestoreError, isFirebaseExhausted } = await import(
+      "@/lib/opsUsage"
+    );
+    noteFirestoreError(err);
     const msg = err instanceof Error ? err.message : String(err);
-    return { ok: false, error: msg.slice(0, 240) };
+    const result = {
+      ok: false,
+      error: msg.slice(0, 240),
+      exhausted: isFirebaseExhausted(),
+    };
+    (globalThis as typeof globalThis & {
+      __hireFbProbe?: { at: number; result: typeof result };
+    }).__hireFbProbe = { at: Date.now(), result };
+    return result;
   }
 }

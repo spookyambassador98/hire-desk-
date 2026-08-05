@@ -31,6 +31,10 @@ type Telemetry = {
       writesApprox: number;
       readsLeftApprox: number;
       writesLeftApprox: number;
+      readsPct?: number;
+      writesPct?: number;
+      exhausted?: boolean;
+      source?: string;
       note: string;
     };
   };
@@ -133,7 +137,7 @@ export function OpsTelemetry() {
       }
     };
     void tick();
-    const id = window.setInterval(() => void tick(), 4000);
+    const id = window.setInterval(() => void tick(), 8000);
     return () => {
       cancelled = true;
       window.clearInterval(id);
@@ -290,30 +294,59 @@ function QuotaBar({
 
 function FirebaseQuotaCard({ firebase }: { firebase: Telemetry["firebase"] }) {
   const leftMs = useUtcQuotaCountdown();
-  const readsPct =
-    firebase.softQuota.readsPerDay > 0
+  const exhausted = Boolean(firebase.usage.exhausted) || !firebase.ok;
+  const readsUsed = firebase.usage.readsApprox;
+  const writesUsed = firebase.usage.writesApprox;
+  const readsPct = exhausted
+    ? Math.max(
+        99,
+        firebase.softQuota.readsPerDay > 0
+          ? Math.min(
+              100,
+              Math.round(
+                (readsUsed / firebase.softQuota.readsPerDay) * 1000,
+              ) / 10,
+            )
+          : 99,
+      )
+    : firebase.softQuota.readsPerDay > 0
       ? Math.min(
           100,
-          Math.round(
-            (firebase.usage.readsApprox / firebase.softQuota.readsPerDay) *
-              1000,
-          ) / 10,
+          Math.round((readsUsed / firebase.softQuota.readsPerDay) * 1000) / 10,
         )
       : 0;
-  const nearEmpty = readsPct >= 90 || firebase.usage.readsLeftApprox <= 0;
+  const nearEmpty =
+    exhausted ||
+    readsPct >= 90 ||
+    firebase.usage.readsLeftApprox <= 0;
   const resetColor = nearEmpty ? "var(--gold)" : "var(--cyan)";
 
   return (
-    <div className={`hd-ops__card ${firebase.ok ? "eu" : "warn"}`}>
+    <div className={`hd-ops__card ${firebase.ok && !exhausted ? "eu" : "warn"}`}>
       <div
         className="hd-ops__card-title"
-        style={{ color: firebase.ok ? "var(--green)" : "var(--red)" }}
+        style={{
+          color: firebase.ok && !exhausted ? "var(--green)" : "var(--red)",
+        }}
       >
         Firebase
       </div>
       <ul className="hd-ops__lines">
-        <li>{firebase.ok ? "link OK" : `FAIL · ${firebase.error || "?"}`}</li>
+        <li>
+          {exhausted
+            ? `EXHAUSTED · ${firebase.error || "quota"}`
+            : firebase.ok
+              ? "link OK"
+              : `FAIL · ${firebase.error || "?"}`}
+        </li>
         <li>project {firebase.projectId || "—"}</li>
+        <li>
+          today ~{readsUsed.toLocaleString("en-US")} reads · ~
+          {writesUsed.toLocaleString("en-US")} writes
+          {firebase.usage.source ? (
+            <span className="hd-ops__dim"> · {firebase.usage.source}</span>
+          ) : null}
+        </li>
         <li>latency {firebase.latencyMs}ms</li>
         <li style={{ color: resetColor }}>
           quota reset in {fmtCountdown(leftMs)}
@@ -323,16 +356,20 @@ function FirebaseQuotaCard({ firebase }: { firebase: Telemetry["firebase"] }) {
       <div className="hd-ops__quota-stack">
         <QuotaBar
           label="Reads / day"
-          used={firebase.usage.readsApprox}
+          used={
+            exhausted && readsUsed <= 0
+              ? firebase.softQuota.readsPerDay
+              : readsUsed
+          }
           limit={firebase.softQuota.readsPerDay}
-          left={firebase.usage.readsLeftApprox}
+          left={exhausted ? 0 : firebase.usage.readsLeftApprox}
           unit="reads"
         />
         <QuotaBar
           label="Writes / day"
-          used={firebase.usage.writesApprox}
+          used={writesUsed}
           limit={firebase.softQuota.writesPerDay}
-          left={firebase.usage.writesLeftApprox}
+          left={exhausted ? 0 : firebase.usage.writesLeftApprox}
           unit="writes"
         />
       </div>

@@ -1,7 +1,10 @@
 import { randomUUID } from "node:crypto";
 import {
+  deleteRawJob,
   readRawIndividuals,
   readRawJobs,
+  upsertRawIndividuals,
+  upsertRawJobs,
   writeRawIndividuals,
   writeRawJobs,
 } from "./persistence";
@@ -243,11 +246,7 @@ export async function patchJob(
 }
 
 export async function deleteJob(id: string): Promise<boolean> {
-  const jobs = await readRawJobs();
-  const next = jobs.filter((j) => j.id !== id);
-  if (next.length === jobs.length) return false;
-  await writeRawJobs(next);
-  return true;
+  return deleteRawJob(id);
 }
 
 export type CreateIndividualInput = {
@@ -381,7 +380,7 @@ export async function ingestJobsBatch(jobs: Job[]) {
     fresh.push(job);
     added += 1;
   }
-  await writeRawJobs(existing);
+  if (fresh.length) await upsertRawJobs(fresh);
 
   let individualsAdded = 0;
   if (fresh.length) {
@@ -397,6 +396,7 @@ export async function ingestJobsBatch(jobs: Job[]) {
       ),
     );
     const now = new Date().toISOString();
+    const freshInd: Individual[] = [];
     for (const job of fresh) {
       for (const c of extractContactsFromJob(job)) {
         if (c.email && emailSeen.has(c.email.toLowerCase())) continue;
@@ -422,12 +422,13 @@ export async function ingestJobsBatch(jobs: Job[]) {
           updatedAt: now,
         });
         indRows.unshift(row);
+        freshInd.push(row);
         if (c.email) emailSeen.add(c.email.toLowerCase());
         nameCoSeen.add(nk);
         individualsAdded += 1;
       }
     }
-    if (individualsAdded) await writeRawIndividuals(indRows);
+    if (freshInd.length) await upsertRawIndividuals(freshInd);
   }
 
   return { added, individualsAdded };

@@ -25,8 +25,12 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const live = await readHarvestLive();
-  const jobs = await readJobs();
-  const quota = await readQuotaDay(jobs);
+  // Prefer in-memory / meta quota — do not full-scan jobs on every poll.
+  let quota = await readQuotaDay();
+  if (Object.keys(quota.bySegment || {}).length === 0) {
+    const jobs = await readJobs().catch(() => []);
+    quota = await readQuotaDay(jobs);
+  }
   const quotas = HIRE_SEGMENTS.map((s) => {
     const today = quota.bySegment[s.id] ?? 0;
     return {

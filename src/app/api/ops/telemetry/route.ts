@@ -17,7 +17,7 @@ import { proxyModeLabel, safeRunTarget } from "@/lib/harvest/harvestFetch";
 import { proxyPoolSize } from "@/lib/harvest/proxyPool";
 import { enabledSources } from "@/lib/harvest/sources";
 import { readOpsUsage } from "@/lib/opsUsage";
-import { storageLabel } from "@/lib/persistence";
+import { peekStoreCounts, storageLabel } from "@/lib/persistence";
 import { readJobs, readIndividuals } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -26,15 +26,30 @@ export const runtime = "nodejs";
 export async function GET() {
   const t0 = Date.now();
   const mem = process.memoryUsage();
+  const peek = peekStoreCounts();
 
-  const [firebase, live, quota, usage, jobs, individuals] = await Promise.all([
+  const [firebase, live, quota, usage] = await Promise.all([
     probeFirebase(),
     readHarvestLive().catch(() => null),
     readQuotaDay().catch(() => null),
     readOpsUsage().catch(() => null),
-    readJobs().catch(() => []),
-    readIndividuals().catch(() => []),
   ]);
+
+  // Only hit Firestore for counts when cache is empty (cold process).
+  let jobsTotal = peek.jobs;
+  let individualsTotal = peek.individuals;
+  if (jobsTotal == null || individualsTotal == null) {
+    const [jobs, individuals] = await Promise.all([
+      jobsTotal == null
+        ? readJobs().catch(() => [])
+        : Promise.resolve(null),
+      individualsTotal == null
+        ? readIndividuals().catch(() => [])
+        : Promise.resolve(null),
+    ]);
+    if (jobs) jobsTotal = jobs.length;
+    if (individuals) individualsTotal = individuals.length;
+  }
 
   const firebaseMs = Date.now() - t0;
   const totalToday = quota
@@ -53,17 +68,29 @@ export async function GET() {
 
   const softQuota = { ...FIRESTORE_SOFT };
   const gate = usage ? snapshotFirebaseQuota(usage) : null;
+  const firebaseOk = firebase.ok && !gate?.exhausted;
 
   const platformOk =
-    (storageLabel() !== "firebase" || firebase.ok) &&
+    (storageLabel() !== "firebase" || firebaseOk) &&
     heartbeatOk &&
     (!live?.message || !/error|fail|завис|stuck/i.test(live.message));
 
   const platformStatus: "ok" | "degraded" | "down" = platformOk
     ? "ok"
-    : firebase.ok || storageLabel() !== "firebase"
+    : firebaseOk || storageLabel() !== "firebase"
       ? "degraded"
       : "down";
+
+  const readsApprox = gate?.readsApprox ?? 0;
+  const writesApprox = gate?.writesApprox ?? 0;
+  const noteParts = [
+    `Tracked ~${readsApprox.toLocaleString("en-US")} reads / ~${writesApprox.toLocaleString("en-US")} writes today (app counters)`,
+    `Spark soft cap ${softQuota.readsPerDay.toLocaleString("en-US")}R / ${softQuota.writesPerDay.toLocaleString("en-US")}W`,
+    gate?.source ? `source ${gate.source}` : null,
+    gate?.exhausted
+      ? "RESOURCE_EXHAUSTED — bars use last known + mark empty"
+      : "exact billing → Firebase Console Usage",
+  ].filter(Boolean);
 
   return NextResponse.json({
     ok: true,
@@ -77,13 +104,14 @@ export async function GET() {
       configuredTarget: HIRE_RUN_TARGET,
       dailyQuotaPerSegment: HIRE_DAILY_QUOTA,
       dayCeiling: ceiling,
-      jobsTotal: jobs.length,
-      individualsTotal: individuals.length,
+      jobsTotal: jobsTotal ?? 0,
+      individualsTotal: individualsTotal ?? 0,
       harvestToday: totalToday,
       harvestRemainingToday: totalRemaining,
     },
     firebase: {
       ...firebase,
+      ok: firebaseOk,
       latencyMs: firebaseMs,
       softQuota,
       quotaGate: gate
@@ -94,15 +122,23 @@ export async function GET() {
             writesPct: gate.writesPct,
             reason: gate.reason,
             resetsHint: gate.resetsHint,
+            exhausted: gate.exhausted,
+            source: gate.source,
           }
         : null,
       usage: {
         day: usage?.day ?? null,
-        readsApprox: gate?.readsApprox ?? 0,
-        writesApprox: gate?.writesApprox ?? 0,
-        readsLeftApprox: gate?.readsLeftApprox ?? softQuota.readsPerDay,
-        writesLeftApprox: gate?.writesLeftApprox ?? softQuota.writesPerDay,
-        note: "Internal ops counters · exact quota — Firebase Console",
+        readsApprox,
+        writesApprox,
+        readsLeftApprox:
+          gate?.readsLeftApprox ?? softQuota.readsPerDay,
+        writesLeftApprox:
+          gate?.writesLeftApprox ?? softQuota.writesPerDay,
+        readsPct: gate?.readsPct ?? 0,
+        writesPct: gate?.writesPct ?? 0,
+        exhausted: gate?.exhausted ?? false,
+        source: gate?.source ?? "memory",
+        note: noteParts.join(" · "),
       },
     },
     render: {
@@ -125,9 +161,6 @@ export async function GET() {
       added: live?.added ?? 0,
       skipped: live?.skipped ?? 0,
       trashed: live?.trashed ?? 0,
-      startedAt: live?.startedAt ?? null,
-      finishedAt: live?.finishedAt ?? null,
-      heartbeatAt: live?.heartbeatAt ?? null,
       heartbeatAgeMs,
       heartbeatOk,
     },

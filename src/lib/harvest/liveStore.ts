@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { firebaseConfigured, firestore } from "@/lib/firebase";
+import { bumpOpsUsage, noteFirestoreError } from "@/lib/opsUsage";
 import type { HireSegmentId } from "./max";
 import { HIRE_SEGMENTS } from "./max";
 import type { Job } from "@/lib/types";
@@ -102,22 +103,49 @@ async function readLiveFirebase(): Promise<HarvestLiveState | null> {
   if (!firebaseConfigured()) return null;
   try {
     const snap = await firestore().collection("meta").doc(META_LIVE).get();
+    await bumpOpsUsage({ reads: 1 });
     if (!snap.exists) return null;
     return snap.data() as HarvestLiveState;
-  } catch {
+  } catch (err) {
+    noteFirestoreError(err);
     return null;
   }
 }
 
 async function writeLiveFirebase(next: HarvestLiveState) {
   if (!firebaseConfigured()) return;
-  try {
-    await firestore().collection("meta").doc(META_LIVE).set(next, {
-      merge: true,
-    });
-  } catch {
-    /* ignore */
+  const gLive = globalThis as typeof globalThis & {
+    __hireLiveFbTimer?: ReturnType<typeof setTimeout> | null;
+    __hireLiveFbPending?: HarvestLiveState | null;
+  };
+  gLive.__hireLiveFbPending = next;
+  const flush = async () => {
+    gLive.__hireLiveFbTimer = null;
+    const payload = gLive.__hireLiveFbPending;
+    gLive.__hireLiveFbPending = null;
+    if (!payload) return;
+    try {
+      await firestore().collection("meta").doc(META_LIVE).set(payload, {
+        merge: true,
+      });
+      await bumpOpsUsage({ writes: 1 });
+    } catch (err) {
+      noteFirestoreError(err);
+    }
+  };
+  // Force flush when run ends; otherwise debounce to cut write spam.
+  if (!next.running) {
+    if (gLive.__hireLiveFbTimer) {
+      clearTimeout(gLive.__hireLiveFbTimer);
+      gLive.__hireLiveFbTimer = null;
+    }
+    await flush();
+    return;
   }
+  if (gLive.__hireLiveFbTimer) return;
+  gLive.__hireLiveFbTimer = setTimeout(() => {
+    void flush();
+  }, 3_000);
 }
 
 function normalizeLive(disk: HarvestLiveState): HarvestLiveState {
@@ -133,6 +161,11 @@ function normalizeLive(disk: HarvestLiveState): HarvestLiveState {
 
 export async function readHarvestLive(): Promise<HarvestLiveState> {
   const mem = readHarvestLiveMemory();
+  // During an active run, memory is authoritative — skip Firebase read spam.
+  if (mem.running && mem.heartbeatAt) {
+    const age = Date.now() - Date.parse(mem.heartbeatAt);
+    if (Number.isFinite(age) && age < 90_000) return mem;
+  }
   const fromFb = await readLiveFirebase();
   if (fromFb) {
     g.__hireHarvestLive = normalizeLive(fromFb);
@@ -224,9 +257,11 @@ async function readQuotaFirebase(): Promise<HarvestQuotaDay | null> {
   if (!firebaseConfigured()) return null;
   try {
     const snap = await firestore().collection("meta").doc(META_QUOTA).get();
+    await bumpOpsUsage({ reads: 1 });
     if (!snap.exists) return null;
     return snap.data() as HarvestQuotaDay;
-  } catch {
+  } catch (err) {
+    noteFirestoreError(err);
     return null;
   }
 }
@@ -237,8 +272,9 @@ async function writeQuotaFirebase(next: HarvestQuotaDay) {
     await firestore().collection("meta").doc(META_QUOTA).set(next, {
       merge: true,
     });
-  } catch {
-    /* ignore */
+    await bumpOpsUsage({ writes: 1 });
+  } catch (err) {
+    noteFirestoreError(err);
   }
 }
 
