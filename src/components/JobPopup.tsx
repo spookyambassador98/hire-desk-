@@ -11,7 +11,7 @@ import { useI18n } from "@/lib/i18n";
 import { jobPostedAt, regionClass } from "@/lib/regions";
 import type { JobStatus, ScoredJob } from "@/lib/types";
 import { renderApply, renderTemplate } from "@/lib/templates";
-import { descriptionParagraphs, previewText, stripHtml } from "@/lib/text";
+import { descriptionParagraphs, previewText } from "@/lib/text";
 
 type Props = {
   job: ScoredJob | null;
