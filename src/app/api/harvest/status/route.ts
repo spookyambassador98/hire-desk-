@@ -18,13 +18,15 @@ import { proxyModeLabel, safeRunTarget } from "@/lib/harvest/harvestFetch";
 import { env } from "@/lib/env";
 import { probeFirebase } from "@/lib/firebase";
 import { storageLabel } from "@/lib/persistence";
+import { readJobs } from "@/lib/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const live = await readHarvestLive();
-  const quota = await readQuotaDay();
+  const jobs = await readJobs();
+  const quota = await readQuotaDay(jobs);
   const quotas = HIRE_SEGMENTS.map((s) => {
     const today = quota.bySegment[s.id] ?? 0;
     return {

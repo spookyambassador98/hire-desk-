@@ -266,8 +266,7 @@ export function HireMaxPanel({ onFilled }: Props) {
   async function startMax() {
     userStoppedRef.current = false;
     setRunning(true);
-    setIntake([]);
-    seenIds.current.clear();
+    // Keep prior intake visible — server continues shelves, no wipe
     setMessage("Starting MAX LIVE…");
     stopPoll();
     try {
@@ -284,6 +283,7 @@ export function HireMaxPanel({ onFilled }: Props) {
         alreadyRunning?: boolean;
       };
       setMessage(data.message || "Running");
+      await loadStatus();
       pollRef.current = setInterval(() => void loadStatus(), 1800);
     } catch {
       setRunning(false);

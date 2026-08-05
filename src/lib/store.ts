@@ -29,6 +29,7 @@ import { DEFAULT_HIRE_PROFILE } from "./types";
 import { extractContactsFromJob } from "./extractContacts";
 import { stripHtml } from "./text";
 import { parseHarvestPayload } from "./harvest/parsePaste";
+import { jobDedupeKey } from "./harvest/dedupe";
 
 function startOfUtcDay(iso = new Date().toISOString()): string {
   return iso.slice(0, 10);
@@ -342,22 +343,20 @@ export async function deleteIndividual(id: string): Promise<boolean> {
   return true;
 }
 
-/** Import jobs from harvest payload; dedupe by company+role+url */
+/** Import jobs from harvest payload; dedupe by normalized URL / company+role */
 export async function importHarvestJobs(text: string) {
   const { jobs: parsed, errors } = parseHarvestPayload(text);
   const existing = await readRawJobs();
-  const key = (j: Job) =>
-    `${j.company.toLowerCase()}|${j.role.toLowerCase()}|${(j.url || "").toLowerCase()}`;
-  const seen = new Set(existing.map(key));
+  const seen = new Set(existing.map(jobDedupeKey));
   let added = 0;
   let skipped = 0;
   for (const job of parsed) {
-    if (seen.has(key(job))) {
+    if (seen.has(jobDedupeKey(job))) {
       skipped += 1;
       continue;
     }
     existing.unshift({ ...job, description: stripHtml(job.description) });
-    seen.add(key(job));
+    seen.add(jobDedupeKey(job));
     added += 1;
   }
   await writeRawJobs(existing);
@@ -372,15 +371,13 @@ export async function ingestJobsBatch(jobs: Job[]) {
     description: stripHtml(j.description),
   }));
   const existing = await readRawJobs();
-  const key = (j: Job) =>
-    `${j.company.toLowerCase()}|${j.role.toLowerCase()}|${(j.url || "").toLowerCase()}`;
-  const seen = new Set(existing.map(key));
+  const seen = new Set(existing.map(jobDedupeKey));
   let added = 0;
   const fresh: Job[] = [];
   for (const job of cleaned) {
-    if (seen.has(key(job))) continue;
+    if (seen.has(jobDedupeKey(job))) continue;
     existing.unshift(job);
-    seen.add(key(job));
+    seen.add(jobDedupeKey(job));
     fresh.push(job);
     added += 1;
   }

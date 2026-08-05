@@ -1,6 +1,9 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { firebaseConfigured, firestore } from "@/lib/firebase";
 import type { HireSegmentId } from "./max";
+import { HIRE_SEGMENTS } from "./max";
+import type { Job } from "@/lib/types";
 
 export type HarvestIntakeHit = {
   id: string;
@@ -37,9 +40,12 @@ const DATA_DIR = path.join(process.cwd(), "data");
 const LIVE_FILE = path.join(DATA_DIR, "harvest-live.json");
 const QUOTA_FILE = path.join(DATA_DIR, "harvest-quotas.json");
 const INTAKE_MAX = 48;
+const META_LIVE = "harvest_live";
+const META_QUOTA = "harvest_quotas";
 
 const g = globalThis as typeof globalThis & {
   __hireHarvestLive?: HarvestLiveState;
+  __hireHarvestQuota?: HarvestQuotaDay;
 };
 
 function defaultLive(): HarvestLiveState {
@@ -58,6 +64,10 @@ function defaultLive(): HarvestLiveState {
   };
 }
 
+export function todayKey(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 async function ensureDir() {
   await fs.mkdir(DATA_DIR, { recursive: true });
 }
@@ -67,24 +77,73 @@ export function readHarvestLiveMemory(): HarvestLiveState {
   return g.__hireHarvestLive;
 }
 
-export async function readHarvestLive(): Promise<HarvestLiveState> {
-  const mem = readHarvestLiveMemory();
+async function readLiveDisk(): Promise<HarvestLiveState | null> {
   try {
     await ensureDir();
     const raw = await fs.readFile(LIVE_FILE, "utf8");
-    const disk = JSON.parse(raw) as HarvestLiveState;
-    g.__hireHarvestLive = {
-      ...defaultLive(),
-      ...disk,
-      logs: Array.isArray(disk.logs) ? disk.logs.slice(-120) : [],
-      recentAdds: Array.isArray(disk.recentAdds)
-        ? disk.recentAdds.slice(0, INTAKE_MAX)
-        : [],
-    };
-    return g.__hireHarvestLive;
+    return JSON.parse(raw) as HarvestLiveState;
   } catch {
-    return mem;
+    return null;
   }
+}
+
+async function writeLiveDisk(next: HarvestLiveState) {
+  try {
+    await ensureDir();
+    const tmp = `${LIVE_FILE}.${process.pid}.tmp`;
+    await fs.writeFile(tmp, JSON.stringify(next, null, 2), "utf8");
+    await fs.rename(tmp, LIVE_FILE);
+  } catch {
+    /* memory is enough */
+  }
+}
+
+async function readLiveFirebase(): Promise<HarvestLiveState | null> {
+  if (!firebaseConfigured()) return null;
+  try {
+    const snap = await firestore().collection("meta").doc(META_LIVE).get();
+    if (!snap.exists) return null;
+    return snap.data() as HarvestLiveState;
+  } catch {
+    return null;
+  }
+}
+
+async function writeLiveFirebase(next: HarvestLiveState) {
+  if (!firebaseConfigured()) return;
+  try {
+    await firestore().collection("meta").doc(META_LIVE).set(next, {
+      merge: true,
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
+function normalizeLive(disk: HarvestLiveState): HarvestLiveState {
+  return {
+    ...defaultLive(),
+    ...disk,
+    logs: Array.isArray(disk.logs) ? disk.logs.slice(-120) : [],
+    recentAdds: Array.isArray(disk.recentAdds)
+      ? disk.recentAdds.slice(0, INTAKE_MAX)
+      : [],
+  };
+}
+
+export async function readHarvestLive(): Promise<HarvestLiveState> {
+  const mem = readHarvestLiveMemory();
+  const fromFb = await readLiveFirebase();
+  if (fromFb) {
+    g.__hireHarvestLive = normalizeLive(fromFb);
+    return g.__hireHarvestLive;
+  }
+  const fromDisk = await readLiveDisk();
+  if (fromDisk) {
+    g.__hireHarvestLive = normalizeLive(fromDisk);
+    return g.__hireHarvestLive;
+  }
+  return mem;
 }
 
 export async function writeHarvestLive(
@@ -102,14 +161,8 @@ export async function writeHarvestLive(
     next.recentAdds = next.recentAdds.slice(0, INTAKE_MAX);
   }
   g.__hireHarvestLive = next;
-  try {
-    await ensureDir();
-    const tmp = `${LIVE_FILE}.${process.pid}.tmp`;
-    await fs.writeFile(tmp, JSON.stringify(next, null, 2), "utf8");
-    await fs.rename(tmp, LIVE_FILE);
-  } catch {
-    /* memory is enough */
-  }
+  await writeLiveDisk(next);
+  await writeLiveFirebase(next);
   return next;
 }
 
@@ -147,22 +200,103 @@ export async function pushHarvestLog(
   });
 }
 
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
+const SEGMENT_IDS = new Set(HIRE_SEGMENTS.map((s) => s.id));
+
+/** Rebuild today's shelf fills from jobs already in DB (survives Render disk wipe). */
+export function rebuildQuotaFromJobs(
+  jobs: Job[],
+  day = todayKey(),
+): HarvestQuotaDay {
+  const bySegment: Partial<Record<HireSegmentId, number>> = {};
+  for (const j of jobs) {
+    if (!j.createdAt?.startsWith(day)) continue;
+    const src = j.source || "";
+    const m = /^max:([a-z0-9_]+):/i.exec(src);
+    if (!m) continue;
+    const id = m[1] as HireSegmentId;
+    if (!SEGMENT_IDS.has(id)) continue;
+    bySegment[id] = (bySegment[id] ?? 0) + 1;
+  }
+  return { day, bySegment };
 }
 
-export async function readQuotaDay(): Promise<HarvestQuotaDay> {
+async function readQuotaFirebase(): Promise<HarvestQuotaDay | null> {
+  if (!firebaseConfigured()) return null;
+  try {
+    const snap = await firestore().collection("meta").doc(META_QUOTA).get();
+    if (!snap.exists) return null;
+    return snap.data() as HarvestQuotaDay;
+  } catch {
+    return null;
+  }
+}
+
+async function writeQuotaFirebase(next: HarvestQuotaDay) {
+  if (!firebaseConfigured()) return;
+  try {
+    await firestore().collection("meta").doc(META_QUOTA).set(next, {
+      merge: true,
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
+async function readQuotaDisk(): Promise<HarvestQuotaDay | null> {
   try {
     await ensureDir();
     const raw = await fs.readFile(QUOTA_FILE, "utf8");
-    const data = JSON.parse(raw) as HarvestQuotaDay;
-    if (data.day !== today()) {
-      return { day: today(), bySegment: {} };
-    }
-    return data;
+    return JSON.parse(raw) as HarvestQuotaDay;
   } catch {
-    return { day: today(), bySegment: {} };
+    return null;
   }
+}
+
+async function writeQuotaDisk(next: HarvestQuotaDay) {
+  try {
+    await ensureDir();
+    const tmp = `${QUOTA_FILE}.${process.pid}.tmp`;
+    await fs.writeFile(tmp, JSON.stringify(next, null, 2), "utf8");
+    await fs.rename(tmp, QUOTA_FILE);
+  } catch {
+    /* ignore */
+  }
+}
+
+export async function readQuotaDay(
+  jobsForRecovery?: Job[],
+): Promise<HarvestQuotaDay> {
+  const day = todayKey();
+  if (g.__hireHarvestQuota?.day === day) {
+    return g.__hireHarvestQuota;
+  }
+
+  const fromFb = await readQuotaFirebase();
+  if (fromFb?.day === day) {
+    g.__hireHarvestQuota = fromFb;
+    return fromFb;
+  }
+
+  const fromDisk = await readQuotaDisk();
+  if (fromDisk?.day === day) {
+    g.__hireHarvestQuota = fromDisk;
+    await writeQuotaFirebase(fromDisk);
+    return fromDisk;
+  }
+
+  if (jobsForRecovery?.length) {
+    const rebuilt = rebuildQuotaFromJobs(jobsForRecovery, day);
+    if (Object.keys(rebuilt.bySegment).length > 0) {
+      g.__hireHarvestQuota = rebuilt;
+      await writeQuotaDisk(rebuilt);
+      await writeQuotaFirebase(rebuilt);
+      return rebuilt;
+    }
+  }
+
+  const empty = { day, bySegment: {} as Partial<Record<HireSegmentId, number>> };
+  g.__hireHarvestQuota = empty;
+  return empty;
 }
 
 export async function bumpSegmentQuota(
@@ -170,17 +304,12 @@ export async function bumpSegmentQuota(
   n: number,
 ): Promise<HarvestQuotaDay> {
   const cur = await readQuotaDay();
-  const day = today();
-  const base =
-    cur.day === day ? cur : ({ day, bySegment: {} } as HarvestQuotaDay);
+  const day = todayKey();
+  const base: HarvestQuotaDay =
+    cur.day === day ? { ...cur, bySegment: { ...cur.bySegment } } : { day, bySegment: {} };
   base.bySegment[id] = (base.bySegment[id] ?? 0) + n;
-  try {
-    await ensureDir();
-    const tmp = `${QUOTA_FILE}.${process.pid}.tmp`;
-    await fs.writeFile(tmp, JSON.stringify(base, null, 2), "utf8");
-    await fs.rename(tmp, QUOTA_FILE);
-  } catch {
-    /* ignore */
-  }
+  g.__hireHarvestQuota = base;
+  await writeQuotaDisk(base);
+  await writeQuotaFirebase(base);
   return base;
 }

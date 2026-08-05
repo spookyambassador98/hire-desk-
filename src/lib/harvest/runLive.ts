@@ -21,6 +21,7 @@ import {
   type HireSegment,
   type HireSegmentId,
 } from "./max";
+import { jobDedupeKey } from "./dedupe";
 import { safeRunTarget, proxyModeLabel } from "./harvestFetch";
 import { enabledSources, sourcesByTier } from "./sources";
 import type { JobHit } from "./sources/types";
@@ -34,11 +35,11 @@ export type RunHireMaxResult = {
 };
 
 function hitKey(h: JobHit) {
-  return `${h.company.toLowerCase()}|${h.role.toLowerCase()}|${(h.url || "").toLowerCase()}`;
+  return jobDedupeKey(h);
 }
 
 function jobKey(j: Job) {
-  return `${j.company.toLowerCase()}|${j.role.toLowerCase()}|${(j.url || "").toLowerCase()}`;
+  return jobDedupeKey(j);
 }
 
 function hitToJob(hit: JobHit, segment: HireSegment): Job {
@@ -139,8 +140,8 @@ export async function runHireMax(
   opts: RunHireMaxOpts,
 ): Promise<RunHireMaxResult> {
   const runTarget = opts.runTarget ?? safeRunTarget();
-  const quota = await readQuotaDay();
   const inventory = countJobsByRegion(opts.existingJobs);
+  const quota = await readQuotaDay(opts.existingJobs);
   const segments = prioritizedSegments(quota.bySegment, inventory);
   const existingKeys = new Set(opts.existingJobs.map(jobKey));
 
@@ -165,11 +166,18 @@ export async function runHireMax(
     });
   };
 
+  const filledShelves = segments.filter(
+    (s) => segmentRemaining(s.id as HireSegmentId, quota.bySegment) <= 0,
+  ).length;
+
   await log(
     `MAX LIVE · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET}) · proxy ${proxyModeLabel()} · sources ${enabledSources().length} · segments ${segments.length}`,
   );
   await log(
     `⚖ region inventory EU ${inventory.europe ?? 0} · US ${inventory.america ?? 0} · AS ${inventory.asia ?? 0} → scarcest first`,
+  );
+  await log(
+    `📦 day shelves ${filledShelves}/${segments.length} full · continue (no reset)`,
   );
   if (proxyPoolSize() === 0) {
     await log(

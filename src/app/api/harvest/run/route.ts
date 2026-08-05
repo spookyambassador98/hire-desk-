@@ -56,6 +56,7 @@ async function executeHarvestRun() {
 
   try {
     const runTarget = safeRunTarget();
+    const prev = await readHarvestLive();
     await writeHarvestLive({
       running: true,
       startedAt,
@@ -65,12 +66,14 @@ async function executeHarvestRun() {
       skipped: 0,
       trashed: 0,
       segment: null,
-      recentAdds: [],
+      // Keep prior intake — do not wipe the feed on each start
+      recentAdds: prev.recentAdds || [],
       message: `MAX LIVE · target ≥${runTarget}`,
       logs: [
-        `[${stamp()}] MAX LIVE start · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET})`,
+        ...(prev.logs || []).slice(-60),
+        `[${stamp()}] ── MAX LIVE continue · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET})`,
         `[${stamp()}] sources ${enabledSources().map((s) => s.id).join(", ") || "none"}`,
-        `[${stamp()}] proxy ${proxyModeLabel()}`,
+        `[${stamp()}] proxy ${proxyModeLabel()} · pool ${proxyPoolSize()}`,
       ],
     });
 
@@ -215,6 +218,7 @@ export async function POST(request: Request) {
 
     const kickoffAt = new Date().toISOString();
     const kickTarget = safeRunTarget();
+    const prevKick = await readHarvestLive();
     await writeHarvestLive({
       running: true,
       startedAt: kickoffAt,
@@ -224,8 +228,10 @@ export async function POST(request: Request) {
       skipped: 0,
       trashed: 0,
       segment: null,
+      recentAdds: prevKick.recentAdds || [],
       message: `MAX LIVE kicked · ≥${kickTarget}`,
       logs: [
+        ...(prevKick.logs || []).slice(-80),
         `[${stamp()}] HTTP kickoff · ${manual ? "manual" : "cron"}`,
       ],
     });
