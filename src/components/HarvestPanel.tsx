@@ -67,28 +67,30 @@ export function HarvestPanel({ onImported, onFlash }: Props) {
         }}
       />
 
-      <div className="hd-rail eu" style={{ margin: "1.25rem 0 1rem" }}>
-        <h2>{t("harvest.manual")}</h2>
-        <p>{t("harvest.manual_hint")}</p>
-      </div>
-      <textarea
-        className="harvest-textarea"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder={PLACEHOLDER}
-      />
-      <div
-        className="job-actions"
-        style={{ border: "none", paddingTop: "0.85rem" }}
-      >
-        <button
-          type="button"
-          className="primary"
-          disabled={busy || !text.trim()}
-          onClick={() => void run({ text })}
+      <div className="harvest-panel__manual">
+        <div className="hd-rail eu" style={{ margin: "1.25rem 0 1rem" }}>
+          <h2>{t("harvest.manual")}</h2>
+          <p>{t("harvest.manual_hint")}</p>
+        </div>
+        <textarea
+          className="harvest-textarea"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder={PLACEHOLDER}
+        />
+        <div
+          className="job-actions"
+          style={{ border: "none", paddingTop: "0.85rem" }}
         >
-          {busy ? t("harvest.importing") : t("harvest.import")}
-        </button>
+          <button
+            type="button"
+            className="primary"
+            disabled={busy || !text.trim()}
+            onClick={() => void run({ text })}
+          >
+            {busy ? t("harvest.importing") : t("harvest.import")}
+          </button>
+        </div>
       </div>
     </div>
   );

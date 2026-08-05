@@ -505,6 +505,11 @@ body::after {
 }
 
 .harvest-panel {
+  max-width: none;
+  width: 100%;
+}
+
+.harvest-panel__manual {
   max-width: 900px;
 }
 
@@ -532,18 +537,21 @@ body::after {
   max-width: none;
   width: 100%;
   box-sizing: border-box;
+  padding-left: 1.15rem;
+  padding-right: 1.15rem;
 }
 
 .harvest-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 290px;
-  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 1rem;
   align-items: start;
   width: 100%;
 }
 
 .harvest-stage > .hire-max {
   min-width: 0;
+  width: 100%;
 }
 
 .hire-live-rail {
@@ -553,9 +561,11 @@ body::after {
   position: sticky;
   top: 0.85rem;
   align-self: start;
-  width: 290px;
+  width: 300px;
+  max-width: 300px;
   max-height: calc(100vh - 5.5rem);
   justify-self: end;
+  margin-left: 0;
 }
 
 .hire-live-rail .hire-max__ops {
@@ -569,7 +579,7 @@ body::after {
 }
 
 .hire-max__engine .hire-max__quotas {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
 }
 
 @media (max-width: 1100px) {
@@ -580,6 +590,7 @@ body::after {
   .hire-live-rail {
     position: static;
     width: 100%;
+    max-width: none;
     max-height: none;
     justify-self: stretch;
   }
