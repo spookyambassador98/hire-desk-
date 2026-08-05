@@ -282,7 +282,7 @@ export function JobCardFace({
     trSalary,
     trSchedule,
   } = useI18n();
-  const { values: tr } = useTranslatedFields({
+  const { values: tr, loading } = useTranslatedFields({
     role: job.role,
     description: previewText(job.description, 220),
     location: job.location || "",
@@ -316,7 +316,17 @@ export function JobCardFace({
       <div>
         <div className="job-head">
           <div className="job-company">{job.company}</div>
-          <div className="job-role">{tr.role || job.role}</div>
+          <div className="job-role">
+            {tr.role || job.role}
+            {loading ? (
+              <span
+                className="job-chip"
+                style={{ marginLeft: "0.45rem", opacity: 0.65 }}
+              >
+                {t("popup.translating")}
+              </span>
+            ) : null}
+          </div>
         </div>
         <div className="job-meta">
           <span className={`job-chip ${regionClass(job.region)}`}>

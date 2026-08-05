@@ -7,7 +7,9 @@ import {
   renderIndividualEmail,
   renderIndividualTemplate,
 } from "@/lib/templates";
-import { regionClass, regionLabel } from "@/lib/regions";
+import { useTranslatedFields } from "@/hooks/useTranslatedText";
+import { useI18n } from "@/lib/i18n";
+import { regionClass } from "@/lib/regions";
 
 type Props = {
   individual: ScoredIndividual | null;
@@ -20,15 +22,6 @@ type Props = {
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-const KIND_LABEL: Record<ScoredIndividual["kind"], string> = {
-  hr: "HR",
-  hiring_manager: "Hiring Manager",
-  senior_eng: "Senior Eng",
-  founder: "Founder",
-  recruiter: "Recruiter",
-  other: "Other",
-};
-
 export function IndividualPopup({
   individual: ind,
   open,
@@ -37,6 +30,16 @@ export function IndividualPopup({
   onCopy,
   onDelete,
 }: Props) {
+  const { t, trRegion, trStatus, trKind } = useI18n();
+  const { values: tr } = useTranslatedFields(
+    {
+      title: ind?.title || "",
+      notes: ind?.notes || "",
+      targetRole: ind?.targetRole || "",
+    },
+    { enabled: open && !!ind },
+  );
+
   if (typeof document === "undefined") return null;
 
   return createPortal(
@@ -51,7 +54,7 @@ export function IndividualPopup({
           <motion.button
             type="button"
             className="hire-modal-backdrop"
-            aria-label="Close"
+            aria-label={t("popup.close")}
             onClick={onClose}
           />
           <motion.div
@@ -65,22 +68,32 @@ export function IndividualPopup({
           >
             <div className="hire-modal-top">
               <div>
-                <div className="hire-modal-kicker">INDIVIDUAL · DIRECT</div>
+                <div className="hire-modal-kicker">{t("ind.dossier")}</div>
                 <h2 className="hire-modal-title">{ind.name}</h2>
                 <div className="job-role" style={{ marginTop: "0.35rem" }}>
-                  {KIND_LABEL[ind.kind]}
-                  {ind.title ? ` · ${ind.title}` : ""} @ {ind.company}
+                  {trKind(ind.kind)}
+                  {(tr.title || ind.title) ? ` · ${tr.title || ind.title}` : ""} @{" "}
+                  {ind.company}
                 </div>
                 <div className="job-meta" style={{ marginTop: "0.75rem" }}>
-                  <span className={`job-chip ${regionClass(ind.region)}`}>{regionLabel(ind.region)}
+                  <span className={`job-chip ${regionClass(ind.region)}`}>
+                    {trRegion(ind.region)}
                   </span>
-                  <span className="job-chip">{ind.status}</span>
-                  {ind.targetRole && (
-                    <span className="job-chip">{ind.targetRole}</span>
+                  <span className="job-chip">{trStatus(ind.status)}</span>
+                  {(tr.targetRole || ind.targetRole) && (
+                    <span className="job-chip">
+                      {tr.targetRole || ind.targetRole}
+                    </span>
                   )}
-                  <span className="job-chip">Access {ind.scores.access.score}</span>
-                  <span className="job-chip">Lev {ind.scores.leverage.score}</span>
-                  <span className="job-chip">Pri {ind.scores.priority.score}</span>
+                  <span className="job-chip">
+                    {t("score.access")} {ind.scores.access.score}
+                  </span>
+                  <span className="job-chip">
+                    {t("score.leverage")} {ind.scores.leverage.score}
+                  </span>
+                  <span className="job-chip">
+                    {t("score.pri")} {ind.scores.priority.score}
+                  </span>
                 </div>
               </div>
               <button type="button" className="hire-modal-x" onClick={onClose}>
@@ -88,16 +101,20 @@ export function IndividualPopup({
               </button>
             </div>
 
-            {ind.notes && <p className="hire-modal-desc">{ind.notes}</p>}
+            {(tr.notes || ind.notes) && (
+              <p className="hire-modal-desc">{tr.notes || ind.notes}</p>
+            )}
 
             <div className="hire-modal-grid">
               <div>
-                <div className="hire-modal-section">Contact</div>
+                <div className="hire-modal-section">{t("ind.contact")}</div>
                 <p>
                   {ind.email ? (
                     <a href={`mailto:${ind.email}`}>{ind.email}</a>
                   ) : (
-                    <span style={{ color: "var(--red)" }}>no email yet</span>
+                    <span style={{ color: "var(--red)" }}>
+                      {t("ind.no_email")}
+                    </span>
                   )}
                 </p>
                 {ind.linkedin && (
@@ -109,7 +126,7 @@ export function IndividualPopup({
                 )}
               </div>
               <div>
-                <div className="hire-modal-section">Actions</div>
+                <div className="hire-modal-section">{t("ind.actions")}</div>
                 <div className="job-actions" style={{ border: "none", padding: 0 }}>
                   <button
                     type="button"
@@ -118,7 +135,7 @@ export function IndividualPopup({
                       onCopy(renderIndividualEmail(ind), `Email · ${ind.name}`)
                     }
                   >
-                    Copy email
+                    {t("ind.copy_email")}
                   </button>
                   <button
                     type="button"
@@ -129,17 +146,17 @@ export function IndividualPopup({
                       )
                     }
                   >
-                    Copy follow-up
+                    {t("ind.copy_fu")}
                   </button>
                   <button
                     type="button"
                     className="primary"
                     onClick={() => onStatus(ind.id, "emailed")}
                   >
-                    Mark emailed
+                    {t("ind.mark_emailed")}
                   </button>
                   <button type="button" onClick={() => onStatus(ind.id, "queued")}>
-                    Queue
+                    {t("popup.queue")}
                   </button>
                   <button
                     type="button"
@@ -149,7 +166,7 @@ export function IndividualPopup({
                       onClose();
                     }}
                   >
-                    Delete
+                    {t("popup.delete")}
                   </button>
                 </div>
               </div>
@@ -173,6 +190,11 @@ export function IndividualCardFace({
   rank?: number;
   onOpen: () => void;
 }) {
+  const { t, trRegion, trStatus, trKind } = useI18n();
+  const { values: tr } = useTranslatedFields({
+    title: ind.title || "",
+    targetRole: ind.targetRole || "",
+  });
   const weakAccess = ind.scores.access.score < 40;
   return (
     <motion.article
@@ -195,30 +217,34 @@ export function IndividualCardFace({
         <div className="job-head">
           <div className="job-company">{ind.name}</div>
           <div className="job-role">
-            {KIND_LABEL[ind.kind]}
-            {ind.title ? ` · ${ind.title}` : ""} @ {ind.company}
+            {trKind(ind.kind)}
+            {(tr.title || ind.title) ? ` · ${tr.title || ind.title}` : ""} @{" "}
+            {ind.company}
           </div>
         </div>
         <div className="job-meta">
-          <span className={`job-chip ${regionClass(ind.region)}`}>{regionLabel(ind.region)}
+          <span className={`job-chip ${regionClass(ind.region)}`}>
+            {trRegion(ind.region)}
           </span>
-          <span className="job-chip">{ind.status}</span>
+          <span className="job-chip">{trStatus(ind.status)}</span>
           {rank != null && <span className="job-chip">I#{rank}</span>}
           <span className="job-chip">
-            {ind.email ? "has email" : "no email"}
+            {ind.email ? t("ind.has_email") : t("ind.no_email")}
           </span>
-          {ind.targetRole && <span className="job-chip">{ind.targetRole}</span>}
+          {(tr.targetRole || ind.targetRole) && (
+            <span className="job-chip">{tr.targetRole || ind.targetRole}</span>
+          )}
         </div>
       </div>
       <div className="job-scores">
         <div className="score-pill">
-          Acc <strong>{ind.scores.access.score}</strong>
+          {t("score.access")} <strong>{ind.scores.access.score}</strong>
         </div>
         <div className="score-pill">
-          Lev <strong>{ind.scores.leverage.score}</strong>
+          {t("score.leverage")} <strong>{ind.scores.leverage.score}</strong>
         </div>
         <div className="score-pill gold">
-          Pri <strong>{ind.scores.priority.score}</strong>
+          {t("score.pri")} <strong>{ind.scores.priority.score}</strong>
         </div>
       </div>
     </motion.article>

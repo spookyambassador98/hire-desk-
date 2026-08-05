@@ -6,7 +6,8 @@ import {
   renderIndividualEmail,
   renderIndividualTemplate,
 } from "@/lib/templates";
-import { regionClass, regionLabel } from "@/lib/regions";
+import { useI18n } from "@/lib/i18n";
+import { regionClass } from "@/lib/regions";
 
 type Props = {
   individual: ScoredIndividual;
@@ -19,15 +20,6 @@ type Props = {
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-const KIND_LABEL: Record<ScoredIndividual["kind"], string> = {
-  hr: "HR",
-  hiring_manager: "Hiring Manager",
-  senior_eng: "Senior Eng",
-  founder: "Founder",
-  recruiter: "Recruiter",
-  other: "Other",
-};
-
 export function IndividualCard({
   individual: ind,
   index = 0,
@@ -36,6 +28,7 @@ export function IndividualCard({
   onCopy,
   onDelete,
 }: Props) {
+  const { t, trRegion, trStatus, trKind } = useI18n();
   const rClass = regionClass(ind.region);
   const weakAccess = ind.scores.access.score < 40;
 
@@ -44,66 +37,55 @@ export function IndividualCard({
       className={`job-card ${ind.region}${weakAccess ? " anti" : ""}`}
       initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 0.45, delay: Math.min(index, 8) * 0.05, ease: EASE }}
+      transition={{
+        duration: 0.45,
+        delay: Math.min(index, 8) * 0.05,
+        ease: EASE,
+      }}
     >
       <div>
         <div className="job-head">
           <div className="job-company">{ind.name}</div>
           <div className="job-role">
-            {KIND_LABEL[ind.kind]}
+            {trKind(ind.kind)}
             {ind.title ? ` · ${ind.title}` : ""} @ {ind.company}
           </div>
         </div>
         <div className="job-meta">
-          <span className={`job-chip ${rClass}`}>
-            {regionLabel(ind.region)}
-          </span>
-          <span className="job-chip">{ind.status}</span>
+          <span className={`job-chip ${rClass}`}>{trRegion(ind.region)}</span>
+          <span className="job-chip">{trStatus(ind.status)}</span>
           {rank != null && <span className="job-chip">I#{rank}</span>}
-          <span className="job-chip">direct</span>
+          <span className="job-chip">
+            {ind.email ? t("ind.has_email") : t("ind.no_email")}
+          </span>
           {ind.targetRole && (
             <span className="job-chip">{ind.targetRole}</span>
           )}
         </div>
-        {ind.notes && <p className="job-desc">{ind.notes}</p>}
-        <div className="job-proof">
-          {ind.email ? (
-            <a href={`mailto:${ind.email}`}>{ind.email}</a>
-          ) : (
-            <span style={{ color: "var(--red)" }}>no email</span>
-          )}
-          {ind.linkedin && (
-            <>
-              {" · "}
-              <a href={ind.linkedin} target="_blank" rel="noreferrer">
-                LinkedIn
-              </a>
-            </>
-          )}
-        </div>
         {ind.proofProjects && ind.proofProjects.length > 0 && (
           <div className="job-proof">
-            Proof: {ind.proofProjects.map((p) => p.name).join(" · ")}
+            {t("dossier.proof")}:{" "}
+            {ind.proofProjects.map((p) => p.name).join(" · ")}
           </div>
         )}
       </div>
 
       <div className="job-scores">
         <div className="score-pill">
-          Access <strong>{ind.scores.access.score}</strong>
+          {t("score.access")} <strong>{ind.scores.access.score}</strong>
         </div>
         <div className="score-pill">
-          Leverage <strong>{ind.scores.leverage.score}</strong>
+          {t("score.leverage")} <strong>{ind.scores.leverage.score}</strong>
         </div>
         <div className="score-pill gold">
-          Fit <strong>{ind.scores.roleFit.score}</strong>
+          {t("score.fit")} <strong>{ind.scores.roleFit.score}</strong>
         </div>
       </div>
 
       <div className="job-actions">
         {ind.email && (
           <a className="btn" href={`mailto:${ind.email}`}>
-            Open mail
+            {t("popup.open")}
           </a>
         )}
         {!weakAccess && (
@@ -114,7 +96,7 @@ export function IndividualCard({
               onCopy(renderIndividualEmail(ind), `Email · ${ind.name}`)
             }
           >
-            Copy email
+            {t("ind.copy_email")}
           </button>
         )}
         {ind.status === "emailed" && (
@@ -127,12 +109,7 @@ export function IndividualCard({
               )
             }
           >
-            Copy follow-up
-          </button>
-        )}
-        {ind.status !== "queued" && ind.status !== "emailed" && (
-          <button type="button" onClick={() => onStatus(ind.id, "queued")}>
-            Queue
+            {t("ind.copy_fu")}
           </button>
         )}
         {ind.status !== "emailed" && !weakAccess && (
@@ -141,28 +118,20 @@ export function IndividualCard({
             className="primary"
             onClick={() => onStatus(ind.id, "emailed")}
           >
-            Mark emailed
+            {t("ind.mark_emailed")}
           </button>
         )}
-        {(ind.status === "emailed" || ind.status === "replied") && (
-          <button type="button" onClick={() => onStatus(ind.id, "replied")}>
-            Replied
+        {ind.status !== "queued" && (
+          <button type="button" onClick={() => onStatus(ind.id, "queued")}>
+            {t("popup.queue")}
           </button>
         )}
-        {ind.status === "replied" && (
-          <button type="button" onClick={() => onStatus(ind.id, "intro")}>
-            Intro
-          </button>
-        )}
-        <button type="button" onClick={() => onStatus(ind.id, "closed")}>
-          Close
-        </button>
         <button
           type="button"
           className="danger"
           onClick={() => onDelete(ind.id)}
         >
-          Delete
+          {t("popup.delete")}
         </button>
       </div>
     </motion.article>

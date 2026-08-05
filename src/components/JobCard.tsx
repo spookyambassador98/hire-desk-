@@ -5,15 +5,12 @@ import {
   followUpTemplateForJob,
   getFollowUpInfo,
 } from "@/lib/followUp";
+import { useTranslatedFields } from "@/hooks/useTranslatedText";
+import { useI18n } from "@/lib/i18n";
 import type { JobStatus, ScoredJob } from "@/lib/types";
 import { renderApply, renderTemplate } from "@/lib/templates";
-import { salaryLabel } from "@/lib/text";
-import {
-  jobPostedAt,
-  postAgeLabel,
-  regionClass,
-  regionLabel,
-} from "@/lib/regions";
+import { previewText } from "@/lib/text";
+import { jobPostedAt, regionClass } from "@/lib/regions";
 
 type Props = {
   job: ScoredJob;
@@ -36,9 +33,24 @@ export function JobCard({
   onCopy,
   onDelete,
 }: Props) {
+  const {
+    t,
+    trRegion,
+    trStatus,
+    trAge,
+    trSalary,
+    trSchedule,
+  } = useI18n();
+  const { values: tr, loading } = useTranslatedFields({
+    role: job.role,
+    description: previewText(job.description, 220),
+    location: job.location || "",
+    anti: job.scores.fit.antiFilterReason || "",
+  });
   const anti = job.scores.fit.antiFiltered;
   const rClass = regionClass(job.region);
-  const age = postAgeLabel(jobPostedAt(job));
+  const age = trAge(jobPostedAt(job));
+  const sched = trSchedule(job);
   const fu = showFollowUp ? getFollowUpInfo(job) : null;
   const fuTemplate = showFollowUp ? followUpTemplateForJob(job) : null;
 
@@ -57,13 +69,23 @@ export function JobCard({
       <div>
         <div className="job-head">
           <div className="job-company">{job.company}</div>
-          <div className="job-role">{job.role}</div>
+          <div className="job-role">
+            {tr.role || job.role}
+            {loading ? (
+              <span
+                className="job-chip"
+                style={{ marginLeft: "0.45rem", opacity: 0.65 }}
+              >
+                {t("popup.translating")}
+              </span>
+            ) : null}
+          </div>
         </div>
         <div className="job-meta">
           <span className={`job-chip ${rClass}`}>
-            {regionLabel(job.region)}
+            {trRegion(job.region)}
           </span>
-          <span className="job-chip">{job.status}</span>
+          <span className="job-chip">{trStatus(job.status)}</span>
           {rank != null && <span className="job-chip">Q#{rank}</span>}
           <span
             className="job-chip"
@@ -71,10 +93,14 @@ export function JobCard({
           >
             {age.label}
           </span>
-          <span className="job-chip">{salaryLabel(job.salary)}</span>
-          {job.location && <span className="job-chip">{job.location}</span>}
-          {job.scores.fit.band !== "hide" && (
-            <span className="job-chip">{job.scores.fit.band}</span>
+          <span className="job-chip">{trSalary(job.salary)}</span>
+          {sched.map((s) => (
+            <span key={s} className="job-chip">
+              {s}
+            </span>
+          ))}
+          {(tr.location || job.location) && (
+            <span className="job-chip">{tr.location || job.location}</span>
           )}
           {fu?.due && (
             <span className="job-chip" style={{ color: "var(--gold)" }}>
@@ -83,18 +109,16 @@ export function JobCard({
           )}
           {anti && (
             <span className="job-chip" style={{ color: "var(--red)" }}>
-              anti-filter
+              {t("dossier.anti")}
             </span>
           )}
         </div>
         <p className="job-desc">
-          {job.description.length > 220
-            ? job.description.slice(0, 220) + "…"
-            : job.description}
+          {tr.description || previewText(job.description)}
         </p>
         {job.proofProjects && job.proofProjects.length > 0 && (
           <div className="job-proof">
-            Proof:{" "}
+            {t("dossier.proof")}:{" "}
             {job.proofProjects.map((p, i) => (
               <span key={p.projectId}>
                 {i > 0 ? " · " : ""}
@@ -109,29 +133,29 @@ export function JobCard({
             ))}
           </div>
         )}
-        {anti && job.scores.fit.antiFilterReason && (
+        {anti && (tr.anti || job.scores.fit.antiFilterReason) && (
           <div className="job-proof" style={{ color: "var(--red)" }}>
-            {job.scores.fit.antiFilterReason}
+            {tr.anti || job.scores.fit.antiFilterReason}
           </div>
         )}
       </div>
 
       <div className="job-scores">
         <div className="score-pill">
-          Fit <strong>{job.scores.fit.score}</strong>
+          {t("score.fit")} <strong>{job.scores.fit.score}</strong>
         </div>
         <div className="score-pill">
-          Reach <strong>{job.scores.reach.score}</strong>
+          {t("score.reach")} <strong>{job.scores.reach.score}</strong>
         </div>
         <div className="score-pill gold">
-          Pri <strong>{job.scores.priority.score}</strong>
+          {t("score.pri")} <strong>{job.scores.priority.score}</strong>
         </div>
       </div>
 
       <div className="job-actions">
         {job.url && (
           <a className="btn" href={job.url} target="_blank" rel="noreferrer">
-            Open link
+            {t("popup.open")}
           </a>
         )}
         {!anti && (
@@ -140,7 +164,7 @@ export function JobCard({
             className="primary"
             onClick={() => onCopy(renderApply(job), `Apply · ${job.company}`)}
           >
-            Copy apply
+            {t("popup.copy_apply")}
           </button>
         )}
         {fuTemplate && (
@@ -167,12 +191,12 @@ export function JobCard({
               )
             }
           >
-            Copy brief
+            {t("popup.copy_brief")}
           </button>
         )}
         {job.status !== "queued" && job.status !== "applied" && !anti && (
           <button type="button" onClick={() => onStatus(job.id, "queued")}>
-            Queue
+            {t("popup.queue")}
           </button>
         )}
         {job.status !== "applied" &&
@@ -183,28 +207,28 @@ export function JobCard({
               className="primary"
               onClick={() => onStatus(job.id, "applied")}
             >
-              Mark applied
+              {t("popup.applied")}
             </button>
           )}
         {(job.status === "applied" || job.status === "follow_up") && (
           <button type="button" onClick={() => onStatus(job.id, "follow_up")}>
-            Log follow-up
+            {t("status.follow_up")}
           </button>
         )}
         {(job.status === "applied" || job.status === "follow_up") && (
           <button type="button" onClick={() => onStatus(job.id, "interview")}>
-            Interview
+            {t("status.interview")}
           </button>
         )}
         <button type="button" onClick={() => onStatus(job.id, "rejected")}>
-          Reject
+          {t("popup.reject")}
         </button>
         <button
           type="button"
           className="danger"
           onClick={() => onDelete(job.id)}
         >
-          Delete
+          {t("popup.delete")}
         </button>
       </div>
     </motion.article>

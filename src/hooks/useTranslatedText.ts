@@ -31,9 +31,55 @@ function writeSession(key: string, val: string) {
   }
 }
 
+type Job = {
+  locale: Locale;
+  texts: string[];
+  resolve: (texts: string[]) => void;
+  reject: (err: unknown) => void;
+};
+
+const queue: Job[] = [];
+let active = 0;
+const MAX_PARALLEL = 2;
+
+function pump() {
+  while (active < MAX_PARALLEL && queue.length) {
+    const job = queue.shift()!;
+    active += 1;
+    void (async () => {
+      try {
+        const res = await fetch("/api/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locale: job.locale, texts: job.texts }),
+        });
+        const data = (await res.json()) as { texts?: string[] };
+        const out =
+          Array.isArray(data.texts) && data.texts.length === job.texts.length
+            ? data.texts.map((t, i) => t?.trim() || job.texts[i]!)
+            : job.texts;
+        job.resolve(out);
+      } catch (err) {
+        job.reject(err);
+      } finally {
+        active -= 1;
+        pump();
+      }
+    })();
+  }
+}
+
+function enqueueTranslate(locale: Locale, texts: string[]): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    queue.push({ locale, texts, resolve, reject });
+    pump();
+  });
+}
+
 /**
  * Translate free-text job fields to active locale.
  * EN returns source as-is. Cached in memory + sessionStorage.
+ * Requests are globally queued so the feed doesn't stampede the API.
  */
 export function useTranslatedText(
   text: string | null | undefined,
@@ -71,13 +117,8 @@ export function useTranslatedText(
     setLoading(true);
     void (async () => {
       try {
-        const res = await fetch("/api/translate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ locale, texts: [source] }),
-        });
-        const data = (await res.json()) as { texts?: string[] };
-        const next = data.texts?.[0]?.trim() || source;
+        const [nextRaw] = await enqueueTranslate(locale, [source]);
+        const next = nextRaw?.trim() || source;
         mem.set(key, next);
         writeSession(key, next);
         if (!cancelled) setOut(next);
@@ -98,7 +139,7 @@ export function useTranslatedText(
 /** Batch-translate several fields with one request. */
 export function useTranslatedFields<T extends Record<string, string | null | undefined>>(
   fields: T,
-  opts?: { enabled?: boolean },
+  opts?: { enabled?: boolean; priority?: number },
 ): { values: { [K in keyof T]: string }; loading: boolean } {
   const { locale } = useI18n();
   const enabled = opts?.enabled !== false;
@@ -149,15 +190,10 @@ export function useTranslatedFields<T extends Record<string, string | null | und
     void (async () => {
       try {
         const payload = needIdx.map((i) => entries[i]![1]);
-        const res = await fetch("/api/translate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ locale, texts: payload }),
-        });
-        const data = (await res.json()) as { texts?: string[] };
+        const data = await enqueueTranslate(locale, payload);
         needIdx.forEach((i, j) => {
           const src = entries[i]![1];
-          const tr = data.texts?.[j]?.trim() || src;
+          const tr = data[j]?.trim() || src;
           const k = cacheKey(locale, src);
           mem.set(k, tr);
           writeSession(k, tr);
