@@ -9,93 +9,32 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import {
+  DICTS,
+  isLocale,
+  type Dict,
+  type Locale,
+} from "@/lib/i18n/dicts";
+import type { IndividualKind, JobStatus, Region } from "@/lib/types";
+import { jobPostedAt } from "@/lib/regions";
+import { scheduleChips as rawScheduleChips, salaryLabel as rawSalary } from "@/lib/text";
 
-export type Locale = "ru" | "uk";
+export type { Locale };
 
 const STORAGE_KEY = "hire-desk-locale";
-
-type Dict = Record<string, string>;
-
-const ru: Dict = {
-  "nav.queue": "Очередь",
-  "nav.individuals": "Люди",
-  "nav.applied": "Отклики",
-  "nav.history": "История",
-  "nav.harvest": "Harvest",
-  "nav.templates": "Шаблоны",
-  "nav.admin": "Admin",
-  "nav.add": "+ Добавить",
-  "rail.europe": "Europe rail",
-  "rail.america": "America rail",
-  "rail.asia": "Asia rail",
-  "rail.jobs_quota": "{jobs} вакансий · квота {left}",
-  "rail.tap": "нажми — фильтр на главной",
-  "rail.active": "активный фильтр",
-  "empty.queue": "Пусто на этом рейле — harvest или добавь вакансию",
-  "empty.individuals":
-    "Пока никого — MAX LIVE вытащит контакты, или + Добавить",
-  "empty.applied": "Нет откликов в этом виде",
-  "toast.job_added": "Вакансия добавлена",
-  "toast.ind_added": "Контакт добавлен",
-  "toast.copied": "Скопировано",
-  "quota.eu": "EU",
-  "quota.us": "US",
-  "quota.as": "AS",
-  "quota.ind": "IND",
-  "popup.open": "Открыть ссылку",
-  "popup.copy_apply": "Copy apply",
-  "popup.copy_brief": "Copy brief",
-  "popup.queue": "В очередь",
-  "popup.applied": "Откликнулся",
-  "popup.reject": "Отказ",
-  "popup.delete": "Удалить",
-  "lang.ru": "РУ",
-  "lang.uk": "УКР",
-};
-
-const uk: Dict = {
-  "nav.queue": "Черга",
-  "nav.individuals": "Люди",
-  "nav.applied": "Відгуки",
-  "nav.history": "Історія",
-  "nav.harvest": "Harvest",
-  "nav.templates": "Шаблони",
-  "nav.admin": "Admin",
-  "nav.add": "+ Додати",
-  "rail.europe": "Europe rail",
-  "rail.america": "America rail",
-  "rail.asia": "Asia rail",
-  "rail.jobs_quota": "{jobs} вакансій · квота {left}",
-  "rail.tap": "натисни — фільтр на головній",
-  "rail.active": "активний фільтр",
-  "empty.queue": "Порожньо на цьому рейлі — harvest або додай вакансію",
-  "empty.individuals":
-    "Поки нікого — MAX LIVE витягне контакти, або + Додати",
-  "empty.applied": "Немає відгуків у цьому вигляді",
-  "toast.job_added": "Вакансію додано",
-  "toast.ind_added": "Контакт додано",
-  "toast.copied": "Скопійовано",
-  "quota.eu": "EU",
-  "quota.us": "US",
-  "quota.as": "AS",
-  "quota.ind": "IND",
-  "popup.open": "Відкрити лінк",
-  "popup.copy_apply": "Copy apply",
-  "popup.copy_brief": "Copy brief",
-  "popup.queue": "У чергу",
-  "popup.applied": "Відгукнувся",
-  "popup.reject": "Відмова",
-  "popup.delete": "Видалити",
-  "lang.ru": "РУ",
-  "lang.uk": "УКР",
-};
-
-const DICTS: Record<Locale, Dict> = { ru, uk };
 
 type I18nCtx = {
   locale: Locale;
   setLocale: (l: Locale) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
+  trRegion: (r: Region) => string;
+  trStatus: (s: string) => string;
+  trKind: (k: IndividualKind) => string;
+  trAge: (iso: string) => { label: string; stale: boolean };
+  trSalary: (
+    salary: Parameters<typeof rawSalary>[0],
+  ) => string;
+  trSchedule: (job: Parameters<typeof rawScheduleChips>[0]) => string[];
 };
 
 const Ctx = createContext<I18nCtx | null>(null);
@@ -107,13 +46,17 @@ function format(template: string, vars?: Record<string, string | number>) {
   );
 }
 
+function lookup(dict: Dict, key: string) {
+  return dict[key] || DICTS.en[key] || key;
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("ru");
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw === "ru" || raw === "uk") setLocaleState(raw);
+      if (isLocale(raw)) setLocaleState(raw);
     } catch {
       /* ignore */
     }
@@ -130,15 +73,125 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const t = useCallback(
     (key: string, vars?: Record<string, string | number>) => {
-      const dict = DICTS[locale];
-      return format(dict[key] || DICTS.ru[key] || key, vars);
+      return format(lookup(DICTS[locale], key), vars);
     },
     [locale],
   );
 
+  const trRegion = useCallback(
+    (r: Region) => t(`region.${r}`),
+    [t],
+  );
+
+  const trStatus = useCallback(
+    (s: string) => {
+      const key = `status.${s}`;
+      const v = lookup(DICTS[locale], key);
+      return v === key ? s : v;
+    },
+    [locale],
+  );
+
+  const trKind = useCallback(
+    (k: IndividualKind) => t(`ind.${k}`),
+    [t],
+  );
+
+  const trAge = useCallback(
+    (iso: string) => {
+      const ms = Date.parse(iso);
+      if (Number.isNaN(ms)) {
+        return { label: t("age.unknown"), stale: false };
+      }
+      const hours = Math.max(0, (Date.now() - ms) / 3_600_000);
+      const days = hours / 24;
+      const stale = days > 7;
+      if (hours < 1) return { label: t("age.lt1h"), stale };
+      if (hours < 48) {
+        return {
+          label: t("age.hours", { n: Math.max(1, Math.round(hours)) }),
+          stale,
+        };
+      }
+      if (days < 14) {
+        return {
+          label: t("age.days", { n: Math.max(1, Math.round(days)) }),
+          stale,
+        };
+      }
+      return {
+        label: t("age.weeks", { n: Math.max(1, Math.round(days / 7)) }),
+        stale,
+      };
+    },
+    [t],
+  );
+
+  const trSalary = useCallback(
+    (salary: Parameters<typeof rawSalary>[0]) => {
+      if (!salary || (salary.min == null && salary.max == null)) {
+        return t("comp.tbd");
+      }
+      const unit =
+        salary.period === "hour"
+          ? "/h"
+          : salary.period === "month"
+            ? "/mo"
+            : "/yr";
+      const fmt = (n: number) => {
+        if (salary.period === "hour") return `${salary.currency} ${n}${unit}`;
+        if (n >= 1000)
+          return `${salary.currency} ${Math.round(n / 1000)}k${unit}`;
+        return `${salary.currency} ${n}${unit}`;
+      };
+      if (salary.min != null && salary.max != null) {
+        return `${fmt(salary.min)}–${fmt(salary.max)}`;
+      }
+      if (salary.min != null) return t("comp.from", { v: fmt(salary.min) });
+      return t("comp.up_to", { v: fmt(salary.max!) });
+    },
+    [t],
+  );
+
+  const trSchedule = useCallback(
+    (job: Parameters<typeof rawScheduleChips>[0]) => {
+      const map: Record<string, string> = {
+        Remote: t("sched.remote"),
+        Hybrid: t("sched.hybrid"),
+        "On-site": t("sched.onsite"),
+        "Full-time": t("sched.fulltime"),
+        "Part-time": t("sched.parttime"),
+        Contract: t("sched.contract"),
+        Intern: t("sched.intern"),
+      };
+      return rawScheduleChips(job).map((s) => map[s] || s);
+    },
+    [t],
+  );
+
   const value = useMemo(
-    () => ({ locale, setLocale, t }),
-    [locale, setLocale, t],
+    () => ({
+      locale,
+      setLocale,
+      t,
+      trRegion,
+      trStatus,
+      trKind,
+      trAge,
+      trSalary,
+      trSchedule,
+    }),
+    [
+      locale,
+      setLocale,
+      t,
+      trRegion,
+      trStatus,
+      trKind,
+      trAge,
+      trSalary,
+      trSchedule,
+    ],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
@@ -149,3 +202,10 @@ export function useI18n() {
   if (!ctx) throw new Error("useI18n outside I18nProvider");
   return ctx;
 }
+
+export function useJobAge(job: { postedAt?: string | null; createdAt: string }) {
+  const { trAge } = useI18n();
+  return trAge(jobPostedAt(job));
+}
+
+export type { JobStatus };

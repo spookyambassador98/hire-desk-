@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { OpsTelemetry } from "@/components/OpsTelemetry";
+import { useI18n } from "@/lib/i18n";
 import type { QuotaSnapshot, ScoredIndividual, ScoredJob } from "@/lib/types";
 
 type Props = {
@@ -21,6 +22,7 @@ type HarvestStatus = {
 };
 
 export function AdminPanel({ jobs, individuals, quota }: Props) {
+  const { t, trStatus } = useI18n();
   const [status, setStatus] = useState<HarvestStatus | null>(null);
 
   useEffect(() => {
@@ -60,20 +62,23 @@ export function AdminPanel({ jobs, individuals, quota }: Props) {
       <OpsTelemetry />
 
       <div className="hd-rail us" style={{ marginBottom: "1rem" }}>
-        <h2>Admin // ops</h2>
+        <h2>{t("admin.title")}</h2>
         <p>
-          Jobs {jobs.length} · individuals {individuals.length} · avg Fit{" "}
-          {avgFit}
+          {t("admin.jobs", {
+            n: jobs.length,
+            p: individuals.length,
+            fit: avgFit,
+          })}
         </p>
       </div>
 
       <div className="hd-stats">
         <div className="hd-stat">
-          <span>Storage</span>
+          <span>{t("admin.storage")}</span>
           <b>{status?.storage || "…"}</b>
         </div>
         <div className="hd-stat">
-          <span>Firebase</span>
+          <span>{t("admin.firebase")}</span>
           <b>
             {status?.firebase?.ok
               ? status.firebase.projectId || "ok"
@@ -81,11 +86,11 @@ export function AdminPanel({ jobs, individuals, quota }: Props) {
           </b>
         </div>
         <div className="hd-stat">
-          <span>Proxy</span>
+          <span>{t("admin.proxy")}</span>
           <b>{status?.proxyPool ?? 0}</b>
         </div>
         <div className="hd-stat">
-          <span>Harvest today</span>
+          <span>{t("admin.harvest_today")}</span>
           <b>
             {status?.totalToday ?? 0}/{status?.runTarget ?? "—"}
           </b>
@@ -94,25 +99,28 @@ export function AdminPanel({ jobs, individuals, quota }: Props) {
 
       <div className="hd-dual" style={{ marginBottom: "1rem" }}>
         <section className="hd-rail eu">
-          <h2>Job pipeline</h2>
+          <h2>{t("admin.pipeline")}</h2>
           <div className="hd-stats" style={{ marginTop: "0.75rem" }}>
             {Object.entries(funnel).map(([k, v]) => (
               <div key={k} className="hd-stat">
-                <span>{k}</span>
+                <span>{trStatus(k)}</span>
                 <b>{v}</b>
               </div>
             ))}
           </div>
         </section>
         <section className="hd-rail us">
-          <h2>Individuals</h2>
+          <h2>{t("admin.individuals")}</h2>
           <p style={{ marginTop: "0.35rem" }}>
-            with email {withEmail}/{individuals.length}
+            {t("admin.with_email", {
+              a: withEmail,
+              b: individuals.length,
+            })}
           </p>
           <div className="hd-stats" style={{ marginTop: "0.75rem" }}>
             {Object.entries(indFunnel).map(([k, v]) => (
               <div key={k} className="hd-stat">
-                <span>{k}</span>
+                <span>{trStatus(k)}</span>
                 <b>{v}</b>
               </div>
             ))}
@@ -122,25 +130,25 @@ export function AdminPanel({ jobs, individuals, quota }: Props) {
 
       <div className="hd-stats" style={{ marginBottom: "1rem" }}>
         <div className="hd-stat">
-          <span>EU quota</span>
+          <span>{t("admin.eu_quota")}</span>
           <b>
             {quota.europe.used}/{quota.europe.quota}
           </b>
         </div>
         <div className="hd-stat">
-          <span>US quota</span>
+          <span>{t("admin.us_quota")}</span>
           <b>
             {quota.america.used}/{quota.america.quota}
           </b>
         </div>
         <div className="hd-stat">
-          <span>Asia quota</span>
+          <span>{t("admin.asia_quota")}</span>
           <b>
             {quota.asia.used}/{quota.asia.quota}
           </b>
         </div>
         <div className="hd-stat">
-          <span>IND quota</span>
+          <span>{t("admin.ind_quota")}</span>
           <b>
             {quota.individuals.used}/{quota.individuals.quota}
           </b>
@@ -149,7 +157,7 @@ export function AdminPanel({ jobs, individuals, quota }: Props) {
 
       {status?.sources && (
         <section className="hd-rail">
-          <h2>Sources live</h2>
+          <h2>{t("admin.sources")}</h2>
           <div className="job-meta" style={{ marginTop: "0.65rem" }}>
             {status.sources.map((s) => (
               <span key={s.id} className="job-chip">

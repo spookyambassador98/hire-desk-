@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n";
 
 type QuotaRow = {
   segmentId: string;
@@ -44,6 +45,7 @@ type Props = {
 };
 
 export function HireMaxPanel({ onFilled }: Props) {
+  const { t } = useI18n();
   const [status, setStatus] = useState<StatusPayload | null>(null);
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -166,7 +168,7 @@ export function HireMaxPanel({ onFilled }: Props) {
             disabled={!running && !stopping}
             onClick={() => void stopMax()}
           >
-            {stopping ? "…" : "STOP"}
+            {stopping ? t("max.stopping") : t("max.stop")}
           </button>
         </div>
       </div>

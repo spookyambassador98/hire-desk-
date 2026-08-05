@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/lib/i18n";
 
 type Telemetry = {
   ok: boolean;
@@ -109,6 +110,7 @@ function useUtcQuotaCountdown() {
 }
 
 export function OpsTelemetry() {
+  const { t } = useI18n();
   const [data, setData] = useState<Telemetry | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -143,7 +145,7 @@ export function OpsTelemetry() {
   return (
     <section className="hd-ops" data-tour="ops-telemetry">
       <div className="hd-ops__head">
-        <h2>Ops // telemetry live</h2>
+        <h2>{t("ops.title")}</h2>
         <div className="hd-ops__pulse">
           <span
             className="hd-ops__dot"
@@ -164,12 +166,12 @@ export function OpsTelemetry() {
       </div>
 
       {err && <p className="hd-ops__err">{err}</p>}
-      {!data && !err && <p className="hd-ops__muted">Linking…</p>}
+      {!data && !err && <p className="hd-ops__muted">{t("ops.linking")}</p>}
 
       {data && (
         <div className="hd-ops__grid">
           <OpsCard
-            title="Platform"
+            title={t("ops.platform")}
             accent="eu"
             lines={[
               `build ${data.build}`,
@@ -185,7 +187,7 @@ export function OpsTelemetry() {
           />
           <FirebaseQuotaCard firebase={data.firebase} />
           <OpsCard
-            title="Render"
+            title={t("ops.render")}
             accent="us"
             lines={[
               data.render.serviceHint,
@@ -195,7 +197,7 @@ export function OpsTelemetry() {
             ]}
           />
           <OpsCard
-            title="Harvest // MAX LIVE"
+            title={t("ops.harvest")}
             accent={
               data.harvest.running
                 ? data.harvest.heartbeatOk

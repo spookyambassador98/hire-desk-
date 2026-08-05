@@ -6,16 +6,12 @@ import {
   followUpTemplateForJob,
   getFollowUpInfo,
 } from "@/lib/followUp";
+import { useTranslatedFields } from "@/hooks/useTranslatedText";
+import { useI18n } from "@/lib/i18n";
+import { jobPostedAt, regionClass } from "@/lib/regions";
 import type { JobStatus, ScoredJob } from "@/lib/types";
 import { renderApply, renderTemplate } from "@/lib/templates";
-import { previewText, salaryLabel, scheduleChips, stripHtml } from "@/lib/text";
-import {
-  jobPostedAt,
-  postAgeLabel,
-  regionClass,
-  regionLabel,
-} from "@/lib/regions";
-import { useI18n } from "@/lib/i18n";
+import { previewText, stripHtml } from "@/lib/text";
 
 type Props = {
   job: ScoredJob | null;
@@ -36,13 +32,31 @@ export function JobPopup({
   onCopy,
   onDelete,
 }: Props) {
-  const { t } = useI18n();
+  const {
+    t,
+    trRegion,
+    trStatus,
+    trAge,
+    trSalary,
+    trSchedule,
+  } = useI18n();
+  const { values: tr, loading } = useTranslatedFields(
+    {
+      role: job?.role || "",
+      description: job?.description || "",
+      location: job?.location || "",
+      anti: job?.scores.fit.antiFilterReason || "",
+    },
+    { enabled: open && !!job },
+  );
+
   if (typeof document === "undefined") return null;
+
   const fu = job ? getFollowUpInfo(job) : null;
   const fuTemplate = job ? followUpTemplateForJob(job) : null;
   const anti = job?.scores.fit.antiFiltered;
-  const sched = job ? scheduleChips(job) : [];
-  const age = job ? postAgeLabel(jobPostedAt(job)) : null;
+  const sched = job ? trSchedule(job) : [];
+  const age = job ? trAge(jobPostedAt(job)) : null;
 
   return createPortal(
     <AnimatePresence>
@@ -57,7 +71,7 @@ export function JobPopup({
           <motion.button
             type="button"
             className="hire-modal-backdrop"
-            aria-label="Close"
+            aria-label={t("popup.close")}
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -74,16 +88,24 @@ export function JobPopup({
           >
             <div className="hire-modal-top">
               <div>
-                <div className="hire-modal-kicker">VACANCY DOSSIER</div>
+                <div className="hire-modal-kicker">{t("dossier.kicker")}</div>
                 <h2 className="hire-modal-title">{job.company}</h2>
                 <div className="job-role" style={{ marginTop: "0.35rem" }}>
-                  {job.role}
+                  {tr.role || job.role}
+                  {loading ? (
+                    <span
+                      className="job-chip"
+                      style={{ marginLeft: "0.5rem", opacity: 0.7 }}
+                    >
+                      {t("popup.translating")}
+                    </span>
+                  ) : null}
                 </div>
                 <div className="job-meta" style={{ marginTop: "0.75rem" }}>
                   <span className={`job-chip ${regionClass(job.region)}`}>
-                    {regionLabel(job.region)}
+                    {trRegion(job.region)}
                   </span>
-                  <span className="job-chip">{job.status}</span>
+                  <span className="job-chip">{trStatus(job.status)}</span>
                   {age && (
                     <span
                       className="job-chip"
@@ -95,21 +117,25 @@ export function JobPopup({
                       {age.label}
                     </span>
                   )}
-                  <span className="job-chip">{salaryLabel(job.salary)}</span>
+                  <span className="job-chip">{trSalary(job.salary)}</span>
                   {sched.map((s) => (
                     <span key={s} className="job-chip">
                       {s}
                     </span>
                   ))}
-                  {job.location && (
-                    <span className="job-chip">{job.location}</span>
+                  {(tr.location || job.location) && (
+                    <span className="job-chip">
+                      {tr.location || job.location}
+                    </span>
                   )}
-                  <span className="job-chip">Fit {job.scores.fit.score}</span>
                   <span className="job-chip">
-                    Reach {job.scores.reach.score}
+                    {t("score.fit")} {job.scores.fit.score}
                   </span>
                   <span className="job-chip">
-                    Pri {job.scores.priority.score}
+                    {t("score.reach")} {job.scores.reach.score}
+                  </span>
+                  <span className="job-chip">
+                    {t("score.pri")} {job.scores.priority.score}
                   </span>
                 </div>
               </div>
@@ -118,11 +144,13 @@ export function JobPopup({
               </button>
             </div>
 
-            <p className="hire-modal-desc">{stripHtml(job.description)}</p>
+            <p className="hire-modal-desc">
+              {stripHtml(tr.description || job.description)}
+            </p>
 
             {job.proofProjects && job.proofProjects.length > 0 && (
               <div className="job-proof" style={{ marginTop: "1rem" }}>
-                Proof:{" "}
+                {t("dossier.proof")}:{" "}
                 {job.proofProjects.map((p, i) => (
                   <span key={p.projectId}>
                     {i > 0 ? " · " : ""}
@@ -140,7 +168,8 @@ export function JobPopup({
 
             {anti && (
               <div className="job-proof" style={{ color: "var(--red)" }}>
-                Anti-filter: {job.scores.fit.antiFilterReason}
+                {t("dossier.anti")}:{" "}
+                {tr.anti || job.scores.fit.antiFilterReason}
               </div>
             )}
 
@@ -245,9 +274,23 @@ export function JobCardFace({
   showFollowUp?: boolean;
   onOpen: () => void;
 }) {
+  const {
+    t,
+    trRegion,
+    trStatus,
+    trAge,
+    trSalary,
+    trSchedule,
+  } = useI18n();
+  const { values: tr } = useTranslatedFields({
+    role: job.role,
+    description: previewText(job.description, 220),
+    location: job.location || "",
+  });
   const anti = job.scores.fit.antiFiltered;
   const fu = showFollowUp ? getFollowUpInfo(job) : null;
-  const sched = scheduleChips(job);
+  const sched = trSchedule(job);
+  const age = trAge(jobPostedAt(job));
 
   return (
     <motion.article
@@ -273,48 +316,53 @@ export function JobCardFace({
       <div>
         <div className="job-head">
           <div className="job-company">{job.company}</div>
-          <div className="job-role">{job.role}</div>
+          <div className="job-role">{tr.role || job.role}</div>
         </div>
         <div className="job-meta">
           <span className={`job-chip ${regionClass(job.region)}`}>
-            {regionLabel(job.region)}
+            {trRegion(job.region)}
           </span>
-          <span className="job-chip">{job.status}</span>
+          <span className="job-chip">{trStatus(job.status)}</span>
           {rank != null && <span className="job-chip">Q#{rank}</span>}
           <span
             className="job-chip"
-            style={{
-              color: postAgeLabel(jobPostedAt(job)).stale
-                ? "var(--red)"
-                : undefined,
-            }}
+            style={{ color: age.stale ? "var(--red)" : undefined }}
           >
-            {postAgeLabel(jobPostedAt(job)).label}
+            {age.label}
           </span>
-          <span className="job-chip">{salaryLabel(job.salary)}</span>
+          <span className="job-chip">{trSalary(job.salary)}</span>
           {sched.map((s) => (
             <span key={s} className="job-chip">
               {s}
             </span>
           ))}
-          {job.location && <span className="job-chip">{job.location}</span>}
+          {(tr.location || job.location) && (
+            <span className="job-chip">{tr.location || job.location}</span>
+          )}
           {fu?.due && (
             <span className="job-chip" style={{ color: "var(--gold)" }}>
               {fu.label}
             </span>
           )}
+          {anti && (
+            <span className="job-chip" style={{ color: "var(--red)" }}>
+              {t("dossier.anti")}
+            </span>
+          )}
         </div>
-        <p className="job-desc">{previewText(job.description)}</p>
+        <p className="job-desc">
+          {tr.description || previewText(job.description)}
+        </p>
       </div>
       <div className="job-scores">
         <div className="score-pill">
-          Fit <strong>{job.scores.fit.score}</strong>
+          {t("score.fit")} <strong>{job.scores.fit.score}</strong>
         </div>
         <div className="score-pill">
-          Reach <strong>{job.scores.reach.score}</strong>
+          {t("score.reach")} <strong>{job.scores.reach.score}</strong>
         </div>
         <div className="score-pill gold">
-          Pri <strong>{job.scores.priority.score}</strong>
+          {t("score.pri")} <strong>{job.scores.priority.score}</strong>
         </div>
       </div>
     </motion.article>

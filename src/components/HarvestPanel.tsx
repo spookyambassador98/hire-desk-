@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { HireMaxPanel } from "@/components/HireMaxPanel";
+import { useI18n } from "@/lib/i18n";
 
 type Props = {
   onImported: () => void;
@@ -17,11 +18,10 @@ const PLACEHOLDER = `[
     "description": ""
   }
 ]
-
-# or CSV:
-# company,role,region,url,description`;
+`;
 
 export function HarvestPanel({ onImported, onFlash }: Props) {
+  const { t } = useI18n();
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -40,18 +40,19 @@ export function HarvestPanel({ onImported, onFlash }: Props) {
         errors?: string[];
       };
       if (!res.ok || !data.ok) {
-        onFlash("Paste import failed");
+        onFlash(t("harvest.fail"));
         return;
       }
       onFlash(
-        `Paste +${data.added ?? 0} · skip ${data.skipped ?? 0}${
-          data.errors?.length ? ` · err ${data.errors.length}` : ""
-        }`,
+        t("harvest.paste_ok", {
+          added: data.added ?? 0,
+          skipped: data.skipped ?? 0,
+        }),
       );
       setText("");
       onImported();
     } catch {
-      onFlash("Network error");
+      onFlash(t("harvest.network"));
     } finally {
       setBusy(false);
     }
@@ -62,16 +63,13 @@ export function HarvestPanel({ onImported, onFlash }: Props) {
       <HireMaxPanel
         onFilled={() => {
           onImported();
-          onFlash("MAX LIVE finished — Queue refreshed");
+          onFlash(t("harvest.done"));
         }}
       />
 
       <div className="hd-rail eu" style={{ margin: "1.25rem 0 1rem" }}>
-        <h2>Manual paste / CSV</h2>
-        <p>
-          Fallback hatch. JSON array, NDJSON, or CSV. LinkedIn = import file
-          only (no scrape).
-        </p>
+        <h2>{t("harvest.manual")}</h2>
+        <p>{t("harvest.manual_hint")}</p>
       </div>
       <textarea
         className="harvest-textarea"
@@ -89,7 +87,7 @@ export function HarvestPanel({ onImported, onFlash }: Props) {
           disabled={busy || !text.trim()}
           onClick={() => void run({ text })}
         >
-          {busy ? "Importing…" : "Import paste"}
+          {busy ? t("harvest.importing") : t("harvest.import")}
         </button>
       </div>
     </div>

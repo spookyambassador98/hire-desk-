@@ -385,7 +385,12 @@ body::after {
   box-shadow: var(--glow-cyan);
 }
 
-.hd-lang button:last-child.active {
+.hd-lang button:nth-child(2).active {
+  background: var(--asia);
+  box-shadow: 0 0 20px rgba(255, 122, 89, 0.28);
+}
+
+.hd-lang button:nth-child(3).active {
   background: var(--gold);
   box-shadow: var(--glow-gold);
 }

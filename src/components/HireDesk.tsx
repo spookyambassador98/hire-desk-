@@ -141,25 +141,25 @@ export function HireDesk({
       body: JSON.stringify({ status }),
     });
     if (!res.ok) {
-      flash("Status update failed");
+      flash(t("toast.status_fail"));
       return;
     }
     const job = jobs.find((j) => j.id === id);
     applyPayload(await res.json());
-    flash(`Status → ${status}`);
+    flash(t("toast.status", { status }));
     void track("status_change", id, job?.company || id, status);
   }
 
   async function onJobDelete(id: string) {
-    if (!window.confirm("Delete this vacancy?")) return;
+    if (!window.confirm(t("confirm.delete_job"))) return;
     const res = await fetch(`/api/jobs/${id}`, { method: "DELETE" });
     if (!res.ok) {
-      flash("Delete failed");
+      flash(t("toast.delete_fail"));
       return;
     }
     applyPayload(await res.json());
     setSelectedJobId(null);
-    flash("Deleted");
+    flash(t("toast.deleted"));
   }
 
   async function onIndStatus(id: string, status: IndividualStatus) {
@@ -169,31 +169,31 @@ export function HireDesk({
       body: JSON.stringify({ status }),
     });
     if (!res.ok) {
-      flash("Status update failed");
+      flash(t("toast.status_fail"));
       return;
     }
     const ind = individuals.find((i) => i.id === id);
     applyPayload(await res.json());
-    flash(`Individual → ${status}`);
+    flash(t("toast.ind_status", { status }));
     void track("status_change", id, ind?.name || id, status);
   }
 
   async function onIndDelete(id: string) {
-    if (!window.confirm("Delete this contact?")) return;
+    if (!window.confirm(t("confirm.delete_ind"))) return;
     const res = await fetch(`/api/individuals/${id}`, { method: "DELETE" });
     if (!res.ok) {
-      flash("Delete failed");
+      flash(t("toast.delete_fail"));
       return;
     }
     applyPayload(await res.json());
     setSelectedIndId(null);
-    flash("Deleted");
+    flash(t("toast.deleted"));
   }
 
   async function onCopy(text: string, label: string) {
     try {
       await navigator.clipboard.writeText(text);
-      flash(`Copied · ${label}`);
+      flash(t("toast.copied", { label }));
       const type = label.toLowerCase().includes("brief")
         ? "copy_brief"
         : label.toLowerCase().includes("email") ||
@@ -202,7 +202,7 @@ export function HireDesk({
           : "copy_apply";
       void track(type, null, label, null);
     } catch {
-      flash("Clipboard blocked");
+      flash(t("toast.clipboard"));
     }
   }
 
@@ -318,10 +318,10 @@ export function HireDesk({
           <div className="hd-lang" role="group" aria-label="Language">
             <button
               type="button"
-              className={locale === "ru" ? "active" : ""}
-              onClick={() => setLocale("ru")}
+              className={locale === "en" ? "active" : ""}
+              onClick={() => setLocale("en")}
             >
-              {t("lang.ru")}
+              {t("lang.en")}
             </button>
             <button
               type="button"
@@ -329,6 +329,13 @@ export function HireDesk({
               onClick={() => setLocale("uk")}
             >
               {t("lang.uk")}
+            </button>
+            <button
+              type="button"
+              className={locale === "ru" ? "active" : ""}
+              onClick={() => setLocale("ru")}
+            >
+              {t("lang.ru")}
             </button>
           </div>
           <div className="hd-quota">
@@ -409,7 +416,7 @@ export function HireDesk({
                         className="primary"
                         onClick={() => onCopy(tpl.body, tpl.name)}
                       >
-                        Copy skeleton
+                        {t("templates.copy")}
                       </button>
                     </div>
                   </div>

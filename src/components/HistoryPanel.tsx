@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import type { HireActivity } from "@/lib/activity";
+import { useI18n } from "@/lib/i18n";
 import type { ScoredIndividual, ScoredJob } from "@/lib/types";
 
 type Props = {
@@ -15,6 +16,7 @@ function dayKey(iso: string) {
 }
 
 export function HistoryPanel({ activities, jobs, individuals }: Props) {
+  const { t } = useI18n();
   const byDay = useMemo(() => {
     const map = new Map<string, HireActivity[]>();
     for (const a of activities) {
@@ -36,9 +38,9 @@ export function HistoryPanel({ activities, jobs, individuals }: Props) {
   return (
     <div className="hd-panel">
       <div className="hd-rail eu" style={{ marginBottom: "1rem" }}>
-        <h2>History · 7 days</h2>
+        <h2>{t("history.title")}</h2>
         <p>
-          Applied {applied7} · individuals emailed {emailed7} · events{" "}
+          {t("popup.applied")} {applied7} · {t("nav.individuals")} {emailed7} ·{" "}
           {activities.length}
         </p>
       </div>
@@ -69,7 +71,7 @@ export function HistoryPanel({ activities, jobs, individuals }: Props) {
       </div>
 
       {byDay.length === 0 ? (
-        <div className="empty">No activity yet — apply / copy / open cards</div>
+        <div className="empty">{t("history.empty")}</div>
       ) : (
         byDay.map(([day, rows]) => (
           <section key={day} className="hd-hist-day">
