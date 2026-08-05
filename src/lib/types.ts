@@ -140,7 +140,7 @@ export const DEFAULT_HIRE_PROFILE: HireProfile = {
   salaryCurrency: "USD",
   europeDailyQuota: 10,
   americaDailyQuota: 10,
-  asiaDailyQuota: 6,
+  asiaDailyQuota: 10,
   individualDailyQuota: 4,
 };
 

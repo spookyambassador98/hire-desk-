@@ -13,7 +13,9 @@ export type HireSegmentId =
   | "america_ai"
   | "america_ops"
   | "asia_product"
-  | "asia_ai";
+  | "asia_founding"
+  | "asia_ai"
+  | "asia_ops";
 
 export type HireSegment = {
   id: HireSegmentId;
@@ -129,6 +131,18 @@ export const HIRE_SEGMENTS: HireSegment[] = [
     ],
   },
   {
+    id: "asia_founding",
+    label: "Asia · Founding",
+    region: "asia",
+    family: "founding",
+    keywords: [
+      "founding engineer",
+      "founding fullstack",
+      "early engineer",
+      "startup engineer",
+    ],
+  },
+  {
     id: "asia_ai",
     label: "Asia · AI / Builder",
     region: "asia",
@@ -141,15 +155,33 @@ export const HIRE_SEGMENTS: HireSegment[] = [
       "rapid prototyping",
     ],
   },
+  {
+    id: "asia_ops",
+    label: "Asia · Ops / Tools",
+    region: "asia",
+    family: "ops",
+    keywords: [
+      "internal tools",
+      "ops platform",
+      "platform engineer",
+      "automation",
+    ],
+  },
 ];
 
 export function dayCeiling() {
   return HIRE_DAILY_QUOTA * HIRE_SEGMENTS.length;
 }
 
-/** Scarce shelves first; rotate by UTC hour. */
+export type RegionInventory = Partial<Record<Region, number>>;
+
+/**
+ * Fill scarcest region in the DB first, then scarcest segment today.
+ * Example: Asia 0 / Europe 99 / America 100 → all Asia shelves run before EU/US.
+ */
 export function prioritizedSegments(
   todayCounts: Partial<Record<HireSegmentId, number>>,
+  regionInventory: RegionInventory = {},
   now = new Date(),
 ): HireSegment[] {
   const rot = now.getUTCHours() % HIRE_SEGMENTS.length;
@@ -158,11 +190,24 @@ export function prioritizedSegments(
     ...HIRE_SEGMENTS.slice(0, rot),
   ];
   return [...rotated].sort((a, b) => {
+    const ra = regionInventory[a.region] ?? 0;
+    const rb = regionInventory[b.region] ?? 0;
+    if (ra !== rb) return ra - rb;
     const ca = todayCounts[a.id] ?? 0;
     const cb = todayCounts[b.id] ?? 0;
     if (ca !== cb) return ca - cb;
     return 0;
   });
+}
+
+export function countJobsByRegion(jobs: { region: Region }[]): RegionInventory {
+  const out: RegionInventory = { europe: 0, america: 0, asia: 0 };
+  for (const j of jobs) {
+    if (j.region === "america") out.america = (out.america ?? 0) + 1;
+    else if (j.region === "asia") out.asia = (out.asia ?? 0) + 1;
+    else out.europe = (out.europe ?? 0) + 1;
+  }
+  return out;
 }
 
 export function segmentRemaining(

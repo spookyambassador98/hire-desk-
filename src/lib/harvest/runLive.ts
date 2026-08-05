@@ -15,6 +15,7 @@ import {
 } from "./liveStore";
 import {
   HIRE_RUN_TARGET,
+  countJobsByRegion,
   prioritizedSegments,
   segmentRemaining,
   type HireSegment,
@@ -139,7 +140,8 @@ export async function runHireMax(
 ): Promise<RunHireMaxResult> {
   const runTarget = opts.runTarget ?? safeRunTarget();
   const quota = await readQuotaDay();
-  const segments = prioritizedSegments(quota.bySegment);
+  const inventory = countJobsByRegion(opts.existingJobs);
+  const segments = prioritizedSegments(quota.bySegment, inventory);
   const existingKeys = new Set(opts.existingJobs.map(jobKey));
 
   let added = 0;
@@ -165,6 +167,9 @@ export async function runHireMax(
 
   await log(
     `MAX LIVE · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET}) · proxy ${proxyModeLabel()} · sources ${enabledSources().length} · segments ${segments.length}`,
+  );
+  await log(
+    `⚖ region inventory EU ${inventory.europe ?? 0} · US ${inventory.america ?? 0} · AS ${inventory.asia ?? 0} → scarcest first`,
   );
   if (proxyPoolSize() === 0) {
     await log(
