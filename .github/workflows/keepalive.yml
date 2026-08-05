@@ -1,0 +1,25 @@
+name: keepalive
+
+on:
+  schedule:
+    # Backup for Render free spin-down (~15m idle). GH cron can drift; pair with Render */5.
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping hire-desk
+        run: |
+          set -e
+          URL="${KEEPALIVE_URL:-https://hire-desk.onrender.com/api/ping}"
+          for i in 1 2; do
+            echo "hit $i → $URL"
+            curl -fsS --max-time 90 "$URL"
+            echo
+            sleep 2
+          done
+        env:
+          KEEPALIVE_URL: https://hire-desk.onrender.com/api/ping
