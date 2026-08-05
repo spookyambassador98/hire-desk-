@@ -392,110 +392,126 @@ export function HireMaxPanel({ onFilled }: Props) {
           )}
         </div>
 
-        <aside className="hire-max__feed" aria-live="polite">
-          <div className="hire-max__feed-head">
-            <div>
-              <div className="hire-max__feed-kicker">
-                {t("intake.kicker")}
+        <div className="hire-max__rail">
+          <aside className="hire-max__ops" aria-label={t("intake.ops_title")}>
+            <div className="hire-max__feed-head">
+              <div>
+                <div className="hire-max__feed-kicker">
+                  {t("intake.ops_kicker")}
+                </div>
+                <h3 className="hire-max__feed-title">{t("intake.ops_title")}</h3>
               </div>
-              <h3 className="hire-max__feed-title">{t("intake.title")}</h3>
+              <div
+                className={`hire-max__feed-pulse${running ? " is-live" : ""}`}
+              >
+                <span />
+                {running ? t("intake.live") : t("intake.idle")}
+              </div>
             </div>
-            <div
-              className={`hire-max__feed-pulse${running ? " is-live" : ""}`}
-            >
-              <span />
-              {running ? t("intake.live") : t("intake.idle")}
-            </div>
-          </div>
 
-          <RegionRadar intake={intake} running={running} />
+            <RegionRadar intake={intake} running={running} />
 
-          <div className="hire-max__vitals">
-            <div>
-              <em>{t("intake.added")}</em>
-              <Kinetic value={added} prefix="+" />
+            <div className="hire-max__vitals">
+              <div>
+                <em>{t("intake.added")}</em>
+                <Kinetic value={added} prefix="+" />
+              </div>
+              <div>
+                <em>{t("intake.skip")}</em>
+                <Kinetic value={skipped} />
+              </div>
+              <div>
+                <em>{t("intake.trash")}</em>
+                <Kinetic value={trashed} />
+              </div>
+              <div>
+                <em>{t("intake.segment")}</em>
+                <b title={live?.segment || ""}>{live?.segment || "—"}</b>
+              </div>
             </div>
-            <div>
-              <em>{t("intake.skip")}</em>
-              <Kinetic value={skipped} />
-            </div>
-            <div>
-              <em>{t("intake.trash")}</em>
-              <Kinetic value={trashed} />
-            </div>
-            <div>
-              <em>{t("intake.segment")}</em>
-              <b title={live?.segment || ""}>{live?.segment || "—"}</b>
-            </div>
-          </div>
 
-          <div className="hire-max__feed-list" ref={feedRef}>
-            {intake.length === 0 ? (
-              <div className="hire-max__feed-empty">{t("intake.empty")}</div>
-            ) : (
-              <AnimatePresence initial={false}>
-                {intake.map((hit, idx) => {
-                  const r = (hit.region || "europe") as Region;
-                  const depth = Math.min(idx, 8);
-                  const isFlash = flashId === hit.id;
-                  return (
-                    <motion.div
-                      key={`${hit.id}-${hit.at}`}
-                      className={`hire-max__hit${isFlash ? " is-flash" : ""}`}
-                      style={{
-                        opacity: 1 - depth * 0.06,
-                        filter: `brightness(${1 - depth * 0.035})`,
-                      }}
-                      initial={{ opacity: 0, y: -14, x: 6 }}
-                      animate={{ opacity: 1 - depth * 0.06, y: 0, x: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
-                      transition={{ duration: 0.38, ease: EASE }}
-                      layout
-                    >
-                      <div className="hire-max__hit-corners" aria-hidden />
-                      <div className="hire-max__hit-top">
-                        <span className={`job-chip ${regionClass(r)}`}>
-                          {trRegion(r)}
-                        </span>
-                        <time>{fmtAgo(hit.at)}</time>
-                      </div>
-                      <div className="hire-max__hit-co">{hit.company}</div>
-                      <div className="hire-max__hit-role">{hit.role}</div>
-                      <div className="hire-max__hit-src">
-                        {shortSource(hit.source)}
-                      </div>
-                      <div className="hire-max__hit-scores">
-                        <span>
-                          {t("score.fit")}{" "}
-                          <strong>{hit.fit ?? "—"}</strong>
-                        </span>
-                        <span>
-                          {t("score.pri")}{" "}
-                          <strong>{hit.pri ?? "—"}</strong>
-                        </span>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            )}
-          </div>
+            <div className={`hire-max__ribbon hire-max__ribbon--${beatTone}`}>
+              <span className="hire-max__ribbon-heart">♥</span>
+              <span>
+                {beatAgeSec == null
+                  ? "—"
+                  : `${beatAgeSec < 10 ? beatAgeSec.toFixed(1) : Math.round(beatAgeSec)}s`}
+              </span>
+              <span className="hire-max__ribbon-sep">·</span>
+              <span className="hire-max__ribbon-seg">
+                {live?.segment || "—"}
+              </span>
+              <span className="hire-max__ribbon-sep">·</span>
+              <span>proxy {proxyOn ? "ON" : "OFF"}</span>
+            </div>
+          </aside>
 
-          <div className={`hire-max__ribbon hire-max__ribbon--${beatTone}`}>
-            <span className="hire-max__ribbon-heart">♥</span>
-            <span>
-              {beatAgeSec == null
-                ? "—"
-                : `${beatAgeSec < 10 ? beatAgeSec.toFixed(1) : Math.round(beatAgeSec)}s`}
-            </span>
-            <span className="hire-max__ribbon-sep">·</span>
-            <span className="hire-max__ribbon-seg">
-              {live?.segment || "—"}
-            </span>
-            <span className="hire-max__ribbon-sep">·</span>
-            <span>proxy {proxyOn ? "ON" : "OFF"}</span>
-          </div>
-        </aside>
+          <aside className="hire-max__feed" aria-live="polite">
+            <div className="hire-max__feed-head">
+              <div>
+                <div className="hire-max__feed-kicker">
+                  {t("intake.kicker")}
+                </div>
+                <h3 className="hire-max__feed-title">{t("intake.title")}</h3>
+              </div>
+              <div className="hire-max__feed-count">
+                {intake.length}
+              </div>
+            </div>
+
+            <div className="hire-max__feed-list" ref={feedRef}>
+              {intake.length === 0 ? (
+                <div className="hire-max__feed-empty">{t("intake.empty")}</div>
+              ) : (
+                <AnimatePresence initial={false}>
+                  {intake.map((hit, idx) => {
+                    const r = (hit.region || "europe") as Region;
+                    const depth = Math.min(idx, 8);
+                    const isFlash = flashId === hit.id;
+                    return (
+                      <motion.div
+                        key={`${hit.id}-${hit.at}`}
+                        className={`hire-max__hit${isFlash ? " is-flash" : ""}`}
+                        style={{
+                          opacity: 1 - depth * 0.06,
+                          filter: `brightness(${1 - depth * 0.035})`,
+                        }}
+                        initial={{ opacity: 0, y: -14, x: 6 }}
+                        animate={{ opacity: 1 - depth * 0.06, y: 0, x: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.38, ease: EASE }}
+                        layout
+                      >
+                        <div className="hire-max__hit-corners" aria-hidden />
+                        <div className="hire-max__hit-top">
+                          <span className={`job-chip ${regionClass(r)}`}>
+                            {trRegion(r)}
+                          </span>
+                          <time>{fmtAgo(hit.at)}</time>
+                        </div>
+                        <div className="hire-max__hit-co">{hit.company}</div>
+                        <div className="hire-max__hit-role">{hit.role}</div>
+                        <div className="hire-max__hit-src">
+                          {shortSource(hit.source)}
+                        </div>
+                        <div className="hire-max__hit-scores">
+                          <span>
+                            {t("score.fit")}{" "}
+                            <strong>{hit.fit ?? "—"}</strong>
+                          </span>
+                          <span>
+                            {t("score.pri")}{" "}
+                            <strong>{hit.pri ?? "—"}</strong>
+                          </span>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
+              )}
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );

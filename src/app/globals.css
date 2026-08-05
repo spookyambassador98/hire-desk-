@@ -1152,27 +1152,45 @@ body::after {
 
 .hire-max__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
   gap: 1rem;
   margin-top: 0.85rem;
-  align-items: start;
+  align-items: stretch;
+  min-height: min(72vh, 780px);
 }
 
 @media (max-width: 980px) {
   .hire-max__grid {
     grid-template-columns: 1fr;
+    min-height: 0;
   }
 }
 
 .hire-max__col {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
+.hire-max__col .hire-max__log {
+  flex: 1;
+  min-height: 280px;
+}
+
+.hire-max__rail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-self: stretch;
+}
+
+.hire-max__ops,
 .hire-max__feed {
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.28);
   padding: 0.85rem 0.9rem;
-  min-height: 320px;
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
@@ -1180,6 +1198,11 @@ body::after {
   overflow: hidden;
 }
 
+.hire-max__ops {
+  flex: 0 0 auto;
+}
+
+.hire-max__ops::before,
 .hire-max__feed::before {
   content: "";
   position: absolute;
@@ -1189,6 +1212,16 @@ body::after {
   height: 2px;
   background: linear-gradient(270deg, var(--cyan), transparent);
   box-shadow: var(--glow-cyan);
+}
+
+.hire-max__ops::before {
+  background: linear-gradient(270deg, var(--gold), transparent);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+}
+
+.hire-max__feed {
+  flex: 1 1 auto;
+  min-height: 320px;
 }
 
 .hire-max__feed-head {
@@ -1286,15 +1319,28 @@ body::after {
   white-space: nowrap;
 }
 
+.hire-max__feed-count {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+  min-width: 1.5rem;
+  text-align: right;
+}
+
 .hire-max__feed-list {
   flex: 1;
-  min-height: 180px;
-  max-height: 420px;
+  min-height: 220px;
   overflow: auto;
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
   padding-right: 0.15rem;
+}
+
+.hire-max__ops .hire-max__ribbon {
+  margin-top: 0.15rem;
 }
 
 .hire-max__feed-empty {
@@ -1668,7 +1714,7 @@ body::after {
 }
 
 .hire-max__quotas {
-  margin-top: 1rem;
+  margin-top: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 0.55rem;
@@ -1708,8 +1754,10 @@ body::after {
 }
 
 .hire-max__log {
-  margin-top: 1rem;
-  max-height: 260px;
+  margin-top: 0;
+  flex: 1;
+  min-height: 280px;
+  max-height: none;
   overflow: auto;
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.45);
@@ -1725,7 +1773,7 @@ body::after {
 }
 
 .hire-max__sources {
-  margin-top: 0.75rem;
+  margin-top: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
