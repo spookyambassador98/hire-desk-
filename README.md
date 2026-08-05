@@ -24,7 +24,7 @@ Free web services sleep after ~15 minutes idle. Ping:
 GET https://hire-desk.onrender.com/api/ping
 ```
 
-every **10–14 minutes** via Render cron `hire-desk-keepalive` (in `render.yaml`) **or** free [UptimeRobot](https://uptimerobot.com) / [cron-job.org](https://cron-job.org) HTTP monitor.
+every **≤5 minutes** via Render cron `hire-desk-keepalive` **and** GitHub Action `keepalive.yml`. If it still naps, Sync the Blueprint in Render so the cron schedule updates from `*/12` → `*/5`.
 
 ## Scoring (lib)
 
