@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { env } from "@/lib/env";
 
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as { code?: string };
-  const expected = process.env.HIRE_DESK_ACCESS_CODE?.trim();
+  const expected = env("HIRE_DESK_ACCESS_CODE");
   if (!expected) {
     return NextResponse.json(
       { ok: false, error: "access_not_configured" },

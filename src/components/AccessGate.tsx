@@ -25,11 +25,14 @@ export function AccessGate({ onUnlock }: Props) {
         body: JSON.stringify({ code }),
       });
       if (!res.ok) {
-    setError(
-        res.status === 503
-          ? "Задай HIRE_DESK_ACCESS_CODE в .env.local"
-          : "Неверный код",
-      );
+        const data = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        setError(
+          res.status === 503 || data.error === "access_not_configured"
+            ? "На сервере не задан HIRE_DESK_ACCESS_CODE (Render → Environment или .env.local + перезапуск dev)"
+            : "Неверный код",
+        );
         return;
       }
       sessionStorage.setItem(STORAGE_KEY, "1");
@@ -58,7 +61,8 @@ export function AccessGate({ onUnlock }: Props) {
         <div className="access-gate__kicker">APEX // HIRE LOCK</div>
         <h2 className="access-gate__title">Hire Desk</h2>
         <p className="access-gate__hint">
-          Код доступа. По умолчанию: APEX-HIRE
+          Код из <code>HIRE_DESK_ACCESS_CODE</code> (локально — <code>.env.local</code>,
+          Render — Environment).
         </p>
         <label className="access-gate__field">
           <input
