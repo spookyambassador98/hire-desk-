@@ -3,10 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useI18n, type Locale } from "@/lib/i18n";
 
+/** Bump when translate backend changes — drops poisoned EN caches. */
+const CACHE_VER = "v3";
+
 const mem = new Map<string, string>();
 
 function cacheKey(locale: Locale, text: string) {
-  return `${locale}::${text.slice(0, 24)}::${text.length}::${hash(text)}`;
+  return `${CACHE_VER}:${locale}::${text.slice(0, 32)}::${text.length}::${hash(text)}`;
 }
 
 function hash(s: string) {
@@ -15,9 +18,13 @@ function hash(s: string) {
   return String(h);
 }
 
+function sessionKey(key: string) {
+  return `hire-tr:${key}`;
+}
+
 function readSession(key: string): string | null {
   try {
-    return sessionStorage.getItem(`tr:${key}`);
+    return sessionStorage.getItem(sessionKey(key));
   } catch {
     return null;
   }
@@ -25,61 +32,149 @@ function readSession(key: string): string | null {
 
 function writeSession(key: string, val: string) {
   try {
-    sessionStorage.setItem(`tr:${key}`, val);
+    sessionStorage.setItem(sessionKey(key), val);
   } catch {
     /* ignore quota */
   }
 }
 
-type Job = {
-  locale: Locale;
-  texts: string[];
-  resolve: (texts: string[]) => void;
+function looksTranslated(source: string, out: string, locale: Locale) {
+  if (locale === "en") return true;
+  const a = source.trim();
+  const b = out.trim();
+  if (!b) return false;
+  if (b !== a) return true;
+  // Identical output for non-EN is only OK for non-translatable tokens
+  // (URLs, brand codes). Long Latin prose = failed translate — do not cache.
+  if (a.length < 12) return true;
+  if (/[А-Яа-яЁёІіЇїЄєҐґ]/.test(a)) return true;
+  return !/[A-Za-z]{4}/.test(a);
+}
+
+function remember(key: string, source: string, out: string, locale: Locale) {
+  if (!looksTranslated(source, out, locale)) return false;
+  mem.set(key, out);
+  writeSession(key, out);
+  return true;
+}
+
+function cached(key: string): string | null {
+  return mem.get(key) || readSession(key);
+}
+
+type Waiter = {
+  resolve: (text: string) => void;
   reject: (err: unknown) => void;
 };
 
-const queue: Job[] = [];
-let active = 0;
-const MAX_PARALLEL = 2;
+/** Deduped pending strings per locale */
+const pending = new Map<string, { locale: Locale; text: string; waiters: Waiter[] }>();
+let flushTimer: ReturnType<typeof setTimeout> | null = null;
+let activeFlushes = 0;
+const MAX_FLUSH = 3;
+const BATCH = 10;
 
-function pump() {
-  while (active < MAX_PARALLEL && queue.length) {
-    const job = queue.shift()!;
-    active += 1;
-    void (async () => {
+function scheduleFlush() {
+  if (flushTimer) return;
+  flushTimer = setTimeout(() => {
+    flushTimer = null;
+    void flushPending();
+  }, 40);
+}
+
+async function flushPending() {
+  if (activeFlushes >= MAX_FLUSH || pending.size === 0) return;
+  activeFlushes += 1;
+  try {
+    while (pending.size > 0) {
+      const batch: Array<{ key: string; locale: Locale; text: string; waiters: Waiter[] }> =
+        [];
+      for (const [key, job] of pending) {
+        if (batch.length && batch[0]!.locale !== job.locale) continue;
+        batch.push({ key, ...job });
+        pending.delete(key);
+        if (batch.length >= BATCH) break;
+      }
+      if (!batch.length) break;
+
+      const locale = batch[0]!.locale;
       try {
         const res = await fetch("/api/translate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ locale: job.locale, texts: job.texts }),
+          body: JSON.stringify({
+            locale,
+            texts: batch.map((b) => b.text),
+          }),
         });
-        const data = (await res.json()) as { texts?: string[] };
-        const out =
-          Array.isArray(data.texts) && data.texts.length === job.texts.length
-            ? data.texts.map((t, i) => t?.trim() || job.texts[i]!)
-            : job.texts;
-        job.resolve(out);
+        const data = (await res.json()) as {
+          texts?: string[];
+          error?: string;
+        };
+        const ok =
+          Array.isArray(data.texts) && data.texts.length === batch.length;
+        batch.forEach((b, i) => {
+          const raw = ok ? data.texts![i]?.trim() || "" : "";
+          const next = raw && looksTranslated(b.text, raw, locale) ? raw : "";
+          if (next) {
+            remember(b.key, b.text, next, locale);
+            b.waiters.forEach((w) => w.resolve(next));
+          } else {
+            // Do not poison cache — leave source for UI, allow retry later
+            b.waiters.forEach((w) => w.resolve(b.text));
+          }
+        });
       } catch (err) {
-        job.reject(err);
-      } finally {
-        active -= 1;
-        pump();
+        batch.forEach((b) => b.waiters.forEach((w) => w.reject(err)));
       }
-    })();
+    }
+  } finally {
+    activeFlushes -= 1;
+    if (pending.size) scheduleFlush();
   }
 }
 
-function enqueueTranslate(locale: Locale, texts: string[]): Promise<string[]> {
+function enqueueOne(locale: Locale, text: string): Promise<string> {
+  const key = cacheKey(locale, text);
+  const hit = cached(key);
+  if (hit && looksTranslated(text, hit, locale)) {
+    return Promise.resolve(hit);
+  }
+  // Drop poisoned EN cache entries
+  if (hit) {
+    mem.delete(key);
+    try {
+      sessionStorage.removeItem(sessionKey(key));
+    } catch {
+      /* ignore */
+    }
+  }
+
   return new Promise((resolve, reject) => {
-    queue.push({ locale, texts, resolve, reject });
-    pump();
+    const existing = pending.get(key);
+    if (existing) {
+      existing.waiters.push({ resolve, reject });
+    } else {
+      pending.set(key, {
+        locale,
+        text,
+        waiters: [{ resolve, reject }],
+      });
+    }
+    scheduleFlush();
   });
+}
+
+async function translateMany(
+  locale: Locale,
+  texts: string[],
+): Promise<string[]> {
+  return Promise.all(texts.map((t) => (t ? enqueueOne(locale, t) : Promise.resolve(""))));
 }
 
 /**
  * Translate free-text job fields to active locale.
- * EN returns source as-is. Cached in memory + sessionStorage.
- * Requests are globally queued so the feed doesn't stampede the API.
+ * EN returns source as-is. Cached in memory + sessionStorage (versioned).
  */
 export function useTranslatedText(
   text: string | null | undefined,
@@ -107,8 +202,8 @@ export function useTranslatedText(
       setLoading(false);
       return;
     }
-    const hit = mem.get(key) || readSession(key);
-    if (hit) {
+    const hit = cached(key);
+    if (hit && looksTranslated(source, hit, locale)) {
       setOut(hit);
       setLoading(false);
       return;
@@ -117,10 +212,7 @@ export function useTranslatedText(
     setLoading(true);
     void (async () => {
       try {
-        const [nextRaw] = await enqueueTranslate(locale, [source]);
-        const next = nextRaw?.trim() || source;
-        mem.set(key, next);
-        writeSession(key, next);
+        const next = await enqueueOne(locale, source);
         if (!cancelled) setOut(next);
       } catch {
         if (!cancelled) setOut(source);
@@ -136,10 +228,10 @@ export function useTranslatedText(
   return { text: out || source, loading };
 }
 
-/** Batch-translate several fields with one request. */
+/** Batch-translate several fields (deduped global queue). */
 export function useTranslatedFields<T extends Record<string, string | null | undefined>>(
   fields: T,
-  opts?: { enabled?: boolean; priority?: number },
+  opts?: { enabled?: boolean },
 ): { values: { [K in keyof T]: string }; loading: boolean } {
   const { locale } = useI18n();
   const enabled = opts?.enabled !== false;
@@ -165,17 +257,17 @@ export function useTranslatedFields<T extends Record<string, string | null | und
       return;
     }
 
-    const needIdx: number[] = [];
-    const resolved: string[] = entries.map(([_, v], i) => {
+    const need: string[] = [];
+    const resolved: string[] = entries.map(([_, v]) => {
       if (!v) return "";
       const k = cacheKey(locale, v);
-      const hit = mem.get(k) || readSession(k);
-      if (hit) return hit;
-      needIdx.push(i);
+      const hit = cached(k);
+      if (hit && looksTranslated(v, hit, locale)) return hit;
+      need.push(v);
       return v;
     });
 
-    if (!needIdx.length) {
+    if (!need.length) {
       const next = {} as { [K in keyof T]: string };
       entries.forEach(([k], i) => {
         (next as Record<string, string>)[k] = resolved[i]!;
@@ -189,15 +281,12 @@ export function useTranslatedFields<T extends Record<string, string | null | und
     setLoading(true);
     void (async () => {
       try {
-        const payload = needIdx.map((i) => entries[i]![1]);
-        const data = await enqueueTranslate(locale, payload);
-        needIdx.forEach((i, j) => {
-          const src = entries[i]![1];
-          const tr = data[j]?.trim() || src;
-          const k = cacheKey(locale, src);
-          mem.set(k, tr);
-          writeSession(k, tr);
-          resolved[i] = tr;
+        const unique = [...new Set(need)];
+        const translated = await translateMany(locale, unique);
+        const map = new Map(unique.map((s, i) => [s, translated[i]!]));
+        entries.forEach(([_, v], i) => {
+          if (!v) return;
+          resolved[i] = map.get(v) || v;
         });
       } catch {
         /* keep source */

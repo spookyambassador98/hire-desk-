@@ -138,19 +138,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "bad_locale" }, { status: 400 });
     }
     const texts = Array.isArray(body.texts) ? body.texts.slice(0, 12) : [];
-    // Sequential within request keeps upstream calm; parallel cards use client queue.
     const translated: string[] = [];
     for (const t of texts) {
       translated.push(
         await translateOne(String(t || "").slice(0, 3500), locale),
       );
     }
-    return NextResponse.json({ locale, texts: translated });
+    return NextResponse.json({
+      locale,
+      texts: translated,
+      ok: true,
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
-      { error: msg.slice(0, 160), texts: [] },
-      { status: 200 },
+      { error: msg.slice(0, 160), texts: [], ok: false },
+      { status: 502 },
     );
   }
 }

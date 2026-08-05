@@ -57,6 +57,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (isLocale(raw)) setLocaleState(raw);
+      // Drop pre-v3 translate poison (failed MyMemory EN caches)
+      for (let i = sessionStorage.length - 1; i >= 0; i--) {
+        const k = sessionStorage.key(i);
+        if (k && (k.startsWith("tr:") || k.startsWith("hire-tr:v1") || k.startsWith("hire-tr:v2"))) {
+          sessionStorage.removeItem(k);
+        }
+      }
     } catch {
       /* ignore */
     }

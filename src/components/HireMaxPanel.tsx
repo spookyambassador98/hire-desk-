@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useSpring, useTransform } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
+import { useTranslatedText } from "@/hooks/useTranslatedText";
 import { regionClass } from "@/lib/regions";
 import type { Region } from "@/lib/types";
 
@@ -74,6 +75,11 @@ function shortSource(src: string | null) {
   if (!src) return "—";
   const part = src.split(":").pop() || src;
   return part.replace(/^max:/, "").slice(0, 18);
+}
+
+function IntakeRole({ text }: { text: string }) {
+  const { text: role } = useTranslatedText(text);
+  return <>{role}</>;
 }
 
 function Kinetic({ value, prefix = "" }: { value: number; prefix?: string }) {
@@ -489,7 +495,9 @@ export function HireMaxPanel({ onFilled }: Props) {
                         <time>{fmtAgo(hit.at)}</time>
                       </div>
                       <div className="hire-max__hit-co">{hit.company}</div>
-                      <div className="hire-max__hit-role">{hit.role}</div>
+                      <div className="hire-max__hit-role">
+                        <IntakeRole text={hit.role} />
+                      </div>
                       <div className="hire-max__hit-src">
                         {shortSource(hit.source)}
                       </div>
