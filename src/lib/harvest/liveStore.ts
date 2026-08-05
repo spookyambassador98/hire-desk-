@@ -2,6 +2,15 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { HireSegmentId } from "./max";
 
+export type HarvestIntakeHit = {
+  id: string;
+  company: string;
+  role: string;
+  region: string;
+  source: string | null;
+  at: string;
+};
+
 export type HarvestLiveState = {
   running: boolean;
   startedAt: string | null;
@@ -13,6 +22,8 @@ export type HarvestLiveState = {
   segment: string | null;
   message: string;
   logs: string[];
+  /** Newest first — live intake for MAX LIVE right rail */
+  recentAdds: HarvestIntakeHit[];
 };
 
 export type HarvestQuotaDay = {
@@ -23,6 +34,7 @@ export type HarvestQuotaDay = {
 const DATA_DIR = path.join(process.cwd(), "data");
 const LIVE_FILE = path.join(DATA_DIR, "harvest-live.json");
 const QUOTA_FILE = path.join(DATA_DIR, "harvest-quotas.json");
+const INTAKE_MAX = 48;
 
 const g = globalThis as typeof globalThis & {
   __hireHarvestLive?: HarvestLiveState;
@@ -40,6 +52,7 @@ function defaultLive(): HarvestLiveState {
     segment: null,
     message: "idle",
     logs: [],
+    recentAdds: [],
   };
 }
 
@@ -62,6 +75,9 @@ export async function readHarvestLive(): Promise<HarvestLiveState> {
       ...defaultLive(),
       ...disk,
       logs: Array.isArray(disk.logs) ? disk.logs.slice(-120) : [],
+      recentAdds: Array.isArray(disk.recentAdds)
+        ? disk.recentAdds.slice(0, INTAKE_MAX)
+        : [],
     };
     return g.__hireHarvestLive;
   } catch {
@@ -77,8 +93,12 @@ export async function writeHarvestLive(
     ...cur,
     ...patch,
     logs: patch.logs ?? cur.logs,
+    recentAdds: patch.recentAdds ?? cur.recentAdds,
   };
   if (next.logs.length > 120) next.logs = next.logs.slice(-120);
+  if (next.recentAdds.length > INTAKE_MAX) {
+    next.recentAdds = next.recentAdds.slice(0, INTAKE_MAX);
+  }
   g.__hireHarvestLive = next;
   try {
     await ensureDir();
@@ -93,6 +113,19 @@ export async function writeHarvestLive(
 
 export async function patchHarvestLive(patch: Partial<HarvestLiveState>) {
   return writeHarvestLive(patch);
+}
+
+export async function pushIntakeHits(
+  hits: Omit<HarvestIntakeHit, "at">[],
+) {
+  if (!hits.length) return readHarvestLiveMemory();
+  const cur = readHarvestLiveMemory();
+  const at = new Date().toISOString();
+  const recentAdds = [
+    ...hits.map((h) => ({ ...h, at })),
+    ...cur.recentAdds,
+  ].slice(0, INTAKE_MAX);
+  return writeHarvestLive({ recentAdds, heartbeatAt: at });
 }
 
 function stamp() {

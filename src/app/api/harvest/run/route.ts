@@ -10,6 +10,7 @@ import {
 import {
   patchHarvestLive,
   pushHarvestLog,
+  pushIntakeHits,
   readHarvestLive,
   writeHarvestLive,
 } from "@/lib/harvest/liveStore";
@@ -62,6 +63,7 @@ async function executeHarvestRun() {
       skipped: 0,
       trashed: 0,
       segment: null,
+      recentAdds: [],
       message: `MAX LIVE · target ≥${runTarget}`,
       logs: [
         `[${stamp()}] MAX LIVE start · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET})`,
@@ -94,6 +96,15 @@ async function executeHarvestRun() {
       onJobsBatch: async (chunk) => {
         if (isHarvestStopRequested()) return;
         await ingestJobsBatch(chunk);
+        await pushIntakeHits(
+          chunk.map((j) => ({
+            id: j.id,
+            company: j.company,
+            role: j.role,
+            region: j.region,
+            source: j.source,
+          })),
+        );
       },
       onProgress: async (ev) => {
         const stopped = isHarvestStopRequested();

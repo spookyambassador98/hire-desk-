@@ -163,6 +163,15 @@ const en: Dict = {
   "max.stopping": "Stopping…",
   "max.proxy": "Proxy",
   "max.storage": "Storage",
+  "intake.kicker": "LIVE INTAKE",
+  "intake.title": "Just landed",
+  "intake.live": "LIVE",
+  "intake.idle": "idle",
+  "intake.added": "added",
+  "intake.skip": "skip",
+  "intake.trash": "trash",
+  "intake.segment": "segment",
+  "intake.empty": "Waiting for MAX LIVE · new jobs stream here",
 };
 
 const ru: Dict = {
@@ -322,6 +331,15 @@ const ru: Dict = {
   "max.stopping": "Останавливаю…",
   "max.proxy": "Proxy",
   "max.storage": "Хранилище",
+  "intake.kicker": "LIVE INTAKE",
+  "intake.title": "Только что",
+  "intake.live": "LIVE",
+  "intake.idle": "idle",
+  "intake.added": "добавлено",
+  "intake.skip": "skip",
+  "intake.trash": "trash",
+  "intake.segment": "сегмент",
+  "intake.empty": "Ждём MAX LIVE · новые вакансии появятся здесь",
 };
 
 const uk: Dict = {
@@ -481,6 +499,15 @@ const uk: Dict = {
   "max.stopping": "Зупиняю…",
   "max.proxy": "Proxy",
   "max.storage": "Сховище",
+  "intake.kicker": "LIVE INTAKE",
+  "intake.title": "Щойно",
+  "intake.live": "LIVE",
+  "intake.idle": "idle",
+  "intake.added": "додано",
+  "intake.skip": "skip",
+  "intake.trash": "trash",
+  "intake.segment": "сегмент",
+  "intake.empty": "Чекаємо MAX LIVE · нові вакансії з'являться тут",
 };
 
 export const DICTS: Record<Locale, Dict> = { en, ru, uk };
