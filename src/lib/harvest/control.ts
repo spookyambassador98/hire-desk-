@@ -69,3 +69,17 @@ export function requestHarvestStop() {
     /* ignore */
   }
 }
+
+/** Next auto-wave after time budget — never clears STOP pause. */
+export function beginContinueRun(): boolean {
+  const s = state();
+  if (Date.now() < s.pauseUntil) return false;
+  s.stopRequested = false;
+  try {
+    s.stopAbort?.abort();
+  } catch {
+    /* ignore */
+  }
+  s.stopAbort = new AbortController();
+  return true;
+}

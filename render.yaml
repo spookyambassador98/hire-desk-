@@ -85,7 +85,7 @@ services:
     name: hire-desk-harvest-cron
     runtime: node
     plan: free
-    schedule: "0 */6 * * *"
+    schedule: "0 * * * *"
     buildCommand: echo cron
     startCommand: >
       node -e "fetch(process.env.RENDER_CRON_URL,{method:'POST',headers:{Authorization:'Bearer '+process.env.HARVEST_CRON_SECRET}}).then(r=>r.text()).then(console.log).catch(e=>{console.error(e);process.exit(1)})"

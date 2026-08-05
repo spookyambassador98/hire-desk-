@@ -332,8 +332,8 @@ export function HireMaxPanel({ onFilled }: Props) {
             <div className="hire-max__kicker">APEX // HARVEST ENGINE</div>
             <h2 className="hire-max__title">MAX LIVE</h2>
             <p className="hire-max__sub">
-              Target ≥{target} · day cap {dayCap} · proxy{" "}
-              {proxyOn ? `ON (${status?.proxyPool})` : "OFF"} ·{" "}
+              Fill-day until shelves full · wave ≥{target} · day cap {dayCap} ·
+              proxy {proxyOn ? `ON (${status?.proxyPool})` : "OFF"} ·{" "}
               {status?.storage === "firebase" ? "Firebase" : "local"} ·{" "}
               {status?.sources?.length ?? 0} sources
             </p>

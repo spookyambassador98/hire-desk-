@@ -173,6 +173,28 @@ export function dayCeiling() {
   return HIRE_DAILY_QUOTA * HIRE_SEGMENTS.length;
 }
 
+export function dayQuotaUsed(
+  bySegment: Partial<Record<HireSegmentId, number>>,
+): number {
+  let n = 0;
+  for (const s of HIRE_SEGMENTS) n += bySegment[s.id] ?? 0;
+  return n;
+}
+
+export function dayQuotaRemaining(
+  bySegment: Partial<Record<HireSegmentId, number>>,
+): number {
+  return Math.max(0, dayCeiling() - dayQuotaUsed(bySegment));
+}
+
+export function anySegmentOpen(
+  bySegment: Partial<Record<HireSegmentId, number>>,
+): boolean {
+  return HIRE_SEGMENTS.some(
+    (s) => segmentRemaining(s.id, bySegment) > 0,
+  );
+}
+
 export type RegionInventory = Partial<Record<Region, number>>;
 
 /**
