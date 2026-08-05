@@ -14,6 +14,10 @@ export type JobHit = {
   salaryMin: number | null;
   salaryMax: number | null;
   salaryCurrency: string | null;
+  /** Free-text salary from APIs like Remotive */
+  salaryText?: string | null;
+  /** Source post / publish time ISO */
+  postedAt?: string | null;
 };
 
 export type HireSourceContext = {
@@ -44,6 +48,13 @@ export function inferRegionFromText(
   fallback: Region,
 ): Region {
   const t = text.toLowerCase();
+  if (
+    /\b(singapore|tokyo|japan|korea|seoul|hong\s*kong|taiwan|bangkok|jakarta|manila|vietnam|india|bangalore|bengaluru|hyderabad|remote[- ]?apac|asia[- ]?pacific|apac)\b/.test(
+      t,
+    )
+  ) {
+    return "asia";
+  }
   if (
     /\b(usa|united states|canada|latam|nyc|sf bay|remote[- ]?us|america)\b/.test(
       t,

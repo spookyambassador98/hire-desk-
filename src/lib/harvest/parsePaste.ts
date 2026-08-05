@@ -23,6 +23,11 @@ function inferChannel(url: string | null | undefined): ApplyChannel {
 function inferRegion(raw: string | undefined | null): Region {
   const t = (raw || "").toLowerCase();
   if (
+    /singapore|tokyo|japan|korea|hong\s*kong|india|bangalore|apac|asia/.test(t)
+  ) {
+    return "asia";
+  }
+  if (
     /america|usa|us\b|united states|canada|latam|nyc|sf\b|remote us/.test(t)
   ) {
     return "america";
@@ -56,7 +61,9 @@ function normalizeOne(raw: LooseJob, now: string): Job | null {
 
   const url = (raw.url || raw.link || null)?.toString().trim() || null;
   const region =
-    raw.region === "america" || raw.region === "europe"
+    raw.region === "america" ||
+    raw.region === "europe" ||
+    raw.region === "asia"
       ? raw.region
       : inferRegion(`${raw.region || ""} ${raw.location || ""}`);
 
@@ -77,6 +84,7 @@ function normalizeOne(raw: LooseJob, now: string): Job | null {
     source: raw.source || "harvest",
     appliedAt: null,
     followUpAt: null,
+    postedAt: now,
     createdAt: now,
     updatedAt: now,
   });

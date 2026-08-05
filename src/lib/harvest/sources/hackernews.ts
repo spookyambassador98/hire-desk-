@@ -1,6 +1,7 @@
 import { envSourceOn } from "@/lib/env";
 import type { JobHit, JobSource } from "./types";
 import { inferRegionFromText, textMatchesSegment } from "./types";
+import { harvestFetch } from "../harvestFetch";
 
 const HN_SEARCH =
   "https://hn.algolia.com/api/v1/search?query=Ask%20HN%3A%20Who%20is%20hiring&tags=story&hitsPerPage=3";
@@ -13,7 +14,7 @@ async function latestWhoIsHiringId(): Promise<number | null> {
   if (cachedStoryId && now - cachedStoryAt < 6 * 60 * 60 * 1000) {
     return cachedStoryId;
   }
-  const res = await fetch(HN_SEARCH, {
+  const res = await harvestFetch(HN_SEARCH, {
     signal: AbortSignal.timeout(15_000),
     headers: { Accept: "application/json" },
   });
@@ -83,7 +84,7 @@ export const hackernewsSource: JobSource = {
         await ctx.log("HN · no recent Who is hiring thread");
         return hits;
       }
-      const res = await fetch(
+      const res = await harvestFetch(
         `https://hn.algolia.com/api/v1/items/${storyId}`,
         {
           signal: ctx.signal ?? AbortSignal.timeout(20_000),

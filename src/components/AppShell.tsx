@@ -6,6 +6,7 @@ import { AccessGate, isHireUnlocked } from "@/components/AccessGate";
 import { HireDesk } from "@/components/HireDesk";
 import { HireAtmosphere } from "@/components/motion/HireAtmosphere";
 import { HireIntro } from "@/components/motion/HireIntro";
+import { I18nProvider } from "@/lib/i18n";
 import type {
   QuotaSnapshot,
   ScoredIndividual,
@@ -35,7 +36,7 @@ export function AppShell({
   }, []);
 
   return (
-    <>
+    <I18nProvider>
       <HireAtmosphere />
       <AnimatePresence mode="wait">
         {phase === "intro" && (
@@ -67,6 +68,6 @@ export function AppShell({
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </I18nProvider>
   );
 }

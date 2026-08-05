@@ -1,12 +1,12 @@
 import * as cheerio from "cheerio";
 import { env, envSourceOn } from "@/lib/env";
-import { proxiedFetch, proxyPoolSize } from "../proxyPool";
+import { harvestFetch } from "../harvestFetch";
+import { proxyPoolSize } from "../proxyPool";
 import type { JobHit, JobSource } from "./types";
 import { textMatchesSegment } from "./types";
 
 /**
- * Tertiary HTML sources — only when proxy configured for Indeed;
- * Wellfound attempted direct first.
+ * Tertiary HTML sources — careers pages + Indeed (Indeed needs proxy).
  */
 export const htmlBoardsSource: JobSource = {
   id: "html_boards",
@@ -18,7 +18,6 @@ export const htmlBoardsSource: JobSource = {
     const kw = ctx.segment.keywords[0] || "product engineer";
     await ctx.log(`HTML · «${kw}» · ${ctx.segment.label}`);
 
-    // Wellfound-style public search is fragile; use a simple careers HTML probe list
     const careerUrls = (env("CAREER_HTML_URLS") || "")
       .split(/[\n,]+/)
       .map((s) => s.trim())
@@ -27,12 +26,8 @@ export const htmlBoardsSource: JobSource = {
     for (const url of careerUrls) {
       if (hits.length >= ctx.limit) break;
       try {
-        const res = await proxiedFetch(url, {
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
-            Accept: "text/html",
-          },
+        const res = await harvestFetch(url, {
+          headers: { Accept: "text/html" },
           signal: ctx.signal ?? AbortSignal.timeout(14_000),
         });
         if (!res.ok) continue;
@@ -67,17 +62,17 @@ export const htmlBoardsSource: JobSource = {
       }
     }
 
-    // Indeed only with proxies
     if (proxyPoolSize() > 0 && hits.length < ctx.limit) {
-      const loc = ctx.segment.region === "europe" ? "Europe" : "United States";
+      const loc =
+        ctx.segment.region === "europe"
+          ? "Europe"
+          : ctx.segment.region === "asia"
+            ? "Asia"
+            : "United States";
       const indeed = `https://www.indeed.com/jobs?q=${encodeURIComponent(kw)}&l=${encodeURIComponent(loc)}`;
       try {
-        const res = await proxiedFetch(indeed, {
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
-            Accept: "text/html",
-          },
+        const res = await harvestFetch(indeed, {
+          headers: { Accept: "text/html" },
           signal: ctx.signal ?? AbortSignal.timeout(14_000),
         });
         if (res.ok) {

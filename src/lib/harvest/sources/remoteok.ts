@@ -1,6 +1,7 @@
 import { envSourceOn } from "@/lib/env";
 import type { JobHit, JobSource } from "./types";
 import { inferRegionFromText, textMatchesSegment } from "./types";
+import { harvestFetch } from "../harvestFetch";
 
 /**
  * RemoteOK public API.
@@ -15,7 +16,7 @@ export const remoteokSource: JobSource = {
     const hits: JobHit[] = [];
     await ctx.log(`RemoteOK · ${ctx.segment.label}`);
     try {
-      const res = await fetch("https://remoteok.com/api", {
+      const res = await harvestFetch("https://remoteok.com/api", {
         signal: ctx.signal ?? AbortSignal.timeout(20_000),
         headers: {
           Accept: "application/json",
@@ -36,6 +37,7 @@ export const remoteokSource: JobSource = {
         tags?: string[];
         salary_min?: number;
         salary_max?: number;
+        date?: number | string;
       }>;
       for (const j of data) {
         if (!j || !j.position || !j.company) continue;
@@ -50,6 +52,13 @@ export const remoteokSource: JobSource = {
           ctx.segment.region,
         );
         if (region !== ctx.segment.region) continue;
+        let postedAt: string | null = null;
+        if (typeof j.date === "number" && j.date > 0) {
+          postedAt = new Date(j.date * 1000).toISOString();
+        } else if (typeof j.date === "string" && j.date) {
+          const t = Date.parse(j.date);
+          if (!Number.isNaN(t)) postedAt = new Date(t).toISOString();
+        }
         hits.push({
           sourceId: "remoteok",
           company: j.company,
@@ -65,6 +74,7 @@ export const remoteokSource: JobSource = {
           salaryMin: j.salary_min ?? null,
           salaryMax: j.salary_max ?? null,
           salaryCurrency: "USD",
+          postedAt,
         });
       }
       await ctx.log(`RemoteOK · +${hits.length}`);

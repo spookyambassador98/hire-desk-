@@ -7,6 +7,13 @@ import {
 } from "@/lib/followUp";
 import type { JobStatus, ScoredJob } from "@/lib/types";
 import { renderApply, renderTemplate } from "@/lib/templates";
+import { salaryLabel } from "@/lib/text";
+import {
+  jobPostedAt,
+  postAgeLabel,
+  regionClass,
+  regionLabel,
+} from "@/lib/regions";
 
 type Props = {
   job: ScoredJob;
@@ -20,15 +27,6 @@ type Props = {
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-function salaryLabel(job: ScoredJob) {
-  const s = job.salary;
-  if (!s || (s.min == null && s.max == null)) return "Comp TBD";
-  const fmt = (n: number) => `${s.currency} ${Math.round(n / 1000)}k`;
-  if (s.min != null && s.max != null) return `${fmt(s.min)}–${fmt(s.max)}`;
-  if (s.min != null) return `from ${fmt(s.min)}`;
-  return `up to ${fmt(s.max!)}`;
-}
-
 export function JobCard({
   job,
   rank,
@@ -39,7 +37,8 @@ export function JobCard({
   onDelete,
 }: Props) {
   const anti = job.scores.fit.antiFiltered;
-  const regionClass = job.region === "europe" ? "eu" : "us";
+  const rClass = regionClass(job.region);
+  const age = postAgeLabel(jobPostedAt(job));
   const fu = showFollowUp ? getFollowUpInfo(job) : null;
   const fuTemplate = showFollowUp ? followUpTemplateForJob(job) : null;
 
@@ -61,12 +60,18 @@ export function JobCard({
           <div className="job-role">{job.role}</div>
         </div>
         <div className="job-meta">
-          <span className={`job-chip ${regionClass}`}>
-            {job.region === "europe" ? "Europe" : "America"}
+          <span className={`job-chip ${rClass}`}>
+            {regionLabel(job.region)}
           </span>
           <span className="job-chip">{job.status}</span>
           {rank != null && <span className="job-chip">Q#{rank}</span>}
-          <span className="job-chip">{salaryLabel(job)}</span>
+          <span
+            className="job-chip"
+            style={{ color: age.stale ? "var(--red)" : undefined }}
+          >
+            {age.label}
+          </span>
+          <span className="job-chip">{salaryLabel(job.salary)}</span>
           {job.location && <span className="job-chip">{job.location}</span>}
           {job.scores.fit.band !== "hide" && (
             <span className="job-chip">{job.scores.fit.band}</span>

@@ -2,6 +2,7 @@ import { envSourceOn } from "@/lib/env";
 import { envBoardList, sleep } from "./envBoards";
 import type { JobHit, JobSource } from "./types";
 import { inferRegionFromText, textMatchesSegment } from "./types";
+import { harvestFetch } from "../harvestFetch";
 
 /**
  * SmartRecruiters public postings API.
@@ -28,7 +29,7 @@ export const smartrecruitersSource: JobSource = {
         let offset = 0;
         const pageSize = 40;
         while (hits.length < ctx.limit && offset < 120) {
-          const res = await fetch(
+          const res = await harvestFetch(
             `https://api.smartrecruiters.com/v1/companies/${encodeURIComponent(company)}/postings?offset=${offset}&limit=${pageSize}`,
             {
               signal: ctx.signal ?? AbortSignal.timeout(18_000),

@@ -106,6 +106,7 @@ export function AddIndividualModal({ open, onClose, onCreated }: Props) {
           >
             <option value="europe">Europe</option>
             <option value="america">America</option>
+            <option value="asia">Asia</option>
           </select>
         </label>
         <label>

@@ -10,6 +10,7 @@ import {
   scoreIndividual,
 } from "./individualScoring";
 import { enrichJobProofs, scoreJob } from "./scoring";
+import { resolveSalary } from "./regions";
 import type {
   ApplyChannel,
   HireProfile,
@@ -36,12 +37,14 @@ function startOfUtcDay(iso = new Date().toISOString()): string {
 export function appliedTodayCounts(jobs: Job[], day = startOfUtcDay()) {
   let europe = 0;
   let america = 0;
+  let asia = 0;
   for (const j of jobs) {
     if (!j.appliedAt?.startsWith(day)) continue;
     if (j.region === "europe") europe += 1;
+    else if (j.region === "asia") asia += 1;
     else america += 1;
   }
-  return { europe, america };
+  return { europe, america, asia };
 }
 
 export function emailedTodayCount(
@@ -67,6 +70,7 @@ export function buildPriorityContext(
       0,
       profile.americaDailyQuota - counts.america,
     ),
+    asiaQuotaRemaining: Math.max(0, profile.asiaDailyQuota - counts.asia),
     individualQuotaRemaining: Math.max(
       0,
       profile.individualDailyQuota - emailed,
@@ -82,16 +86,32 @@ export function withScores(
   const ctx = buildPriorityContext(jobs, profile, individuals);
   return jobs
     .map((j) => {
+      const description = stripHtml(j.description || "");
+      const salary =
+        j.salary && (j.salary.min != null || j.salary.max != null)
+          ? j.salary
+          : resolveSalary({
+              min: null,
+              max: null,
+              currency: null,
+              description,
+              region: j.region,
+            });
       const job = enrichJobProofs({
         ...j,
-        description: stripHtml(j.description || ""),
+        description,
+        salary,
+        postedAt: j.postedAt ?? null,
       });
       return { ...job, scores: scoreJob(job, ctx, profile) };
     })
     .sort(
       (a, b) =>
         b.scores.priority.score - a.scores.priority.score ||
-        b.scores.fit.score - a.scores.fit.score,
+        b.scores.fit.score - a.scores.fit.score ||
+        // fresher first as tie-break
+        Date.parse(b.postedAt || b.createdAt) -
+          Date.parse(a.postedAt || a.createdAt),
     );
 }
 
@@ -168,6 +188,7 @@ export async function createJob(input: CreateJobInput): Promise<Job> {
     source: input.source ?? "manual",
     appliedAt: null,
     followUpAt: null,
+    postedAt: now,
     createdAt: now,
     updatedAt: now,
   });
@@ -432,6 +453,11 @@ export function quotaSnapshot(
       used: counts.america,
       quota: profile.americaDailyQuota,
       remaining: Math.max(0, profile.americaDailyQuota - counts.america),
+    },
+    asia: {
+      used: counts.asia,
+      quota: profile.asiaDailyQuota,
+      remaining: Math.max(0, profile.asiaDailyQuota - counts.asia),
     },
     individuals: {
       used: emailed,

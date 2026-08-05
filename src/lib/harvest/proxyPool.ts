@@ -41,8 +41,15 @@ function isGatewayUrl(uri: string): boolean {
   }
 }
 
+/** Free CF workers.dev — Indeed/Yelp ban them; ATS/JSON APIs usually OK.
+ *  Set PROXY_BLOCK_CF_WORKER=1 to skip (Lead Desk default behavior).
+ *  Set PROXY_ALLOW_CF_WORKER=1 to force-allow even when blocked. */
 function isBlockedFreeCfWorker(uri: string): boolean {
   if (env("PROXY_ALLOW_CF_WORKER") === "1") return false;
+  const block =
+    env("PROXY_BLOCK_CF_WORKER") === "1" ||
+    env("PROXY_BLOCK_CF_WORKER") === "true";
+  if (!block) return false;
   try {
     const u = new URL(uri);
     return (
@@ -60,7 +67,7 @@ function splitUrls(all: string[]) {
   for (const u of all) {
     if (isBlockedFreeCfWorker(u)) {
       console.warn(
-        "[proxy] skip free CF worker (often blocked by targets) · PROXY_ALLOW_CF_WORKER=1 to force",
+        "[proxy] skip CF worker (PROXY_BLOCK_CF_WORKER=1) · unset to use as ATS gateway",
         u,
       );
       continue;

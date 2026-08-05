@@ -3,6 +3,7 @@ import path from "node:path";
 import { env, envSourceOn } from "@/lib/env";
 import type { JobHit, JobSource } from "./types";
 import { textMatchesSegment } from "./types";
+import { harvestFetch } from "../harvestFetch";
 
 /**
  * LinkedIn — import only (file / URL). No SN scrape.
@@ -25,7 +26,7 @@ export const linkedinImportSource: JobSource = {
     let raw = "";
     try {
       if (url) {
-        const res = await fetch(url, {
+        const res = await harvestFetch(url, {
           signal: ctx.signal ?? AbortSignal.timeout(15_000),
         });
         if (res.ok) raw = await res.text();

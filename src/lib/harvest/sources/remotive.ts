@@ -1,4 +1,5 @@
 import { envSourceOn } from "@/lib/env";
+import { harvestFetch } from "../harvestFetch";
 import type { JobHit, JobSource } from "./types";
 import {
   inferRegionFromText,
@@ -18,7 +19,7 @@ export const remotiveSource: JobSource = {
     const hits: JobHit[] = [];
     await ctx.log(`Remotive · ${ctx.segment.label}`);
     try {
-      const res = await fetch("https://remotive.com/api/remote-jobs", {
+      const res = await harvestFetch("https://remotive.com/api/remote-jobs", {
         signal: ctx.signal ?? AbortSignal.timeout(20_000),
         headers: { Accept: "application/json" },
       });
@@ -37,6 +38,7 @@ export const remotiveSource: JobSource = {
           candidate_required_location: string;
           description: string;
           salary: string;
+          publication_date?: string;
         }>;
       };
       for (const j of data.jobs || []) {
@@ -61,6 +63,8 @@ export const remotiveSource: JobSource = {
           salaryMin: null,
           salaryMax: null,
           salaryCurrency: null,
+          salaryText: j.salary || null,
+          postedAt: j.publication_date || null,
         });
       }
       await ctx.log(`Remotive · +${hits.length}`);

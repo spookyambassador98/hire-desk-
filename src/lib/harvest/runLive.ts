@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { envNum } from "@/lib/env";
+import { resolveSalary } from "@/lib/regions";
 import { computeFit, enrichJobProofs } from "@/lib/scoring";
 import { stripHtml } from "@/lib/text";
 import type { Job } from "@/lib/types";
@@ -19,8 +20,10 @@ import {
   type HireSegment,
   type HireSegmentId,
 } from "./max";
+import { safeRunTarget, proxyModeLabel } from "./harvestFetch";
 import { enabledSources, sourcesByTier } from "./sources";
 import type { JobHit } from "./sources/types";
+import { proxyPoolSize } from "./proxyPool";
 
 export type RunHireMaxResult = {
   added: number;
@@ -39,6 +42,17 @@ function jobKey(j: Job) {
 
 function hitToJob(hit: JobHit, segment: HireSegment): Job {
   const now = new Date().toISOString();
+  const description = hit.description
+    ? stripHtml(hit.description)
+    : `${hit.role} at ${hit.company}`;
+  const salary = resolveSalary({
+    min: hit.salaryMin,
+    max: hit.salaryMax,
+    currency: hit.salaryCurrency,
+    description,
+    salaryText: hit.salaryText,
+    region: hit.region,
+  });
   return enrichJobProofs({
     id: `job_${randomUUID().slice(0, 8)}`,
     company: hit.company.trim(),
@@ -46,18 +60,8 @@ function hitToJob(hit: JobHit, segment: HireSegment): Job {
     region: hit.region,
     location: hit.location,
     remote: hit.remote,
-    description: hit.description
-      ? stripHtml(hit.description)
-      : `${hit.role} at ${hit.company}`,
-    salary:
-      hit.salaryMin != null || hit.salaryMax != null
-        ? {
-            min: hit.salaryMin,
-            max: hit.salaryMax,
-            currency: hit.salaryCurrency || "USD",
-            period: "year",
-          }
-        : null,
+    description,
+    salary,
     url: hit.url,
     channel: hit.channel,
     contact: null,
@@ -66,6 +70,7 @@ function hitToJob(hit: JobHit, segment: HireSegment): Job {
     source: `max:${segment.id}:${hit.sourceId}`,
     appliedAt: null,
     followUpAt: null,
+    postedAt: hit.postedAt || null,
     createdAt: now,
     updatedAt: now,
   });
@@ -132,7 +137,7 @@ export type RunHireMaxOpts = {
 export async function runHireMax(
   opts: RunHireMaxOpts,
 ): Promise<RunHireMaxResult> {
-  const runTarget = opts.runTarget ?? HIRE_RUN_TARGET;
+  const runTarget = opts.runTarget ?? safeRunTarget();
   const quota = await readQuotaDay();
   const segments = prioritizedSegments(quota.bySegment);
   const existingKeys = new Set(opts.existingJobs.map(jobKey));
@@ -159,8 +164,13 @@ export async function runHireMax(
   };
 
   await log(
-    `MAX LIVE · target ≥${runTarget} · sources ${enabledSources().length} · segments ${segments.length}`,
+    `MAX LIVE · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET}) · proxy ${proxyModeLabel()} · sources ${enabledSources().length} · segments ${segments.length}`,
   );
+  if (proxyPoolSize() === 0) {
+    await log(
+      `⚠ No PROXY_URLS — soft cap ${runTarget} + gaps · set CF gateway or residential (see cloudflare/hire-proxy-worker.js)`,
+    );
+  }
 
   for (const segment of segments) {
     if (isHarvestStopRequested()) break;

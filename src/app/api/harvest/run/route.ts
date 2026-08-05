@@ -16,6 +16,7 @@ import {
 import { HIRE_RUN_TARGET } from "@/lib/harvest/max";
 import { runHireMax } from "@/lib/harvest/runLive";
 import { proxyPoolSize } from "@/lib/harvest/proxyPool";
+import { proxyModeLabel, safeRunTarget } from "@/lib/harvest/harvestFetch";
 import { enabledSources } from "@/lib/harvest/sources";
 import { env } from "@/lib/env";
 import { ingestJobsBatch, readJobs } from "@/lib/store";
@@ -51,6 +52,7 @@ async function executeHarvestRun() {
   };
 
   try {
+    const runTarget = safeRunTarget();
     await writeHarvestLive({
       running: true,
       startedAt,
@@ -60,11 +62,11 @@ async function executeHarvestRun() {
       skipped: 0,
       trashed: 0,
       segment: null,
-      message: `MAX LIVE · target ≥${HIRE_RUN_TARGET}`,
+      message: `MAX LIVE · target ≥${runTarget}`,
       logs: [
-        `[${stamp()}] MAX LIVE start · target ≥${HIRE_RUN_TARGET}`,
+        `[${stamp()}] MAX LIVE start · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET})`,
         `[${stamp()}] sources ${enabledSources().map((s) => s.id).join(", ") || "none"}`,
-        `[${stamp()}] proxy ${proxyPoolSize() ? `ON (${proxyPoolSize()})` : "OFF"}`,
+        `[${stamp()}] proxy ${proxyModeLabel()}`,
       ],
     });
 
@@ -88,7 +90,7 @@ async function executeHarvestRun() {
     const existing = await readJobs();
     const result = await runHireMax({
       existingJobs: existing,
-      runTarget: HIRE_RUN_TARGET,
+      runTarget,
       onJobsBatch: async (chunk) => {
         if (isHarvestStopRequested()) return;
         await ingestJobsBatch(chunk);
@@ -155,7 +157,7 @@ export async function POST(request: Request) {
         started: false,
         paused: true,
         message: `Paused after STOP · ~${mins}m · press MAX LIVE`,
-        target: HIRE_RUN_TARGET,
+        target: safeRunTarget(),
       });
     }
 
@@ -183,13 +185,14 @@ export async function POST(request: Request) {
         started: true,
         alreadyRunning: true,
         message: live2.message || "MAX LIVE already running",
-        target: HIRE_RUN_TARGET,
+        target: safeRunTarget(),
       });
     }
 
     if (manual) beginManualRun();
 
     const kickoffAt = new Date().toISOString();
+    const kickTarget = safeRunTarget();
     await writeHarvestLive({
       running: true,
       startedAt: kickoffAt,
@@ -199,7 +202,7 @@ export async function POST(request: Request) {
       skipped: 0,
       trashed: 0,
       segment: null,
-      message: `MAX LIVE kicked · ≥${HIRE_RUN_TARGET}`,
+      message: `MAX LIVE kicked · ≥${kickTarget}`,
       logs: [
         `[${stamp()}] HTTP kickoff · ${manual ? "manual" : "cron"}`,
       ],
@@ -213,9 +216,11 @@ export async function POST(request: Request) {
     return NextResponse.json({
       started: true,
       alreadyRunning: false,
-      message: `MAX LIVE started · target ≥${HIRE_RUN_TARGET}`,
-      target: HIRE_RUN_TARGET,
+      message: `MAX LIVE started · target ≥${kickTarget}`,
+      target: kickTarget,
+      configuredTarget: HIRE_RUN_TARGET,
       proxy: proxyPoolSize(),
+      proxyMode: proxyModeLabel(),
       mode: env("HIRE_PARSER_MODE", "live"),
     });
   } catch (err) {
@@ -225,7 +230,7 @@ export async function POST(request: Request) {
         started: false,
         error: msg.slice(0, 200),
         message: `Start failed: ${msg.slice(0, 120)}`,
-        target: HIRE_RUN_TARGET,
+        target: safeRunTarget(),
       },
       { status: 200 },
     );

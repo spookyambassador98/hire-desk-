@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { OpsTelemetry } from "@/components/OpsTelemetry";
 import type { QuotaSnapshot, ScoredIndividual, ScoredJob } from "@/lib/types";
 
 type Props = {
@@ -56,6 +57,8 @@ export function AdminPanel({ jobs, individuals, quota }: Props) {
 
   return (
     <div className="hd-panel">
+      <OpsTelemetry />
+
       <div className="hd-rail us" style={{ marginBottom: "1rem" }}>
         <h2>Admin // ops</h2>
         <p>
@@ -128,6 +131,12 @@ export function AdminPanel({ jobs, individuals, quota }: Props) {
           <span>US quota</span>
           <b>
             {quota.america.used}/{quota.america.quota}
+          </b>
+        </div>
+        <div className="hd-stat">
+          <span>Asia quota</span>
+          <b>
+            {quota.asia.used}/{quota.asia.quota}
           </b>
         </div>
         <div className="hd-stat">

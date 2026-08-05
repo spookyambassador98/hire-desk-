@@ -9,6 +9,13 @@ import {
 import type { JobStatus, ScoredJob } from "@/lib/types";
 import { renderApply, renderTemplate } from "@/lib/templates";
 import { previewText, salaryLabel, scheduleChips, stripHtml } from "@/lib/text";
+import {
+  jobPostedAt,
+  postAgeLabel,
+  regionClass,
+  regionLabel,
+} from "@/lib/regions";
+import { useI18n } from "@/lib/i18n";
 
 type Props = {
   job: ScoredJob | null;
@@ -29,11 +36,13 @@ export function JobPopup({
   onCopy,
   onDelete,
 }: Props) {
+  const { t } = useI18n();
   if (typeof document === "undefined") return null;
   const fu = job ? getFollowUpInfo(job) : null;
   const fuTemplate = job ? followUpTemplateForJob(job) : null;
   const anti = job?.scores.fit.antiFiltered;
   const sched = job ? scheduleChips(job) : [];
+  const age = job ? postAgeLabel(jobPostedAt(job)) : null;
 
   return createPortal(
     <AnimatePresence>
@@ -71,12 +80,21 @@ export function JobPopup({
                   {job.role}
                 </div>
                 <div className="job-meta" style={{ marginTop: "0.75rem" }}>
-                  <span
-                    className={`job-chip ${job.region === "europe" ? "eu" : "us"}`}
-                  >
-                    {job.region === "europe" ? "Europe" : "America"}
+                  <span className={`job-chip ${regionClass(job.region)}`}>
+                    {regionLabel(job.region)}
                   </span>
                   <span className="job-chip">{job.status}</span>
+                  {age && (
+                    <span
+                      className="job-chip"
+                      style={{
+                        color: age.stale ? "var(--red)" : "var(--cyan)",
+                      }}
+                      title={jobPostedAt(job)}
+                    >
+                      {age.label}
+                    </span>
+                  )}
                   <span className="job-chip">{salaryLabel(job.salary)}</span>
                   {sched.map((s) => (
                     <span key={s} className="job-chip">
@@ -137,7 +155,7 @@ export function JobPopup({
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Open link
+                  {t("popup.open")}
                 </a>
               )}
               {!anti && (
@@ -148,7 +166,7 @@ export function JobPopup({
                     onCopy(renderApply(job), `Apply · ${job.company}`)
                   }
                 >
-                  Copy apply
+                  {t("popup.copy_apply")}
                 </button>
               )}
               {!anti && (
@@ -161,7 +179,7 @@ export function JobPopup({
                     )
                   }
                 >
-                  Copy brief
+                  {t("popup.copy_brief")}
                 </button>
               )}
               {fuTemplate && (
@@ -179,20 +197,20 @@ export function JobPopup({
                 </button>
               )}
               <button type="button" onClick={() => onStatus(job.id, "queued")}>
-                Queue
+                {t("popup.queue")}
               </button>
               <button
                 type="button"
                 className="primary"
                 onClick={() => onStatus(job.id, "applied")}
               >
-                Mark applied
+                {t("popup.applied")}
               </button>
               <button
                 type="button"
                 onClick={() => onStatus(job.id, "rejected")}
               >
-                Reject
+                {t("popup.reject")}
               </button>
               <button
                 type="button"
@@ -202,7 +220,7 @@ export function JobPopup({
                   onClose();
                 }}
               >
-                Delete
+                {t("popup.delete")}
               </button>
             </div>
           </motion.div>
@@ -258,11 +276,21 @@ export function JobCardFace({
           <div className="job-role">{job.role}</div>
         </div>
         <div className="job-meta">
-          <span className={`job-chip ${job.region === "europe" ? "eu" : "us"}`}>
-            {job.region === "europe" ? "Europe" : "America"}
+          <span className={`job-chip ${regionClass(job.region)}`}>
+            {regionLabel(job.region)}
           </span>
           <span className="job-chip">{job.status}</span>
           {rank != null && <span className="job-chip">Q#{rank}</span>}
+          <span
+            className="job-chip"
+            style={{
+              color: postAgeLabel(jobPostedAt(job)).stale
+                ? "var(--red)"
+                : undefined,
+            }}
+          >
+            {postAgeLabel(jobPostedAt(job)).label}
+          </span>
           <span className="job-chip">{salaryLabel(job.salary)}</span>
           {sched.map((s) => (
             <span key={s} className="job-chip">

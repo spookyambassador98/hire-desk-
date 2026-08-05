@@ -1,6 +1,7 @@
 import { envSourceOn } from "@/lib/env";
 import type { JobHit, JobSource } from "./types";
 import { inferRegionFromText, textMatchesSegment } from "./types";
+import { harvestFetch } from "../harvestFetch";
 
 /**
  * Arbeitnow public API — EU-heavy remote jobs.
@@ -15,7 +16,7 @@ export const arbeitnowSource: JobSource = {
     const hits: JobHit[] = [];
     await ctx.log(`Arbeitnow · ${ctx.segment.label}`);
     try {
-      const res = await fetch("https://www.arbeitnow.com/api/job-board-api", {
+      const res = await harvestFetch("https://www.arbeitnow.com/api/job-board-api", {
         signal: ctx.signal ?? AbortSignal.timeout(20_000),
         headers: { Accept: "application/json" },
       });

@@ -2,6 +2,7 @@ import { envSourceOn } from "@/lib/env";
 import { envBoardList, sleep } from "./envBoards";
 import type { JobHit, JobSource } from "./types";
 import { inferRegionFromText, textMatchesSegment } from "./types";
+import { harvestFetch } from "../harvestFetch";
 
 type WorkableWidget = {
   name?: string;
@@ -33,7 +34,7 @@ export const workableSource: JobSource = {
     for (const account of accounts) {
       if (hits.length >= ctx.limit) break;
       try {
-        const res = await fetch(
+        const res = await harvestFetch(
           `https://apply.workable.com/api/v1/widget/accounts/${encodeURIComponent(account)}?details=true`,
           {
             signal: ctx.signal ?? AbortSignal.timeout(18_000),

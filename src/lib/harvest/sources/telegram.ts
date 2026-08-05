@@ -1,9 +1,9 @@
-import * as cheerio from "cheerio";
-import { env, envSourceOn } from "@/lib/env";
-import { proxiedFetch } from "../proxyPool";
+import { harvestFetch } from "../harvestFetch";
 import { envBoardList, sleep } from "./envBoards";
 import type { JobHit, JobSource } from "./types";
 import { inferRegionFromText, textMatchesSegment } from "./types";
+import { env, envSourceOn } from "@/lib/env";
+import * as cheerio from "cheerio";
 
 /**
  * Public Telegram channel preview (t.me/s/…) — throttle + optional proxy.
@@ -28,14 +28,15 @@ export const telegramSource: JobSource = {
       const slug = ch.replace(/^@/, "").trim();
       if (!slug) continue;
       try {
-        const res = await proxiedFetch(`https://t.me/s/${encodeURIComponent(slug)}`, {
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
-            Accept: "text/html",
+        const res = await harvestFetch(
+          `https://t.me/s/${encodeURIComponent(slug)}`,
+          {
+            headers: {
+              Accept: "text/html",
+            },
+            signal: ctx.signal ?? AbortSignal.timeout(16_000),
           },
-          signal: ctx.signal ?? AbortSignal.timeout(16_000),
-        });
+        );
         if (!res.ok) {
           await ctx.log(`Telegram · @${slug} · HTTP ${res.status}`);
           await sleep(1500);

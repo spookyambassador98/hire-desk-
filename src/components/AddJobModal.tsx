@@ -47,7 +47,12 @@ export function AddJobModal({ open, onClose, onCreated }: Props) {
               ? {
                   min,
                   max,
-                  currency: region === "europe" ? "EUR" : "USD",
+                  currency:
+                    region === "europe"
+                      ? "EUR"
+                      : region === "asia"
+                        ? "USD"
+                        : "USD",
                   period: "year",
                 }
               : null,
@@ -105,6 +110,7 @@ export function AddJobModal({ open, onClose, onCreated }: Props) {
           >
             <option value="europe">Europe</option>
             <option value="america">America</option>
+            <option value="asia">Asia</option>
           </select>
         </label>
         <label>

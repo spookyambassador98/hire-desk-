@@ -1,6 +1,7 @@
 import { env, envSourceOn } from "@/lib/env";
 import type { JobHit, JobSource } from "./types";
 import { textMatchesSegment } from "./types";
+import { harvestFetch } from "../harvestFetch";
 
 function ashbyBoards(): string[] {
   return (env("ASHBY_BOARDS") || "openai,anthropic,vercel")
@@ -26,7 +27,7 @@ export const ashbySource: JobSource = {
     for (const board of boards) {
       if (hits.length >= ctx.limit) break;
       try {
-        const res = await fetch(
+        const res = await harvestFetch(
           `https://api.ashbyhq.com/posting-api/job-board/${encodeURIComponent(board)}`,
           {
             signal: ctx.signal ?? AbortSignal.timeout(15_000),

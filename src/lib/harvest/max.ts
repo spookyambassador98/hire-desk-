@@ -11,7 +11,9 @@ export type HireSegmentId =
   | "america_product"
   | "america_founding"
   | "america_ai"
-  | "america_ops";
+  | "america_ops"
+  | "asia_product"
+  | "asia_ai";
 
 export type HireSegment = {
   id: HireSegmentId;
@@ -112,6 +114,31 @@ export const HIRE_SEGMENTS: HireSegment[] = [
       "ops platform",
       "platform engineer",
       "automation",
+    ],
+  },
+  {
+    id: "asia_product",
+    label: "Asia · Product",
+    region: "asia",
+    family: "product",
+    keywords: [
+      "product engineer",
+      "full-stack",
+      "fullstack",
+      "product builder",
+    ],
+  },
+  {
+    id: "asia_ai",
+    label: "Asia · AI / Builder",
+    region: "asia",
+    family: "ai",
+    keywords: [
+      "ai engineer",
+      "ml engineer",
+      "llm",
+      "generative ai",
+      "rapid prototyping",
     ],
   },
 ];

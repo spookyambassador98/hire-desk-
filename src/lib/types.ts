@@ -1,6 +1,6 @@
 /** Hire Desk domain types — jobs, pipeline, scores */
 
-export type Region = "europe" | "america";
+export type Region = "europe" | "america" | "asia";
 
 export type JobStatus =
   | "new"
@@ -59,6 +59,7 @@ export type PriorityContext = {
   /** Daily EU quota remaining (e.g. 12 - appliedTodayEU) */
   europeQuotaRemaining: number;
   americaQuotaRemaining: number;
+  asiaQuotaRemaining: number;
   /** ISO now; defaults to Date.now in scorer */
   now?: string;
 };
@@ -116,6 +117,8 @@ export type Job = {
   source: string | null;
   appliedAt: string | null;
   followUpAt: string | null;
+  /** Original post time from source when known; else null → use createdAt */
+  postedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -127,6 +130,7 @@ export type HireProfile = {
   /** Daily apply targets (8–12 band) */
   europeDailyQuota: number;
   americaDailyQuota: number;
+  asiaDailyQuota: number;
   /** Cold emails to individuals per day */
   individualDailyQuota: number;
 };
@@ -136,13 +140,12 @@ export const DEFAULT_HIRE_PROFILE: HireProfile = {
   salaryCurrency: "USD",
   europeDailyQuota: 10,
   americaDailyQuota: 10,
+  asiaDailyQuota: 6,
   individualDailyQuota: 4,
 };
 
 export type AppView =
   | "queue"
-  | "europe"
-  | "america"
   | "individuals"
   | "applied"
   | "harvest"
@@ -219,6 +222,7 @@ export type QuotaLane = {
 export type QuotaSnapshot = {
   europe: QuotaLane;
   america: QuotaLane;
+  asia: QuotaLane;
   individuals: QuotaLane;
 };
 

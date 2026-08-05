@@ -409,10 +409,26 @@ function daysSince(iso: string, nowMs: number): number {
   return Math.max(0, (nowMs - t) / (1000 * 60 * 60 * 24));
 }
 
-/** Freshness 0–100: full at day 0, ~0 after 7 days */
-function freshnessPoints(createdAt: string, nowMs: number): number {
-  const d = daysSince(createdAt, nowMs);
-  return clamp(Math.round(100 * (1 - d / 7)), 0, 100);
+/** Age reference: source post time when known. */
+function ageIso(job: Job): string {
+  return job.postedAt || job.createdAt;
+}
+
+/**
+ * Freshness 0–100 — steep curve.
+ * Full when <12h, ~half at ~3d, ~0 at 7d. Stale (>7d) scored 0 here + extra penalty.
+ */
+function freshnessPoints(iso: string, nowMs: number): number {
+  const d = daysSince(iso, nowMs);
+  if (d > 7) return 0;
+  return clamp(Math.round(100 * Math.pow(1 - d / 7, 1.55)), 0, 100);
+}
+
+/** After 7 days the seat is usually gone — bury hard. */
+function stalePenalty(iso: string, nowMs: number): number {
+  const d = daysSince(iso, nowMs);
+  if (d <= 7) return 0;
+  return clamp(18 + (d - 7) * 4, 18, 55);
 }
 
 function statusPenalty(status: Job["status"]): number {
@@ -438,7 +454,8 @@ function statusPenalty(status: Job["status"]): number {
 
 /**
  * Priority sort key (not a card KPI %).
- * priority = Fit*0.55 + Reach*0.25 + freshness*0.10 + quotaBoost*0.10 − statusPenalty
+ * priority = Fit*0.45 + Reach*0.20 + freshness*0.25 + quotaBoost*0.10 − penalties
+ * Fresh post (<7d) floats; older than a week sinks.
  */
 export function computePriority(
   job: Job,
@@ -447,13 +464,17 @@ export function computePriority(
   ctx: PriorityContext,
 ): PriorityResult {
   const nowMs = ctx.now ? Date.parse(ctx.now) : Date.now();
-  const fresh = freshnessPoints(job.createdAt, nowMs);
+  const posted = ageIso(job);
+  const fresh = freshnessPoints(posted, nowMs);
+  const stale = stalePenalty(posted, nowMs);
 
   let quotaBoost = 0;
   if (job.region === "europe" && ctx.europeQuotaRemaining > 0) {
     quotaBoost = clamp(ctx.europeQuotaRemaining * 10, 0, 100);
   } else if (job.region === "america" && ctx.americaQuotaRemaining > 0) {
     quotaBoost = clamp(ctx.americaQuotaRemaining * 10, 0, 100);
+  } else if (job.region === "asia" && ctx.asiaQuotaRemaining > 0) {
+    quotaBoost = clamp(ctx.asiaQuotaRemaining * 10, 0, 100);
   }
 
   // Body-shop company signal → Priority penalty (Fit stays honest)
@@ -466,38 +487,39 @@ export function computePriority(
     companyPenalty = findAntiFilter(text) ? 20 : 12;
   }
 
-  const penalty = statusPenalty(job.status) + companyPenalty;
+  const penalty = statusPenalty(job.status) + companyPenalty + stale;
 
   const weighted =
-    fit.score * 0.55 +
-    reach.score * 0.25 +
-    fresh * 0.1 +
+    fit.score * 0.45 +
+    reach.score * 0.2 +
+    fresh * 0.25 +
     quotaBoost * 0.1 -
     penalty;
 
   const score = Math.round(weighted * 10) / 10;
+  const ageDays = Math.round(daysSince(posted, nowMs) * 10) / 10;
 
   return {
     score,
     breakdown: [
       {
         key: "fit_w",
-        label: "Fit × 0.55",
-        points: Math.round(fit.score * 0.55 * 10) / 10,
-        max: 55,
+        label: "Fit × 0.45",
+        points: Math.round(fit.score * 0.45 * 10) / 10,
+        max: 45,
       },
       {
         key: "reach_w",
-        label: "Reach × 0.25",
-        points: Math.round(reach.score * 0.25 * 10) / 10,
-        max: 25,
+        label: "Reach × 0.20",
+        points: Math.round(reach.score * 0.2 * 10) / 10,
+        max: 20,
       },
       {
         key: "fresh_w",
-        label: "Freshness × 0.10",
-        points: Math.round(fresh * 0.1 * 10) / 10,
-        max: 10,
-        note: `${Math.round(fresh)} raw`,
+        label: "Freshness × 0.25",
+        points: Math.round(fresh * 0.25 * 10) / 10,
+        max: 25,
+        note: `${Math.round(fresh)} raw · ${ageDays}d`,
       },
       {
         key: "quota_w",
@@ -508,10 +530,10 @@ export function computePriority(
       },
       {
         key: "penalty",
-        label: "Status / company penalty",
+        label: "Status / stale / company",
         points: -penalty,
         max: 0,
-        note: job.status,
+        note: stale ? `${job.status} · stale>${7}d` : job.status,
       },
     ],
   };

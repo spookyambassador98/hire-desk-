@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { firebaseConfigured, firestore } from "@/lib/firebase";
+import { bumpOpsUsage } from "@/lib/opsUsage";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
@@ -52,9 +53,11 @@ export async function readActivities(days = 7): Promise<HireActivity[]> {
         .limit(MAX)
         .get();
       rows = snap.docs.map((d) => d.data() as HireActivity);
+      void bumpOpsUsage({ reads: snap.size + 1 }).catch(() => undefined);
     } catch {
       const snap = await firestore().collection(COL).limit(MAX).get();
       rows = snap.docs.map((d) => d.data() as HireActivity);
+      void bumpOpsUsage({ reads: snap.size + 1 }).catch(() => undefined);
     }
   } else {
     rows = await readLocal();
@@ -83,6 +86,7 @@ export async function logActivity(input: {
   };
   if (firebaseConfigured()) {
     await firestore().collection(COL).doc(row.id).set(row);
+    void bumpOpsUsage({ writes: 1 }).catch(() => undefined);
   } else {
     const rows = await readLocal();
     rows.unshift(row);

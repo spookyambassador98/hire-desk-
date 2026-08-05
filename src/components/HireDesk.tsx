@@ -14,12 +14,14 @@ import {
 import { JobCardFace, JobPopup } from "@/components/JobPopup";
 import type { HireActivity } from "@/lib/activity";
 import { sortAppliedWithFollowUps } from "@/lib/followUp";
+import { useI18n } from "@/lib/i18n";
 import { TEMPLATES } from "@/lib/templates";
 import type {
   AppView,
   IndividualStatus,
   JobStatus,
   QuotaSnapshot,
+  Region,
   ScoredIndividual,
   ScoredJob,
 } from "@/lib/types";
@@ -30,26 +32,32 @@ type Props = {
   initialQuota: QuotaSnapshot;
 };
 
-const NAV: Array<{ id: AppView; label: string; us?: boolean }> = [
-  { id: "queue", label: "Queue" },
-  { id: "europe", label: "Europe" },
-  { id: "america", label: "America", us: true },
-  { id: "individuals", label: "Individuals" },
-  { id: "applied", label: "Applied" },
-  { id: "history", label: "History" },
-  { id: "harvest", label: "Harvest" },
-  { id: "templates", label: "Templates" },
-  { id: "admin", label: "Admin" },
+const NAV: Array<{ id: AppView; labelKey: string }> = [
+  { id: "queue", labelKey: "nav.queue" },
+  { id: "individuals", labelKey: "nav.individuals" },
+  { id: "applied", labelKey: "nav.applied" },
+  { id: "history", labelKey: "nav.history" },
+  { id: "harvest", labelKey: "nav.harvest" },
+  { id: "templates", labelKey: "nav.templates" },
+  { id: "admin", labelKey: "nav.admin" },
 ];
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+
+const RAILS: Array<{ id: Region; titleKey: string; cls: string }> = [
+  { id: "europe", titleKey: "rail.europe", cls: "eu" },
+  { id: "america", titleKey: "rail.america", cls: "us" },
+  { id: "asia", titleKey: "rail.asia", cls: "asia" },
+];
 
 export function HireDesk({
   initialJobs,
   initialIndividuals,
   initialQuota,
 }: Props) {
+  const { t, locale, setLocale } = useI18n();
   const [view, setView] = useState<AppView>("queue");
+  const [activeRail, setActiveRail] = useState<Region>("europe");
   const [jobs, setJobs] = useState(initialJobs);
   const [individuals, setIndividuals] = useState(initialIndividuals);
   const [quota, setQuota] = useState(initialQuota);
@@ -209,19 +217,12 @@ export function HireDesk({
     [jobs],
   );
 
-  const queueIndividuals = useMemo(
-    () =>
-      individuals.filter(
-        (i) =>
-          ["new", "queued"].includes(i.status) &&
-          (i.email || i.linkedin || i.scores.access.score >= 25),
-      ),
-    [individuals],
+  const railJobs = useMemo(
+    () => queueJobs.filter((j) => j.region === activeRail),
+    [queueJobs, activeRail],
   );
 
   const visibleJobs = useMemo(() => {
-    if (view === "europe") return jobs.filter((j) => j.region === "europe");
-    if (view === "america") return jobs.filter((j) => j.region === "america");
     if (view === "applied") {
       return sortAppliedWithFollowUps(
         jobs.filter((j) =>
@@ -231,12 +232,30 @@ export function HireDesk({
         ),
       );
     }
-    if (view === "queue") return queueJobs;
+    if (view === "queue") return railJobs;
     return [];
-  }, [jobs, view, queueJobs]);
+  }, [jobs, view, railJobs]);
 
   const euQueue = queueJobs.filter((j) => j.region === "europe").length;
   const usQueue = queueJobs.filter((j) => j.region === "america").length;
+  const asiaQueue = queueJobs.filter((j) => j.region === "asia").length;
+
+  function railCount(id: Region) {
+    if (id === "europe") return euQueue;
+    if (id === "america") return usQueue;
+    return asiaQueue;
+  }
+
+  function railQuotaLeft(id: Region) {
+    if (id === "europe") return quota.europe.remaining;
+    if (id === "america") return quota.america.remaining;
+    return quota.asia.remaining;
+  }
+
+  function selectRail(id: Region) {
+    setActiveRail(id);
+    setView("queue");
+  }
 
   function openJob(id: string) {
     setSelectedIndId(null);
@@ -273,17 +292,17 @@ export function HireDesk({
             <button
               key={n.id}
               type="button"
-              className={`${view === n.id ? "active" : ""} ${n.us && view === n.id ? "us" : ""}`}
+              className={view === n.id ? "active" : ""}
               onClick={() => setView(n.id)}
             >
               {view === n.id && (
                 <motion.span
-                  className={`hd-nav-pill${n.us ? " us" : ""}`}
+                  className="hd-nav-pill"
                   layoutId="hire-nav-pill"
                   transition={{ type: "spring", stiffness: 380, damping: 34 }}
                 />
               )}
-              <span className="hd-nav-label">{n.label}</span>
+              <span className="hd-nav-label">{t(n.labelKey)}</span>
             </button>
           ))}
           <button
@@ -292,18 +311,40 @@ export function HireDesk({
               view === "individuals" ? setAddIndOpen(true) : setAddJobOpen(true)
             }
           >
-            + Add
+            {t("nav.add")}
           </button>
         </nav>
-        <div className="hd-quota">
-          <div className="eu">
-            EU <b>{quota.europe.used}</b>/{quota.europe.quota}
+        <div className="hd-top-tools">
+          <div className="hd-lang" role="group" aria-label="Language">
+            <button
+              type="button"
+              className={locale === "ru" ? "active" : ""}
+              onClick={() => setLocale("ru")}
+            >
+              {t("lang.ru")}
+            </button>
+            <button
+              type="button"
+              className={locale === "uk" ? "active" : ""}
+              onClick={() => setLocale("uk")}
+            >
+              {t("lang.uk")}
+            </button>
           </div>
-          <div className="us">
-            US <b>{quota.america.used}</b>/{quota.america.quota}
-          </div>
-          <div className="ind">
-            IND <b>{quota.individuals.used}</b>/{quota.individuals.quota}
+          <div className="hd-quota">
+            <div className="eu">
+              {t("quota.eu")} <b>{quota.europe.used}</b>/{quota.europe.quota}
+            </div>
+            <div className="us">
+              {t("quota.us")} <b>{quota.america.used}</b>/{quota.america.quota}
+            </div>
+            <div className="asia">
+              {t("quota.as")} <b>{quota.asia.used}</b>/{quota.asia.quota}
+            </div>
+            <div className="ind">
+              {t("quota.ind")} <b>{quota.individuals.used}</b>/
+              {quota.individuals.quota}
+            </div>
           </div>
         </div>
       </motion.header>
@@ -318,31 +359,30 @@ export function HireDesk({
             transition={{ duration: 0.32, ease: EASE }}
           >
             {view === "queue" && (
-              <div className="hd-dual">
-                <div className="hd-rail eu">
-                  <h2>Europe rail</h2>
-                  <p>
-                    {euQueue} jobs · quota left {quota.europe.remaining} (target
-                    8–12)
-                  </p>
-                </div>
-                <div className="hd-rail us">
-                  <h2>America rail</h2>
-                  <p>
-                    {usQueue} jobs · quota left {quota.america.remaining}{" "}
-                    (target 8–12)
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {view === "queue" && queueIndividuals.length > 0 && (
-              <div className="hd-rail" style={{ marginBottom: "0.85rem" }}>
-                <h2>Individuals today</h2>
-                <p>
-                  {queueIndividuals.length} ready · email quota left{" "}
-                  {quota.individuals.remaining}/{quota.individuals.quota}
-                </p>
+              <div className="hd-dual hd-rails">
+                {RAILS.map((rail) => {
+                  const active = activeRail === rail.id;
+                  return (
+                    <button
+                      key={rail.id}
+                      type="button"
+                      className={`hd-rail ${rail.cls} hd-rail--btn${active ? " is-active" : ""}`}
+                      onClick={() => selectRail(rail.id)}
+                      aria-pressed={active}
+                    >
+                      <h2>{t(rail.titleKey)}</h2>
+                      <p>
+                        {t("rail.jobs_quota", {
+                          jobs: railCount(rail.id),
+                          left: railQuotaLeft(rail.id),
+                        })}
+                      </p>
+                      <span className="hd-rail__hint">
+                        {active ? t("rail.active") : t("rail.tap")}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -353,13 +393,13 @@ export function HireDesk({
               />
             ) : view === "templates" ? (
               <div className="tpl-list">
-                {TEMPLATES.map((t) => (
-                  <div key={t.id} className="tpl-card">
+                {TEMPLATES.map((tpl) => (
+                  <div key={tpl.id} className="tpl-card">
                     <h4>
-                      {t.name}
-                      {t.kind === "individual" ? " · direct" : ""}
+                      {tpl.name}
+                      {tpl.kind === "individual" ? " · direct" : ""}
                     </h4>
-                    <pre>{t.body}</pre>
+                    <pre>{tpl.body}</pre>
                     <div
                       className="job-actions"
                       style={{ border: "none", paddingTop: "0.75rem" }}
@@ -367,7 +407,7 @@ export function HireDesk({
                       <button
                         type="button"
                         className="primary"
-                        onClick={() => onCopy(t.body, t.name)}
+                        onClick={() => onCopy(tpl.body, tpl.name)}
                       >
                         Copy skeleton
                       </button>
@@ -387,43 +427,37 @@ export function HireDesk({
                 individuals={individuals}
                 quota={quota}
               />
-            ) : view === "individuals" || view === "queue" ? (
+            ) : view === "individuals" ? (
               <div className="hd-list">
-                {view === "queue" &&
-                  queueJobs.map((job, i) => (
-                    <JobCardFace
-                      key={job.id}
-                      job={job}
-                      index={i}
-                      rank={i + 1}
-                      onOpen={() => openJob(job.id)}
-                    />
-                  ))}
-                {(view === "individuals" ? individuals : queueIndividuals).map(
-                  (ind, i) => (
-                    <IndividualCardFace
-                      key={ind.id}
-                      individual={ind}
-                      index={i}
-                      rank={view === "queue" ? i + 1 : undefined}
-                      onOpen={() => openInd(ind.id)}
-                    />
-                  ),
+                {individuals.map((ind, i) => (
+                  <IndividualCardFace
+                    key={ind.id}
+                    individual={ind}
+                    index={i}
+                    onOpen={() => openInd(ind.id)}
+                  />
+                ))}
+                {individuals.length === 0 && (
+                  <div className="empty">{t("empty.individuals")}</div>
                 )}
-                {view === "individuals" && individuals.length === 0 && (
-                  <div className="empty">
-                    No individuals yet — run MAX LIVE (emails extracted from
-                    postings) or + Add HR / senior
-                  </div>
+              </div>
+            ) : view === "queue" ? (
+              <div className="hd-list">
+                {railJobs.map((job, i) => (
+                  <JobCardFace
+                    key={job.id}
+                    job={job}
+                    index={i}
+                    rank={i + 1}
+                    onOpen={() => openJob(job.id)}
+                  />
+                ))}
+                {railJobs.length === 0 && (
+                  <div className="empty">{t("empty.queue")}</div>
                 )}
-                {view === "queue" &&
-                  queueJobs.length === 0 &&
-                  queueIndividuals.length === 0 && (
-                    <div className="empty">Queue empty — harvest or add</div>
-                  )}
               </div>
             ) : visibleJobs.length === 0 ? (
-              <div className="empty">No vacancies in this view</div>
+              <div className="empty">{t("empty.applied")}</div>
             ) : (
               <div className="hd-list">
                 {visibleJobs.map((job, i) => (
@@ -463,7 +497,7 @@ export function HireDesk({
         onClose={() => setAddJobOpen(false)}
         onCreated={() => {
           void reload();
-          flash("Vacancy added");
+          flash(t("toast.job_added"));
         }}
       />
       <AddIndividualModal
@@ -471,7 +505,7 @@ export function HireDesk({
         onClose={() => setAddIndOpen(false)}
         onCreated={() => {
           void reload();
-          flash("Individual added");
+          flash(t("toast.ind_added"));
         }}
       />
 

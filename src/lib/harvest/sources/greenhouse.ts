@@ -1,6 +1,7 @@
 import { env, envSourceOn } from "@/lib/env";
 import type { JobHit, JobSource } from "./types";
 import { textMatchesSegment } from "./types";
+import { harvestFetch } from "../harvestFetch";
 
 function boardTokens(): string[] {
   return (env("GREENHOUSE_BOARDS") || "stripe,notion,figma,vercel,linear")
@@ -26,7 +27,7 @@ export const greenhouseSource: JobSource = {
     for (const token of boards) {
       if (hits.length >= ctx.limit) break;
       try {
-        const res = await fetch(
+        const res = await harvestFetch(
           `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(token)}/jobs?content=true`,
           {
             signal: ctx.signal ?? AbortSignal.timeout(15_000),
@@ -44,6 +45,8 @@ export const greenhouseSource: JobSource = {
             absolute_url: string;
             location?: { name?: string };
             content?: string;
+            updated_at?: string;
+            first_published?: string;
           }>;
         };
         for (const j of data.jobs || []) {
@@ -65,6 +68,7 @@ export const greenhouseSource: JobSource = {
             salaryMin: null,
             salaryMax: null,
             salaryCurrency: null,
+            postedAt: j.first_published || j.updated_at || null,
           });
         }
       } catch (err) {

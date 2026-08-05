@@ -331,11 +331,13 @@ export function renderIndividualTemplate(
 }
 
 export function pickApplyTemplate(region: Region): TemplateId {
-  return region === "europe" ? "apply_europe" : "apply_america";
+  if (region === "europe") return "apply_europe";
+  return "apply_america";
 }
 
 export function pickIndividualTemplate(region: Region): TemplateId {
-  return region === "europe" ? "ind_europe" : "ind_america";
+  if (region === "europe") return "ind_europe";
+  return "ind_america";
 }
 
 export function renderApply(job: Job): string {

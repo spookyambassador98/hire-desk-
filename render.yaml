@@ -58,9 +58,13 @@ services:
       - key: PROXY_URLS
         sync: false
       - key: PROXY_GATEWAYS
-        sync: false
+        value: "1"
       - key: PROXY_GATEWAY_SECRET
         sync: false
+      - key: PROXY_BLOCK_CF_WORKER
+        value: "0"
+      - key: HIRE_RUN_TARGET_NO_PROXY
+        value: "35"
       - key: GITHUB_TOKEN
         sync: false
 

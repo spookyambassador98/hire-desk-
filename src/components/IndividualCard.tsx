@@ -6,6 +6,7 @@ import {
   renderIndividualEmail,
   renderIndividualTemplate,
 } from "@/lib/templates";
+import { regionClass, regionLabel } from "@/lib/regions";
 
 type Props = {
   individual: ScoredIndividual;
@@ -35,7 +36,7 @@ export function IndividualCard({
   onCopy,
   onDelete,
 }: Props) {
-  const regionClass = ind.region === "europe" ? "eu" : "us";
+  const rClass = regionClass(ind.region);
   const weakAccess = ind.scores.access.score < 40;
 
   return (
@@ -54,8 +55,8 @@ export function IndividualCard({
           </div>
         </div>
         <div className="job-meta">
-          <span className={`job-chip ${regionClass}`}>
-            {ind.region === "europe" ? "Europe" : "America"}
+          <span className={`job-chip ${rClass}`}>
+            {regionLabel(ind.region)}
           </span>
           <span className="job-chip">{ind.status}</span>
           {rank != null && <span className="job-chip">I#{rank}</span>}

@@ -2,6 +2,7 @@ import { env, envSourceOn } from "@/lib/env";
 import { sleep } from "./envBoards";
 import type { JobHit, JobSource } from "./types";
 import { inferRegionFromText, textMatchesSegment } from "./types";
+import { harvestFetch } from "../harvestFetch";
 
 function githubHeaders(): HeadersInit {
   const token = env("GITHUB_TOKEN");
@@ -30,7 +31,7 @@ export const githubSource: JobSource = {
     await ctx.log(`GitHub · hiring issues · ${ctx.segment.label}`);
 
     try {
-      const res = await fetch(
+      const res = await harvestFetch(
         `https://api.github.com/search/issues?q=${q}&sort=updated&per_page=30`,
         {
           signal: ctx.signal ?? AbortSignal.timeout(18_000),
