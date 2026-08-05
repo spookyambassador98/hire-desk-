@@ -16,6 +16,16 @@ Access code: set `HIRE_DESK_ACCESS_CODE` in `.env.local` (required).
 
 `data/jobs.sample.json` is **fixtures only** for `npm run score:samples` — not loaded into the app.
 
+## Keep-alive (Render free)
+
+Free web services sleep after ~15 minutes idle. Ping:
+
+```text
+GET https://hire-desk.onrender.com/api/ping
+```
+
+every **10–14 minutes** via Render cron `hire-desk-keepalive` (in `render.yaml`) **or** free [UptimeRobot](https://uptimerobot.com) / [cron-job.org](https://cron-job.org) HTTP monitor.
+
 ## Scoring (lib)
 
 Transparent three-number model in `src/lib/`:

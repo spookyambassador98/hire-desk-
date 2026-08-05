@@ -64,6 +64,19 @@ services:
       - key: GITHUB_TOKEN
         sync: false
 
+  # Keep free web service awake (sleeps ~15m without traffic)
+  - type: cron
+    name: hire-desk-keepalive
+    runtime: node
+    plan: free
+    schedule: "*/12 * * * *"
+    buildCommand: echo keepalive
+    startCommand: >
+      node -e "fetch(process.env.KEEPALIVE_URL||'https://hire-desk.onrender.com/api/ping').then(async r=>{console.log(r.status,await r.text()); if(!r.ok) process.exit(1)}).catch(e=>{console.error(e);process.exit(1)})"
+    envVars:
+      - key: KEEPALIVE_URL
+        value: https://hire-desk.onrender.com/api/ping
+
   - type: cron
     name: hire-desk-harvest-cron
     runtime: node
@@ -77,3 +90,4 @@ services:
         sync: false
       - key: HARVEST_CRON_SECRET
         sync: false
+
