@@ -1,0 +1,14 @@
+---
+description: After any code change, always commit and push to deploy
+alwaysApply: true
+---
+
+# Always commit + push after changes
+
+When you finish making code changes in this repo:
+
+1. **Commit** — stage relevant files and create a commit (follow the repo commit protocol: status/diff/log, HEREDOC message, no secrets).
+2. **Push** — `git push` to `origin` so Render auto-deploys from `main`.
+3. Do this **without waiting** for the user to ask — treat deploy as part of finishing the task.
+
+Do not commit secrets (`.env`, credentials, `secrets/`). Do not force-push. If there is nothing to commit, skip.

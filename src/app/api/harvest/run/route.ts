@@ -19,8 +19,10 @@ import { runHireMax } from "@/lib/harvest/runLive";
 import { proxyPoolSize } from "@/lib/harvest/proxyPool";
 import { proxyModeLabel, safeRunTarget } from "@/lib/harvest/harvestFetch";
 import { enabledSources } from "@/lib/harvest/sources";
+import { scoreJob } from "@/lib/scoring";
 import { env } from "@/lib/env";
 import { ingestJobsBatch, readJobs } from "@/lib/store";
+import { DEFAULT_HIRE_PROFILE } from "@/lib/types";
 
 export const maxDuration = 300;
 export const runtime = "nodejs";
@@ -97,13 +99,22 @@ async function executeHarvestRun() {
         if (isHarvestStopRequested()) return;
         await ingestJobsBatch(chunk);
         await pushIntakeHits(
-          chunk.map((j) => ({
-            id: j.id,
-            company: j.company,
-            role: j.role,
-            region: j.region,
-            source: j.source,
-          })),
+          chunk.map((j) => {
+            const scores = scoreJob(j, {
+              europeQuotaRemaining: DEFAULT_HIRE_PROFILE.europeDailyQuota,
+              americaQuotaRemaining: DEFAULT_HIRE_PROFILE.americaDailyQuota,
+              asiaQuotaRemaining: DEFAULT_HIRE_PROFILE.asiaDailyQuota,
+            });
+            return {
+              id: j.id,
+              company: j.company,
+              role: j.role,
+              region: j.region,
+              source: j.source,
+              fit: scores.fit.score,
+              pri: scores.priority.score,
+            };
+          }),
         );
       },
       onProgress: async (ev) => {

@@ -9,6 +9,8 @@ export type HarvestIntakeHit = {
   region: string;
   source: string | null;
   at: string;
+  fit: number | null;
+  pri: number | null;
 };
 
 export type HarvestLiveState = {

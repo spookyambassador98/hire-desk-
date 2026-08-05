@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useSpring, useTransform } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { regionClass } from "@/lib/regions";
 import type { Region } from "@/lib/types";
@@ -21,6 +22,8 @@ type IntakeHit = {
   region: string;
   source: string | null;
   at: string;
+  fit?: number | null;
+  pri?: number | null;
 };
 
 type LiveState = {
@@ -56,6 +59,8 @@ type Props = {
   onFilled?: () => void;
 };
 
+const EASE = [0.16, 1, 0.3, 1] as const;
+
 function fmtAgo(iso: string, now = Date.now()) {
   const t = Date.parse(iso);
   if (Number.isNaN(t)) return "—";
@@ -71,6 +76,109 @@ function shortSource(src: string | null) {
   return part.replace(/^max:/, "").slice(0, 18);
 }
 
+function Kinetic({ value, prefix = "" }: { value: number; prefix?: string }) {
+  const spring = useSpring(value, { stiffness: 120, damping: 18, mass: 0.6 });
+  const display = useTransform(spring, (v) => `${prefix}${Math.round(v)}`);
+  const [text, setText] = useState(`${prefix}${value}`);
+
+  useEffect(() => {
+    spring.set(value);
+  }, [spring, value]);
+
+  useEffect(() => {
+    const unsub = display.on("change", (v) => setText(v));
+    return () => unsub();
+  }, [display]);
+
+  return <b>{text}</b>;
+}
+
+function RegionRadar({
+  intake,
+  running,
+}: {
+  intake: IntakeHit[];
+  running: boolean;
+}) {
+  const counts = useMemo(() => {
+    const c = { europe: 0, america: 0, asia: 0 };
+    for (const h of intake) {
+      if (h.region === "america") c.america += 1;
+      else if (h.region === "asia") c.asia += 1;
+      else c.europe += 1;
+    }
+    const total = Math.max(1, c.europe + c.america + c.asia);
+    return {
+      europe: c.europe / total,
+      america: c.america / total,
+      asia: c.asia / total,
+      raw: c,
+    };
+  }, [intake]);
+
+  const arcs: Array<{
+    key: Region;
+    color: string;
+    pct: number;
+    r: number;
+  }> = [
+    { key: "europe", color: "var(--eu)", pct: counts.europe, r: 42 },
+    { key: "america", color: "var(--us)", pct: counts.america, r: 34 },
+    { key: "asia", color: "var(--asia)", pct: counts.asia, r: 26 },
+  ];
+
+  return (
+    <div className={`hire-max__radar${running ? " is-live" : ""}`}>
+      <svg viewBox="0 0 100 100" className="hire-max__radar-svg" aria-hidden>
+        <circle cx="50" cy="50" r="46" className="hire-max__radar-ring" />
+        <circle cx="50" cy="50" r="38" className="hire-max__radar-ring" />
+        <circle cx="50" cy="50" r="30" className="hire-max__radar-ring" />
+        {arcs.map((a) => {
+          const circ = 2 * Math.PI * a.r;
+          const dash = Math.max(0.01, a.pct) * circ;
+          return (
+            <circle
+              key={a.key}
+              cx="50"
+              cy="50"
+              r={a.r}
+              fill="none"
+              stroke={a.color}
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeDasharray={`${dash} ${circ}`}
+              transform="rotate(-90 50 50)"
+              className="hire-max__radar-arc"
+              style={{ filter: `drop-shadow(0 0 4px ${a.color})` }}
+            />
+          );
+        })}
+        <circle cx="50" cy="50" r="2.2" className="hire-max__radar-core" />
+        {running && (
+          <g className="hire-max__radar-sweep">
+            <path
+              d="M50 50 L50 8"
+              stroke="rgba(94,231,255,0.55)"
+              strokeWidth="1"
+            />
+          </g>
+        )}
+      </svg>
+      <div className="hire-max__radar-legend">
+        <span className="eu">
+          EU <b>{counts.raw.europe}</b>
+        </span>
+        <span className="us">
+          US <b>{counts.raw.america}</b>
+        </span>
+        <span className="asia">
+          AS <b>{counts.raw.asia}</b>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function HireMaxPanel({ onFilled }: Props) {
   const { t, trRegion } = useI18n();
   const [status, setStatus] = useState<StatusPayload | null>(null);
@@ -80,10 +188,12 @@ export function HireMaxPanel({ onFilled }: Props) {
   const [intake, setIntake] = useState<IntakeHit[]>([]);
   const [stopping, setStopping] = useState(false);
   const [tick, setTick] = useState(0);
+  const [flashId, setFlashId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const logBoxRef = useRef<HTMLDivElement | null>(null);
   const feedRef = useRef<HTMLDivElement | null>(null);
   const userStoppedRef = useRef(false);
+  const seenIds = useRef(new Set<string>());
 
   const stopPoll = useCallback(() => {
     if (pollRef.current) {
@@ -99,7 +209,17 @@ export function HireMaxPanel({ onFilled }: Props) {
       setStatus(data);
       if (data.live?.logs?.length) setLogs(data.live.logs);
       if (data.live?.message) setMessage(data.live.message);
-      if (data.live?.recentAdds) setIntake(data.live.recentAdds);
+      if (data.live?.recentAdds) {
+        const next = data.live.recentAdds;
+        const newest = next[0];
+        if (newest && !seenIds.current.has(newest.id)) {
+          seenIds.current.add(newest.id);
+          setFlashId(newest.id);
+          window.setTimeout(() => setFlashId(null), 900);
+        }
+        for (const h of next) seenIds.current.add(h.id);
+        setIntake(next);
+      }
       if (userStoppedRef.current) {
         setRunning(false);
         return data;
@@ -141,6 +261,7 @@ export function HireMaxPanel({ onFilled }: Props) {
     userStoppedRef.current = false;
     setRunning(true);
     setIntake([]);
+    seenIds.current.clear();
     setMessage("Starting MAX LIVE…");
     stopPoll();
     try {
@@ -157,7 +278,7 @@ export function HireMaxPanel({ onFilled }: Props) {
         alreadyRunning?: boolean;
       };
       setMessage(data.message || "Running");
-      pollRef.current = setInterval(() => void loadStatus(), 2000);
+      pollRef.current = setInterval(() => void loadStatus(), 1800);
     } catch {
       setRunning(false);
       setMessage("Start failed");
@@ -184,7 +305,18 @@ export function HireMaxPanel({ onFilled }: Props) {
   const added = live?.added ?? 0;
   const skipped = live?.skipped ?? 0;
   const trashed = live?.trashed ?? 0;
+
+  const beatIso = live?.heartbeatAt || live?.startedAt || null;
+  const beatAgeSec = beatIso
+    ? Math.max(0, (Date.now() - Date.parse(beatIso)) / 1000)
+    : null;
   void tick;
+  const beatStale =
+    running && beatAgeSec != null ? beatAgeSec > 90 : beatAgeSec != null && beatAgeSec > 180;
+  const beatWarn =
+    running && beatAgeSec != null ? beatAgeSec > 45 : false;
+  const beatTone = beatStale ? "bad" : beatWarn ? "warn" : "ok";
+  const proxyOn = (status?.proxyPool ?? 0) > 0;
 
   return (
     <div className="hire-max">
@@ -194,7 +326,7 @@ export function HireMaxPanel({ onFilled }: Props) {
           <h2 className="hire-max__title">MAX LIVE</h2>
           <p className="hire-max__sub">
             Target ≥{target} · day cap {dayCap} · proxy{" "}
-            {status?.proxyPool ? `ON (${status.proxyPool})` : "OFF"} ·{" "}
+            {proxyOn ? `ON (${status?.proxyPool})` : "OFF"} ·{" "}
             {status?.storage === "firebase" ? "Firebase" : "local"} ·{" "}
             {status?.sources?.length ?? 0} sources
           </p>
@@ -276,22 +408,24 @@ export function HireMaxPanel({ onFilled }: Props) {
             </div>
           </div>
 
+          <RegionRadar intake={intake} running={running} />
+
           <div className="hire-max__vitals">
             <div>
               <em>{t("intake.added")}</em>
-              <b>+{added}</b>
+              <Kinetic value={added} prefix="+" />
             </div>
             <div>
               <em>{t("intake.skip")}</em>
-              <b>{skipped}</b>
+              <Kinetic value={skipped} />
             </div>
             <div>
               <em>{t("intake.trash")}</em>
-              <b>{trashed}</b>
+              <Kinetic value={trashed} />
             </div>
             <div>
               <em>{t("intake.segment")}</em>
-              <b>{live?.segment || "—"}</b>
+              <b title={live?.segment || ""}>{live?.segment || "—"}</b>
             </div>
           </div>
 
@@ -299,25 +433,67 @@ export function HireMaxPanel({ onFilled }: Props) {
             {intake.length === 0 ? (
               <div className="hire-max__feed-empty">{t("intake.empty")}</div>
             ) : (
-              intake.map((hit) => {
-                const r = (hit.region || "europe") as Region;
-                return (
-                  <div key={`${hit.id}-${hit.at}`} className="hire-max__hit">
-                    <div className="hire-max__hit-top">
-                      <span className={`job-chip ${regionClass(r)}`}>
-                        {trRegion(r)}
-                      </span>
-                      <time>{fmtAgo(hit.at)}</time>
-                    </div>
-                    <div className="hire-max__hit-co">{hit.company}</div>
-                    <div className="hire-max__hit-role">{hit.role}</div>
-                    <div className="hire-max__hit-src">
-                      {shortSource(hit.source)}
-                    </div>
-                  </div>
-                );
-              })
+              <AnimatePresence initial={false}>
+                {intake.map((hit, idx) => {
+                  const r = (hit.region || "europe") as Region;
+                  const depth = Math.min(idx, 8);
+                  const isFlash = flashId === hit.id;
+                  return (
+                    <motion.div
+                      key={`${hit.id}-${hit.at}`}
+                      className={`hire-max__hit${isFlash ? " is-flash" : ""}`}
+                      style={{
+                        opacity: 1 - depth * 0.06,
+                        filter: `brightness(${1 - depth * 0.035})`,
+                      }}
+                      initial={{ opacity: 0, y: -14, x: 6 }}
+                      animate={{ opacity: 1 - depth * 0.06, y: 0, x: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      transition={{ duration: 0.38, ease: EASE }}
+                      layout
+                    >
+                      <div className="hire-max__hit-corners" aria-hidden />
+                      <div className="hire-max__hit-top">
+                        <span className={`job-chip ${regionClass(r)}`}>
+                          {trRegion(r)}
+                        </span>
+                        <time>{fmtAgo(hit.at)}</time>
+                      </div>
+                      <div className="hire-max__hit-co">{hit.company}</div>
+                      <div className="hire-max__hit-role">{hit.role}</div>
+                      <div className="hire-max__hit-src">
+                        {shortSource(hit.source)}
+                      </div>
+                      <div className="hire-max__hit-scores">
+                        <span>
+                          {t("score.fit")}{" "}
+                          <strong>{hit.fit ?? "—"}</strong>
+                        </span>
+                        <span>
+                          {t("score.pri")}{" "}
+                          <strong>{hit.pri ?? "—"}</strong>
+                        </span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
             )}
+          </div>
+
+          <div className={`hire-max__ribbon hire-max__ribbon--${beatTone}`}>
+            <span className="hire-max__ribbon-heart">♥</span>
+            <span>
+              {beatAgeSec == null
+                ? "—"
+                : `${beatAgeSec < 10 ? beatAgeSec.toFixed(1) : Math.round(beatAgeSec)}s`}
+            </span>
+            <span className="hire-max__ribbon-sep">·</span>
+            <span className="hire-max__ribbon-seg">
+              {live?.segment || "—"}
+            </span>
+            <span className="hire-max__ribbon-sep">·</span>
+            <span>proxy {proxyOn ? "ON" : "OFF"}</span>
           </div>
         </aside>
       </div>
