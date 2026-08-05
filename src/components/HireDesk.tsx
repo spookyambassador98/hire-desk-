@@ -356,7 +356,7 @@ export function HireDesk({
         </div>
       </motion.header>
 
-      <main className="hd-main">
+      <main className={`hd-main${view === "harvest" ? " hd-main--harvest" : ""}`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={view}
