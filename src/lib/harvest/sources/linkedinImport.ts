@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { env, envSourceOn } from "@/lib/env";
 import type { JobHit, JobSource } from "./types";
-import { textMatchesSegment } from "./types";
+import { regionForSegmentHit, textMatchesSegment } from "./types";
 import { harvestFetch } from "../harvestFetch";
 
 /**
@@ -57,13 +57,19 @@ export const linkedinImportSource: JobSource = {
         if (!role || !company) continue;
         const blob = `${role} ${r.description || ""}`;
         if (!textMatchesSegment(blob, ctx.segment)) continue;
+        const loc = r.location || "";
+        const region = regionForSegmentHit(
+          `${loc} ${r.region || ""}`,
+          ctx.segment,
+        );
+        if (!region) continue;
         hits.push({
           sourceId: "linkedin_import",
           company,
           role,
-          region: ctx.segment.region,
-          location: r.location || null,
-          remote: /remote/i.test(r.location || "") ? true : null,
+          region,
+          location: loc || null,
+          remote: /remote/i.test(loc) ? true : null,
           description: r.description || `${role} at ${company}`,
           url: r.url || null,
           channel: "linkedin",

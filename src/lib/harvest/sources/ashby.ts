@@ -1,6 +1,6 @@
 import { env, envSourceOn } from "@/lib/env";
 import type { JobHit, JobSource } from "./types";
-import { textMatchesSegment } from "./types";
+import { regionForSegmentHit, textMatchesSegment } from "./types";
 import { harvestFetch } from "../harvestFetch";
 
 function ashbyBoards(): string[] {
@@ -51,16 +51,19 @@ export const ashbySource: JobSource = {
         };
         for (const j of data.jobs || []) {
           if (hits.length >= ctx.limit) break;
+          const loc = j.location || "";
           const desc = j.descriptionPlain || j.descriptionHtml || "";
           const blob = `${j.title} ${j.department || ""} ${desc}`.slice(0, 2000);
           if (!textMatchesSegment(blob, ctx.segment)) continue;
+          const region = regionForSegmentHit(loc, ctx.segment);
+          if (!region) continue;
           hits.push({
             sourceId: `ashby:${board}`,
             company: board,
             role: j.title,
-            region: ctx.segment.region,
-            location: j.location || null,
-            remote: /remote/i.test(j.location || "") ? true : null,
+            region,
+            location: loc || null,
+            remote: /remote/i.test(loc) ? true : null,
             description: desc.replace(/<[^>]+>/g, " ").slice(0, 1200),
             url: j.jobUrl,
             channel: "ashby",

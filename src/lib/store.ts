@@ -14,6 +14,7 @@ import {
 } from "./individualScoring";
 import { enrichJobProofs, scoreJob } from "./scoring";
 import { resolveSalary } from "./regions";
+import { detectRegionFromText } from "./harvest/sources/types";
 import type {
   ApplyChannel,
   HireProfile,
@@ -87,8 +88,12 @@ export function withScores(
   profile: HireProfile = DEFAULT_HIRE_PROFILE,
   individuals: Individual[] = [],
 ): ScoredJob[] {
-  const ctx = buildPriorityContext(jobs, profile, individuals);
-  return jobs
+  const reconciled = jobs.map((j) => ({
+    ...j,
+    region: detectRegionFromText(j.location || "") ?? j.region,
+  }));
+  const ctx = buildPriorityContext(reconciled, profile, individuals);
+  return reconciled
     .map((j) => {
       const description = stripHtml(j.description || "");
       const salary =
