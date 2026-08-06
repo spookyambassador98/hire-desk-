@@ -287,7 +287,7 @@ export function HireDesk({
         <div className="hd-brand">
           APEX // <span>HIRE</span> <em>DESK</em>
         </div>
-        <nav className="hd-nav">
+        <nav className="hd-nav" aria-label="Main">
           {NAV.map((n) => (
             <button
               key={n.id}
@@ -338,20 +338,20 @@ export function HireDesk({
               {t("lang.ru")}
             </button>
           </div>
-          <div className="hd-quota">
-            <div className="eu">
-              {t("quota.eu")} <b>{quota.europe.used}</b>/{quota.europe.quota}
-            </div>
-            <div className="us">
-              {t("quota.us")} <b>{quota.america.used}</b>/{quota.america.quota}
-            </div>
-            <div className="asia">
-              {t("quota.as")} <b>{quota.asia.used}</b>/{quota.asia.quota}
-            </div>
-            <div className="ind">
-              {t("quota.ind")} <b>{quota.individuals.used}</b>/
-              {quota.individuals.quota}
-            </div>
+        </div>
+        <div className="hd-quota" aria-label="Quotas">
+          <div className="eu">
+            {t("quota.eu")} <b>{quota.europe.used}</b>/{quota.europe.quota}
+          </div>
+          <div className="us">
+            {t("quota.us")} <b>{quota.america.used}</b>/{quota.america.quota}
+          </div>
+          <div className="asia">
+            {t("quota.as")} <b>{quota.asia.used}</b>/{quota.asia.quota}
+          </div>
+          <div className="ind">
+            {t("quota.ind")} <b>{quota.individuals.used}</b>/
+            {quota.individuals.quota}
           </div>
         </div>
       </motion.header>
