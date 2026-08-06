@@ -1,20 +1,28 @@
 import { envNum } from "@/lib/env";
 import type { Region } from "@/lib/types";
 
-export type RoleFamily = "product" | "founding" | "ai" | "ops";
+export type RoleFamily =
+  | "founding"
+  | "fullstack"
+  | "frontend"
+  | "backend"
+  | "ops";
 
 export type HireSegmentId =
-  | "europe_product"
   | "europe_founding"
-  | "europe_ai"
+  | "europe_fullstack"
+  | "europe_frontend"
+  | "europe_backend"
   | "europe_ops"
-  | "america_product"
   | "america_founding"
-  | "america_ai"
+  | "america_fullstack"
+  | "america_frontend"
+  | "america_backend"
   | "america_ops"
-  | "asia_product"
   | "asia_founding"
-  | "asia_ai"
+  | "asia_fullstack"
+  | "asia_frontend"
+  | "asia_backend"
   | "asia_ops";
 
 export type HireSegment = {
@@ -29,144 +37,90 @@ export type HireSegment = {
 export const HIRE_DAILY_QUOTA = envNum("HIRE_DAILY_QUOTA", 40);
 export const HIRE_RUN_TARGET = envNum("HIRE_RUN_TARGET", 80);
 
+/** Shared keyword banks — product builder profile, not ML/LLM. */
+const KW_FOUNDING = [
+  "founding engineer",
+  "founding fullstack",
+  "first engineer",
+  "early engineer",
+  "0-1",
+  "0 to 1",
+  "early stage",
+  "build from scratch",
+  "solo fullstack",
+  "own the product",
+  "startup engineer",
+];
+
+const KW_FULLSTACK = [
+  "full-stack",
+  "fullstack",
+  "full stack",
+  "product engineer",
+  "full-stack product",
+  "product builder",
+  "next.js",
+  "react typescript",
+];
+
+const KW_FRONTEND = [
+  "frontend engineer",
+  "front-end engineer",
+  "frontend developer",
+  "react engineer",
+  "next.js",
+  "ui engineer",
+  "creative technologist",
+];
+
+const KW_BACKEND = [
+  "backend engineer",
+  "back-end engineer",
+  "node.js",
+  "nodejs",
+  "typescript backend",
+  "firebase",
+  "supabase",
+  "express",
+];
+
+const KW_OPS = [
+  "internal tools",
+  "ops platform",
+  "ops tooling",
+  "platform engineer",
+  "automation",
+  "growth engineer",
+];
+
+function seg(
+  id: HireSegmentId,
+  label: string,
+  region: Region,
+  family: RoleFamily,
+  keywords: string[],
+): HireSegment {
+  return { id, label, region, family, keywords };
+}
+
 export const HIRE_SEGMENTS: HireSegment[] = [
-  {
-    id: "europe_product",
-    label: "Europe · Product",
-    region: "europe",
-    family: "product",
-    keywords: [
-      "product engineer",
-      "full-stack product",
-      "fullstack",
-      "product builder",
-    ],
-  },
-  {
-    id: "europe_founding",
-    label: "Europe · Founding",
-    region: "europe",
-    family: "founding",
-    keywords: ["founding engineer", "founding fullstack", "early engineer"],
-  },
-  {
-    id: "europe_ai",
-    label: "Europe · AI Product",
-    region: "europe",
-    family: "ai",
-    keywords: [
-      "ai product",
-      "ai engineer",
-      "llm",
-      "rapid prototyping",
-      "creative technologist",
-    ],
-  },
-  {
-    id: "europe_ops",
-    label: "Europe · Ops / Tools",
-    region: "europe",
-    family: "ops",
-    keywords: [
-      "internal tools",
-      "ops platform",
-      "platform engineer",
-      "automation",
-    ],
-  },
-  {
-    id: "america_product",
-    label: "America · Product",
-    region: "america",
-    family: "product",
-    keywords: [
-      "product engineer",
-      "full-stack product",
-      "fullstack",
-      "product builder",
-    ],
-  },
-  {
-    id: "america_founding",
-    label: "America · Founding",
-    region: "america",
-    family: "founding",
-    keywords: ["founding engineer", "founding fullstack", "early engineer"],
-  },
-  {
-    id: "america_ai",
-    label: "America · AI Product",
-    region: "america",
-    family: "ai",
-    keywords: [
-      "ai product",
-      "ai engineer",
-      "llm",
-      "rapid prototyping",
-      "creative technologist",
-    ],
-  },
-  {
-    id: "america_ops",
-    label: "America · Ops / Tools",
-    region: "america",
-    family: "ops",
-    keywords: [
-      "internal tools",
-      "ops platform",
-      "platform engineer",
-      "automation",
-    ],
-  },
-  {
-    id: "asia_product",
-    label: "Asia · Product",
-    region: "asia",
-    family: "product",
-    keywords: [
-      "product engineer",
-      "full-stack",
-      "fullstack",
-      "product builder",
-    ],
-  },
-  {
-    id: "asia_founding",
-    label: "Asia · Founding",
-    region: "asia",
-    family: "founding",
-    keywords: [
-      "founding engineer",
-      "founding fullstack",
-      "early engineer",
-      "startup engineer",
-    ],
-  },
-  {
-    id: "asia_ai",
-    label: "Asia · AI / Builder",
-    region: "asia",
-    family: "ai",
-    keywords: [
-      "ai engineer",
-      "ml engineer",
-      "llm",
-      "generative ai",
-      "rapid prototyping",
-    ],
-  },
-  {
-    id: "asia_ops",
-    label: "Asia · Ops / Tools",
-    region: "asia",
-    family: "ops",
-    keywords: [
-      "internal tools",
-      "ops platform",
-      "platform engineer",
-      "automation",
-    ],
-  },
+  seg("europe_founding", "Europe · Founding 0→1", "europe", "founding", KW_FOUNDING),
+  seg("europe_fullstack", "Europe · Fullstack", "europe", "fullstack", KW_FULLSTACK),
+  seg("europe_frontend", "Europe · Frontend", "europe", "frontend", KW_FRONTEND),
+  seg("europe_backend", "Europe · Backend Node", "europe", "backend", KW_BACKEND),
+  seg("europe_ops", "Europe · Ops / Tools", "europe", "ops", KW_OPS),
+
+  seg("america_founding", "America · Founding 0→1", "america", "founding", KW_FOUNDING),
+  seg("america_fullstack", "America · Fullstack", "america", "fullstack", KW_FULLSTACK),
+  seg("america_frontend", "America · Frontend", "america", "frontend", KW_FRONTEND),
+  seg("america_backend", "America · Backend Node", "america", "backend", KW_BACKEND),
+  seg("america_ops", "America · Ops / Tools", "america", "ops", KW_OPS),
+
+  seg("asia_founding", "Asia · Founding 0→1", "asia", "founding", KW_FOUNDING),
+  seg("asia_fullstack", "Asia · Fullstack", "asia", "fullstack", KW_FULLSTACK),
+  seg("asia_frontend", "Asia · Frontend", "asia", "frontend", KW_FRONTEND),
+  seg("asia_backend", "Asia · Backend Node", "asia", "backend", KW_BACKEND),
+  seg("asia_ops", "Asia · Ops / Tools", "asia", "ops", KW_OPS),
 ];
 
 export function dayCeiling() {

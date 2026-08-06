@@ -23,20 +23,26 @@ import { DEFAULT_HIRE_PROFILE } from "./types";
 
 const ROLE_POSITIVE: Array<{ re: RegExp; w: number; label: string }> = [
   { re: /\bfounding\s+engineer\b/i, w: 35, label: "Founding Engineer" },
+  { re: /\b0\s*[-–to]+\s*1\b|\bfirst\s+engineer\b/i, w: 34, label: "0→1 / First engineer" },
   { re: /\bproduct\s+builder\b/i, w: 34, label: "Product Builder" },
   {
     re: /\bfull[-\s]?stack\s+product\b/i,
     w: 33,
     label: "Full-stack Product",
   },
-  { re: /\bcreative\s+technolog/i, w: 32, label: "Creative Technologist" },
-  { re: /\bai\s+product\b/i, w: 32, label: "AI Product" },
-  { re: /\brapid\s+prototyp/i, w: 30, label: "Rapid Prototyping" },
+  { re: /\bproduct\s+engineer\b/i, w: 32, label: "Product Engineer" },
+  { re: /\bcreative\s+technolog/i, w: 30, label: "Creative Technologist" },
   { re: /\binternal\s+tools?\b/i, w: 28, label: "Internal Tools" },
-  { re: /\bops\s+platform\b/i, w: 28, label: "Ops Platform" },
-  { re: /\bproduct\s+engineer\b/i, w: 30, label: "Product Engineer" },
-  { re: /\bfull[-\s]?stack\b/i, w: 22, label: "Full-stack" },
-  { re: /\bfront[-\s]?end\b/i, w: 16, label: "Frontend" },
+  { re: /\bops\s+(platform|tooling)\b/i, w: 28, label: "Ops Platform" },
+  { re: /\bfull[-\s]?stack\b/i, w: 26, label: "Full-stack" },
+  { re: /\bfront[-\s]?end\b/i, w: 22, label: "Frontend" },
+  { re: /\bui\s+engineer\b/i, w: 20, label: "UI Engineer" },
+  {
+    re: /\b(node\.?js|typescript)\b.*\bbackend\b|\bbackend\b.*\b(node\.?js|typescript|firebase|supabase)\b/i,
+    w: 20,
+    label: "Node/TS Backend",
+  },
+  { re: /\bback[-\s]?end\s+engineer\b/i, w: 16, label: "Backend Engineer" },
   { re: /\bsoftware\s+engineer\b/i, w: 12, label: "Software Engineer" },
 ];
 
@@ -51,6 +57,18 @@ function isNegated(text: string, matchIndex: number): boolean {
 }
 
 const ANTI_FILTERS: Array<{ re: RegExp; reason: string }> = [
+  {
+    re: /\b(ml|machine\s+learning)\s+engineer\b|\bresearch\s+scientist\b/i,
+    reason: "ML / research scientist role",
+  },
+  {
+    re: /\bllm\s+engineer\b|\bai\s+engineer\b|\bprompt\s+engineer\b/i,
+    reason: "LLM / AI engineer role",
+  },
+  {
+    re: /\b(pytorch|tensorflow|jax)\b.*\b(required|must|experience)\b|\b(required|must)\b.*\b(pytorch|tensorflow)\b/i,
+    reason: "ML framework core requirement",
+  },
   {
     re: /\b(leetcode|hackerrank|codewars)\b.*\b(only|required|must)\b|\b(only|required|must)\b.*\b(leetcode|hackerrank)\b/i,
     reason: "Leetcode-only / algorithm gate",
@@ -91,14 +109,33 @@ function findAntiFilter(text: string): string | null {
   return null;
 }
 
+/** Role title gates — avoid false positives from company blurbs that mention AI. */
+function findRoleTitleAnti(role: string): string | null {
+  const r = role || "";
+  if (
+    /\b(ml|machine\s+learning|llm|data\s+science|ai\s+product|ai\s+research|prompt\s+engineer|research\s+scientist)\b/i.test(
+      r,
+    )
+  ) {
+    return "AI/ML-titled role";
+  }
+  if (/\bai\s+engineer\b/i.test(r)) {
+    return "AI engineer title";
+  }
+  return null;
+}
+
 const PRODUCT_LED_UP = [
   /\bproduct[-\s]?led\b/i,
   /\bsaas\b/i,
   /\bplatform\b/i,
   /\bops\s+console\b/i,
   /\bown\s+product\b/i,
+  /\bbuild\s+from\s+scratch\b/i,
+  /\b0\s*[-–to]+\s*1\b/i,
   /\bstartup\b/i,
   /\bseries\s+[a-c]\b/i,
+  /\bearly\s+stage\b/i,
 ];
 
 const PRODUCT_LED_DOWN = [
@@ -112,11 +149,15 @@ const PRODUCT_LED_DOWN = [
 const STACK_SIGNALS: Array<{ re: RegExp; label: string }> = [
   { re: /\bnext\.?js\b/i, label: "Next.js" },
   { re: /\breact\b/i, label: "React" },
-  { re: /\btypescript\b|\b\bts\b/i, label: "TypeScript" },
-  { re: /\bfirebase\b/i, label: "Firebase" },
-  { re: /\breal[-\s]?time\b|\bwebsocket\b/i, label: "Realtime" },
-  { re: /\b(three\.?js|webgl|3d)\b/i, label: "3D" },
-  { re: /\bai[-\s]?native\b|\bllm\b|\bagents?\b/i, label: "AI workflows" },
+  { re: /\btypescript\b/i, label: "TypeScript" },
+  { re: /\btailwind\b/i, label: "Tailwind" },
+  { re: /\bfirebase\b|\bfirestore\b/i, label: "Firebase" },
+  { re: /\bsupabase\b/i, label: "Supabase" },
+  { re: /\bprisma\b/i, label: "Prisma" },
+  { re: /\bnode\.?js\b|\bexpress\b/i, label: "Node" },
+  { re: /\breal[-\s]?time\b|\bwebsocket\b|\bsocket\.?io\b/i, label: "Realtime" },
+  { re: /\b(three\.?js|webgl|r3f|react\s+three)\b/i, label: "3D" },
+  { re: /\bframer\s+motion\b|\bgsap\b/i, label: "Motion" },
 ];
 
 function clamp(n: number, lo: number, hi: number) {
@@ -246,7 +287,8 @@ export function computeFit(
 ): FitResult {
   const text = jobText(job);
 
-  const antiReason = findAntiFilter(text);
+  const antiReason =
+    findRoleTitleAnti(job.role) || findAntiFilter(text);
   if (antiReason) {
     return {
       score: 0,
