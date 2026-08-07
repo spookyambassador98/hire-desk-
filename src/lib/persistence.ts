@@ -7,6 +7,8 @@ import {
   noteFirestoreError,
 } from "@/lib/opsUsage";
 import type { Individual, Job } from "@/lib/types";
+import bundledSeedJobs from "../../data/recovery/seed-jobs.json";
+import bundledSeedIndividuals from "../../data/recovery/seed-individuals.json";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const JOBS_FILE = path.join(DATA_DIR, "jobs.json");
@@ -54,12 +56,19 @@ function ttlMs() {
 }
 
 function jobsFresh(c: StoreCache) {
-  return c.jobs != null && Date.now() - c.jobsAt < ttlMs();
+  // Never treat an empty array as a fresh cache — that stuck the desk at 0 jobs.
+  return (
+    c.jobs != null &&
+    c.jobs.length > 0 &&
+    Date.now() - c.jobsAt < ttlMs()
+  );
 }
 
 function individualsFresh(c: StoreCache) {
   return (
-    c.individuals != null && Date.now() - c.individualsAt < ttlMs()
+    c.individuals != null &&
+    c.individuals.length > 0 &&
+    Date.now() - c.individualsAt < ttlMs()
   );
 }
 
@@ -71,7 +80,10 @@ async function readJobsWithFallback(memory: Job[] | null): Promise<Job[]> {
   const primary = await readJsonFile<Job[]>(JOBS_FILE, []);
   if (primary.length) return primary;
   if (memory && memory.length) return memory;
-  return readJsonFile<Job[]>(SEED_JOBS_FILE, []);
+  const diskSeed = await readJsonFile<Job[]>(SEED_JOBS_FILE, []);
+  if (diskSeed.length) return diskSeed;
+  const bundled = bundledSeedJobs as Job[];
+  return Array.isArray(bundled) && bundled.length ? bundled : [];
 }
 
 async function readIndividualsWithFallback(
@@ -80,7 +92,10 @@ async function readIndividualsWithFallback(
   const primary = await readJsonFile<Individual[]>(INDIVIDUALS_FILE, []);
   if (primary.length) return primary;
   if (memory && memory.length) return memory;
-  return readJsonFile<Individual[]>(SEED_INDIVIDUALS_FILE, []);
+  const diskSeed = await readJsonFile<Individual[]>(SEED_INDIVIDUALS_FILE, []);
+  if (diskSeed.length) return diskSeed;
+  const bundled = bundledSeedIndividuals as Individual[];
+  return Array.isArray(bundled) && bundled.length ? bundled : [];
 }
 
 async function readJsonFile<T>(file: string, fallback: T): Promise<T> {
@@ -302,9 +317,23 @@ export async function readRawJobs(opts: ReadOpts = {}): Promise<Job[]> {
   }
 
   try {
-    const jobs = canTouchFirebase()
-      ? await readJobsFirestore()
-      : await readJobsWithFallback(c.jobs);
+    let jobs: Job[];
+    if (canTouchFirebase()) {
+      try {
+        jobs = await readJobsFirestore();
+      } catch (err) {
+        noteFirestoreError(err);
+        jobs = await readJobsWithFallback(c.jobs);
+        console.error(
+          `[persistence] Firestore jobs fail → fallback ${jobs.length}`,
+        );
+        c.jobs = jobs;
+        c.jobsAt = Date.now();
+        return jobs;
+      }
+    } else {
+      jobs = await readJobsWithFallback(c.jobs);
+    }
     // Never clobber a fat local mirror with an empty cloud read
     if (
       Array.isArray(jobs) &&
