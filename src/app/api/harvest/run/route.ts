@@ -389,7 +389,7 @@ async function executeWriteHarvestRun() {
     }
   };
 
-      let bufferTotalLive = 0;
+  let bufferTotalLive = 0;
   let sessionSkipped = 0;
   let sessionTrashed = 0;
   let pass = 0;
