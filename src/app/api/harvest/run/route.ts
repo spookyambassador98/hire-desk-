@@ -9,6 +9,13 @@ import {
   setActiveRun,
 } from "@/lib/harvest/control";
 import {
+  buildHarvestBufferBoard,
+  countHarvestBuffer,
+  readHarvestBuffer,
+  readHarvestBufferStats,
+  writeHarvestBuffer,
+} from "@/lib/harvest/buffer";
+import {
   patchHarvestLive,
   pushHarvestLog,
   pushIntakeHits,
@@ -29,8 +36,9 @@ import { proxyModeLabel, safeRunTarget } from "@/lib/harvest/harvestFetch";
 import { enabledSources } from "@/lib/harvest/sources";
 import { scoreJob } from "@/lib/scoring";
 import { env, envNum } from "@/lib/env";
+import { getFirebaseQuotaGate } from "@/lib/firebaseQuota";
 import { ingestJobsBatch, readJobs } from "@/lib/store";
-import { DEFAULT_HIRE_PROFILE } from "@/lib/types";
+import { DEFAULT_HIRE_PROFILE, type Job } from "@/lib/types";
 
 export const maxDuration = 300;
 export const runtime = "nodejs";
@@ -39,6 +47,9 @@ export const dynamic = "force-dynamic";
 /** Leave headroom before Render kills the request. */
 const WAVE_DEADLINE_MS = envNum("HIRE_WAVE_DEADLINE_MS", 250_000);
 const WAVE_GAP_MS = envNum("HIRE_WAVE_GAP_MS", 2_000);
+const WRITE_PASS_BUDGET_MS = envNum("HIRE_WRITE_PASS_MS", 200_000);
+
+type RunMode = "max_live" | "write_harvest";
 
 function stamp() {
   return new Date().toLocaleTimeString("en-GB", { hour12: false });
@@ -66,7 +77,19 @@ function resolveOrigin(request: Request) {
   return env("HARVEST_INTERNAL_BASE") || `${proto}://${host}`;
 }
 
-/** Kick another run after this request ends — until day shelves are full. */
+async function liveBufferBoard(stackJobs: Job[]) {
+  const stats = await readHarvestBufferStats().catch(() => undefined);
+  const board = buildHarvestBufferBoard(stackJobs, stats);
+  return {
+    stackTotal: board.stackTotal,
+    bufferTotal: board.bufferTotal,
+    expectedTotal: board.expectedTotal,
+    byRegion: board.byRegion,
+    remoteBuffered: board.buffer.remote,
+  };
+}
+
+/** Kick another MAX LIVE wave after this request ends — until day shelves are full. */
 function scheduleAutoContinue(origin: string) {
   after(async () => {
     try {
@@ -84,7 +107,11 @@ function scheduleAutoContinue(origin: string) {
           "Content-Type": "application/json",
           "x-harvest-continue": "1",
         },
-        body: JSON.stringify({ source: "auto-continue", manual: false }),
+        body: JSON.stringify({
+          source: "auto-continue",
+          manual: false,
+          mode: "max_live",
+        }),
       });
     } catch (err) {
       console.error("[harvest] auto-continue failed", err);
@@ -127,6 +154,8 @@ async function executeHarvestRun(
 
     await writeHarvestLive({
       running: true,
+      mode: "max_live",
+      bufferBoard: null,
       startedAt: opts.continueSession && prev.startedAt ? prev.startedAt : startedAt,
       finishedAt: null,
       heartbeatAt: startedAt,
@@ -345,14 +374,239 @@ async function executeHarvestRun(
   }
 }
 
+/**
+ * WRITE HARVEST — fill harvest_buffer with REMOTE-first jobs while reads are burnt.
+ * Continuous passes until Stop or writes soft-quota ≥ block %.
+ */
+async function executeWriteHarvestRun() {
+  const startedAt = new Date().toISOString();
+  let heartbeat: ReturnType<typeof setInterval> | null = null;
+  const stopHeartbeat = () => {
+    if (heartbeat) {
+      clearInterval(heartbeat);
+      heartbeat = null;
+    }
+  };
+
+  let bufferTotalLive = 0;
+  let sessionSkipped = 0;
+  let sessionTrashed = 0;
+  let pass = 0;
+  let writesBurned = false;
+
+  try {
+    const stackJobs = await readJobs().catch(() => [] as Job[]);
+    const buffered0 = await readHarvestBuffer().catch(() => []);
+    bufferTotalLive = buffered0.length || (await countHarvestBuffer().catch(() => 0));
+    const board0 = await liveBufferBoard(stackJobs);
+
+    await writeHarvestLive({
+      running: true,
+      mode: "write_harvest",
+      startedAt,
+      finishedAt: null,
+      heartbeatAt: startedAt,
+      added: bufferTotalLive,
+      skipped: 0,
+      trashed: 0,
+      segment: null,
+      recentAdds: [],
+      bufferBoard: board0,
+      message: `WRITE HARVEST · REMOTE → buffer · stack ${board0.stackTotal} · buf ${board0.bufferTotal} → ${board0.expectedTotal}`,
+      logs: [
+        `[${stamp()}] ── WRITE HARVEST · REMOTE priority · → harvest_buffer`,
+        `[${stamp()}] stack ${board0.stackTotal} · buffer ${board0.bufferTotal} · expected ${board0.expectedTotal}`,
+        `[${stamp()}] sources ${enabledSources().map((s) => s.id).join(", ") || "none"}`,
+      ],
+    });
+
+    heartbeat = setInterval(() => {
+      if (isHarvestStopRequested()) {
+        stopHeartbeat();
+        void patchHarvestLive({
+          running: false,
+          heartbeatAt: new Date().toISOString(),
+          message: "⏹ Stop — exiting WRITE HARVEST",
+        }).catch(() => undefined);
+        return;
+      }
+      void patchHarvestLive({
+        running: true,
+        heartbeatAt: new Date().toISOString(),
+        added: bufferTotalLive,
+        message: `♥ WRITE HARVEST · buffer ${bufferTotalLive} · stack ${board0.stackTotal} → ${board0.stackTotal + bufferTotalLive}`,
+      }).catch(() => undefined);
+    }, 12_000);
+
+    // Dedupe against stack + already buffered
+    const known: Job[] = [...stackJobs, ...buffered0];
+
+    while (!isHarvestStopRequested()) {
+      const gate = await getFirebaseQuotaGate().catch(() => null);
+      if (gate?.writesBlocked) {
+        writesBurned = true;
+        await pushHarvestLog(
+          `⛔ Writes burned · ${gate.writesPct}% · WRITE HARVEST stop · buffer ${bufferTotalLive}`,
+          {
+            running: true,
+            added: bufferTotalLive,
+            message: `⛔ Writes ≥${gate.writesPct}% · buffer ${bufferTotalLive}`,
+          },
+        );
+        break;
+      }
+
+      pass += 1;
+      const passTarget = safeRunTarget();
+      const passDeadline = Date.now() + WRITE_PASS_BUDGET_MS;
+      await pushHarvestLog(
+        `🔁 WRITE HARVEST pass #${pass} · writes ${gate?.writesPct ?? "?"}% · REMOTE↑ · buffer ${bufferTotalLive}`,
+        {
+          running: true,
+          mode: "write_harvest",
+          added: bufferTotalLive,
+          message: `🔁 pass #${pass} · buffer ${bufferTotalLive} · stack ${board0.stackTotal} → ${board0.stackTotal + bufferTotalLive}`,
+        },
+      );
+
+      const baseBuf = bufferTotalLive;
+      const result = await runHireMax({
+        existingJobs: known,
+        runTarget: passTarget,
+        writeHarvest: true,
+        onJobsBatch: async (chunk) => {
+          if (isHarvestStopRequested()) return;
+          const n = await writeHarvestBuffer(chunk);
+          bufferTotalLive += n;
+          known.push(...chunk);
+          const board = await liveBufferBoard(stackJobs);
+          board.bufferTotal = Math.max(board.bufferTotal, bufferTotalLive);
+          board.expectedTotal = board.stackTotal + board.bufferTotal;
+          await pushIntakeHits(
+            chunk.map((j) => {
+              const scores = scoreJob(j, {
+                europeQuotaRemaining: DEFAULT_HIRE_PROFILE.europeDailyQuota,
+                americaQuotaRemaining: DEFAULT_HIRE_PROFILE.americaDailyQuota,
+                asiaQuotaRemaining: DEFAULT_HIRE_PROFILE.asiaDailyQuota,
+              });
+              return {
+                id: j.id,
+                company: j.company,
+                role: j.role,
+                region: j.region,
+                source: j.source,
+                fit: scores.fit.score,
+                pri: scores.priority.score,
+              };
+            }),
+          );
+          await patchHarvestLive({
+            added: bufferTotalLive,
+            bufferBoard: board,
+            message: `📦 buffer ${bufferTotalLive} · stack ${board.stackTotal} → ${board.stackTotal + bufferTotalLive} · pass #${pass}`,
+          });
+        },
+        onProgress: async (ev) => {
+          const stopped = isHarvestStopRequested();
+          if (stopped) stopHeartbeat();
+          await pushHarvestLog(ev.message, {
+            running: !stopped,
+            mode: "write_harvest",
+            added: bufferTotalLive || baseBuf + ev.added,
+            skipped: sessionSkipped + ev.skipped,
+            trashed: sessionTrashed + ev.trashed,
+            segment: ev.segment,
+            message: ev.message,
+            ...(stopped
+              ? { finishedAt: new Date().toISOString(), running: false }
+              : {}),
+          });
+        },
+      });
+
+      sessionSkipped += result.skipped;
+      sessionTrashed += result.trashed;
+
+      // If pass found nothing new, stop (sources dry)
+      if (result.added === 0) {
+        await pushHarvestLog(
+          `○ WRITE HARVEST dry pass · buffer ${bufferTotalLive}`,
+          {
+            running: true,
+            added: bufferTotalLive,
+            message: `○ Dry · buffer ${bufferTotalLive}`,
+          },
+        );
+        break;
+      }
+
+      if (isHarvestStopRequested()) break;
+      if (Date.now() >= passDeadline) {
+        // continue next pass in same request if time left on maxDuration
+        await sleep(WAVE_GAP_MS);
+      } else {
+        await sleep(WAVE_GAP_MS);
+      }
+
+      // Soft time guard for Render
+      if (Date.now() - Date.parse(startedAt) > WAVE_DEADLINE_MS) {
+        await pushHarvestLog(
+          `⏱ WRITE HARVEST time budget · buffer ${bufferTotalLive} · passes ${pass}`,
+          {
+            running: true,
+            added: bufferTotalLive,
+            message: `⏱ Time · buffer ${bufferTotalLive}`,
+          },
+        );
+        break;
+      }
+    }
+
+    stopHeartbeat();
+    const boardEnd = await liveBufferBoard(stackJobs);
+    boardEnd.bufferTotal = Math.max(boardEnd.bufferTotal, bufferTotalLive);
+    boardEnd.expectedTotal = boardEnd.stackTotal + boardEnd.bufferTotal;
+
+    const finalMsg = isHarvestStopRequested()
+      ? `⏹ WRITE HARVEST stop · +${bufferTotalLive} в буфер · trash ${sessionTrashed} · passes ${pass}`
+      : writesBurned
+        ? `✅ Writes burned · +${bufferTotalLive} в буфер · после сброса reads — FLUSH`
+        : `WRITE HARVEST end · +${bufferTotalLive} в буфер · passes ${pass}`;
+
+    await pushHarvestLog(finalMsg, {
+      running: false,
+      finishedAt: new Date().toISOString(),
+      heartbeatAt: new Date().toISOString(),
+      mode: "write_harvest",
+      added: bufferTotalLive,
+      skipped: sessionSkipped,
+      trashed: sessionTrashed,
+      bufferBoard: boardEnd,
+      message: finalMsg,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    await pushHarvestLog(`WRITE HARVEST error: ${msg.slice(0, 180)}`, {
+      running: false,
+      finishedAt: new Date().toISOString(),
+      message: "WRITE HARVEST error",
+    });
+  } finally {
+    stopHeartbeat();
+    setActiveRun(null);
+  }
+}
+
 export async function POST(request: Request) {
   try {
     let manual = false;
     let autoContinue = false;
+    let mode: RunMode = "max_live";
     try {
       const body = (await request.json().catch(() => null)) as {
         manual?: boolean;
         source?: string;
+        mode?: string;
       } | null;
       autoContinue =
         body?.source === "auto-continue" ||
@@ -362,8 +616,21 @@ export async function POST(request: Request) {
         (body?.manual === true ||
           body?.source === "ui" ||
           request.headers.get("x-harvest-manual") === "1");
+      if (body?.mode === "write_harvest") mode = "write_harvest";
     } catch {
       manual = false;
+    }
+
+    const writeHarvest = mode === "write_harvest";
+    const label = writeHarvest ? "WRITE HARVEST" : "MAX LIVE";
+
+    // WRITE HARVEST is manual-only (like lead-desk).
+    if (!manual && writeHarvest) {
+      return NextResponse.json({
+        started: false,
+        message: "WRITE HARVEST только вручную из UI",
+        target: safeRunTarget(),
+      });
     }
 
     if ((!manual || autoContinue) && isHarvestPaused()) {
@@ -372,6 +639,29 @@ export async function POST(request: Request) {
         started: false,
         paused: true,
         message: `Paused after STOP · ~${mins}m · press MAX LIVE`,
+        target: safeRunTarget(),
+      });
+    }
+
+    const gate = await getFirebaseQuotaGate().catch(() => null);
+    if (writeHarvest) {
+      if (gate?.writesBlocked) {
+        return NextResponse.json({
+          started: false,
+          firebaseQuotaBlocked: true,
+          message: `⛔ Writes ≥99% · WRITE HARVEST нельзя · ${gate.reason || ""}`,
+          firebaseQuota: gate,
+          target: safeRunTarget(),
+        });
+      }
+    } else if (gate?.readsBlocked && !autoContinue) {
+      return NextResponse.json({
+        started: false,
+        firebaseQuotaBlocked: true,
+        message: `⛔ Reads ≥${gate.readsPct}% · MAX LIVE до сброса${
+          !gate.writesBlocked ? " · WRITE HARVEST доступен" : ""
+        } · ${gate.reason || ""}`,
+        firebaseQuota: gate,
         target: safeRunTarget(),
       });
     }
@@ -399,7 +689,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         started: true,
         alreadyRunning: true,
-        message: live2.message || "MAX LIVE already running",
+        message: live2.message || `${label} already running`,
         target: safeRunTarget(),
       });
     }
@@ -420,6 +710,48 @@ export async function POST(request: Request) {
     const kickoffAt = new Date().toISOString();
     const kickTarget = safeRunTarget();
     const prevKick = await readHarvestLive();
+
+    if (writeHarvest) {
+      const stackJobs = await readJobs().catch(() => [] as Job[]);
+      const board = await liveBufferBoard(stackJobs);
+      await writeHarvestLive({
+        running: true,
+        mode: "write_harvest",
+        startedAt: kickoffAt,
+        finishedAt: null,
+        heartbeatAt: kickoffAt,
+        added: board.bufferTotal,
+        skipped: 0,
+        trashed: 0,
+        segment: null,
+        recentAdds: prevKick.recentAdds || [],
+        bufferBoard: board,
+        message: `WRITE HARVEST · REMOTE · stack ${board.stackTotal} + buf ${board.bufferTotal} → ${board.expectedTotal}`,
+        logs: [
+          ...(prevKick.logs || []).slice(-80),
+          `[${stamp()}] HTTP kickoff · WRITE HARVEST · копилка writes · harvest_buffer`,
+        ],
+      });
+
+      const run = executeWriteHarvestRun();
+      setActiveRun(run);
+      void run;
+      after(() => getActiveRun() ?? Promise.resolve());
+
+      return NextResponse.json({
+        started: true,
+        alreadyRunning: false,
+        mode: "write_harvest",
+        message: `WRITE HARVEST · REMOTE → buffer · stack ${board.stackTotal} · buf ${board.bufferTotal} → ${board.expectedTotal}`,
+        bufferBoard: board,
+        target: kickTarget,
+        configuredTarget: HIRE_RUN_TARGET,
+        proxy: proxyPoolSize(),
+        proxyMode: proxyModeLabel(),
+        firebaseQuota: gate,
+      });
+    }
+
     const jobsKick = await readJobs();
     const qKick = await readQuotaDay(jobsKick);
     const dayLeft = dayQuotaRemaining(qKick.bySegment);
@@ -437,6 +769,8 @@ export async function POST(request: Request) {
 
     await writeHarvestLive({
       running: true,
+      mode: "max_live",
+      bufferBoard: null,
       startedAt:
         autoContinue && prevKick.startedAt ? prevKick.startedAt : kickoffAt,
       finishedAt: null,
@@ -462,6 +796,7 @@ export async function POST(request: Request) {
       started: true,
       alreadyRunning: false,
       fillDay: true,
+      mode: "max_live",
       dayLeft,
       dayCapacity: dayCeiling(),
       message: `MAX LIVE fill-day · ${dayLeft}/${dayCeiling()} slots open`,
@@ -469,7 +804,8 @@ export async function POST(request: Request) {
       configuredTarget: HIRE_RUN_TARGET,
       proxy: proxyPoolSize(),
       proxyMode: proxyModeLabel(),
-      mode: env("HIRE_PARSER_MODE", "live"),
+      modeLabel: env("HIRE_PARSER_MODE", "live"),
+      firebaseQuota: gate,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

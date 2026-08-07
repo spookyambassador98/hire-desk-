@@ -17,6 +17,16 @@ export type HarvestIntakeHit = {
   pri: number | null;
 };
 
+export type HarvestLiveBufferBoard = {
+  stackTotal: number;
+  bufferTotal: number;
+  expectedTotal: number;
+  byRegion?: Partial<
+    Record<"europe" | "america" | "asia", { stack: number; buffer: number }>
+  >;
+  remoteBuffered?: number;
+};
+
 export type HarvestLiveState = {
   running: boolean;
   startedAt: string | null;
@@ -30,6 +40,9 @@ export type HarvestLiveState = {
   logs: string[];
   /** Newest first — live intake for MAX LIVE right rail */
   recentAdds: HarvestIntakeHit[];
+  /** WRITE HARVEST live counters */
+  mode?: "max_live" | "write_harvest" | null;
+  bufferBoard?: HarvestLiveBufferBoard | null;
 };
 
 export type HarvestQuotaDay = {
@@ -62,6 +75,8 @@ function defaultLive(): HarvestLiveState {
     message: "idle",
     logs: [],
     recentAdds: [],
+    mode: null,
+    bufferBoard: null,
   };
 }
 

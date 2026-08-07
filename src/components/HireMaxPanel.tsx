@@ -27,6 +27,16 @@ type IntakeHit = {
   pri?: number | null;
 };
 
+type LiveBufferBoard = {
+  stackTotal: number;
+  bufferTotal: number;
+  expectedTotal: number;
+  remoteBuffered?: number;
+  byRegion?: Partial<
+    Record<Region, { stack: number; buffer: number; expected?: number }>
+  >;
+};
+
 type LiveState = {
   running: boolean;
   startedAt: string | null;
@@ -39,6 +49,31 @@ type LiveState = {
   message: string;
   logs: string[];
   recentAdds?: IntakeHit[];
+  mode?: "max_live" | "write_harvest" | null;
+  bufferBoard?: LiveBufferBoard | null;
+};
+
+type FirebaseQuota = {
+  blocked: boolean;
+  readsBlocked: boolean;
+  writesBlocked: boolean;
+  readsPct: number;
+  writesPct: number;
+  reason: string | null;
+  resetsHint?: string;
+  exhausted?: boolean;
+};
+
+type BufferBoardPayload = {
+  stackTotal: number;
+  bufferTotal: number;
+  expectedTotal: number;
+  stack: { total: number; remote?: number };
+  buffer: { total: number; remote?: number };
+  byRegion: Record<
+    Region,
+    { stack: number; buffer: number; expected: number }
+  >;
 };
 
 type StatusPayload = {
@@ -52,6 +87,10 @@ type StatusPayload = {
   proxyPool: number;
   storage?: "local" | "firebase";
   firebase?: { ok: boolean; error?: string; projectId?: string } | null;
+  firebaseQuota?: FirebaseQuota | null;
+  harvestBufferCount?: number;
+  bufferBoard?: BufferBoardPayload;
+  jobsTotal?: number;
   paused?: boolean;
   live?: LiveState;
 };
@@ -263,11 +302,15 @@ export function HireMaxPanel({ onFilled }: Props) {
     if (feedRef.current) feedRef.current.scrollTop = 0;
   }, [intake.length]);
 
-  async function startMax() {
+  async function kickoffRun(mode: "max_live" | "write_harvest") {
+    const label = mode === "write_harvest" ? "WRITE HARVEST" : "MAX LIVE";
     userStoppedRef.current = false;
     setRunning(true);
-    // Keep prior intake visible — server continues shelves, no wipe
-    setMessage("Starting MAX LIVE…");
+    setMessage(
+      mode === "write_harvest"
+        ? "WRITE HARVEST · REMOTE → buffer…"
+        : "Starting MAX LIVE…",
+    );
     stopPoll();
     try {
       const res = await fetch("/api/harvest/run", {
@@ -276,18 +319,58 @@ export function HireMaxPanel({ onFilled }: Props) {
           "Content-Type": "application/json",
           "x-harvest-manual": "1",
         },
-        body: JSON.stringify({ manual: true, source: "ui" }),
+        body: JSON.stringify({ manual: true, source: "ui", mode }),
       });
       const data = (await res.json()) as {
         message?: string;
         alreadyRunning?: boolean;
+        firebaseQuotaBlocked?: boolean;
+        error?: string;
       };
-      setMessage(data.message || "Running");
+      if (data.firebaseQuotaBlocked || data.error) {
+        setMessage(data.message || data.error || "Blocked");
+        setRunning(false);
+        return;
+      }
+      setMessage(data.message || `${label} running`);
       await loadStatus();
       pollRef.current = setInterval(() => void loadStatus(), 1800);
     } catch {
       setRunning(false);
       setMessage("Start failed");
+    }
+  }
+
+  async function startMax() {
+    if (status?.firebaseQuota?.readsBlocked) {
+      setMessage(
+        `⛔ Reads ≥${status.firebaseQuota.readsPct}% · MAX LIVE wait${
+          !status.firebaseQuota.writesBlocked ? " · WRITE HARVEST available" : ""
+        }`,
+      );
+      return;
+    }
+    await kickoffRun("max_live");
+  }
+
+  async function startWriteHarvest() {
+    if (status?.firebaseQuota?.writesBlocked) {
+      setMessage(`⛔ Writes ≥${status.firebaseQuota.writesPct}% · WRITE HARVEST blocked`);
+      return;
+    }
+    await kickoffRun("write_harvest");
+  }
+
+  async function flushBuffer() {
+    setMessage("FLUSH buffer → jobs…");
+    try {
+      const res = await fetch("/api/harvest/flush-buffer", { method: "POST" });
+      const data = (await res.json()) as { message?: string };
+      setMessage(data.message || "Flush done");
+      await loadStatus();
+      onFilled?.();
+    } catch {
+      setMessage("Flush failed");
     }
   }
 
@@ -324,39 +407,179 @@ export function HireMaxPanel({ onFilled }: Props) {
   const beatTone = beatStale ? "bad" : beatWarn ? "warn" : "ok";
   const proxyOn = (status?.proxyPool ?? 0) > 0;
 
+  const fq = status?.firebaseQuota;
+  const readsBlocked = Boolean(fq?.readsBlocked) || (fq?.readsPct ?? 0) >= 95;
+  const writesBlocked = Boolean(fq?.writesBlocked) || (fq?.writesPct ?? 0) >= 95;
+  const writeHarvestAvailable = !writesBlocked;
+  const board = status?.bufferBoard;
+  const liveBoard = live?.bufferBoard;
+  const stackTotal = Math.max(
+    liveBoard?.stackTotal ?? 0,
+    board?.stackTotal ?? 0,
+    status?.jobsTotal ?? 0,
+  );
+  const bufferTotal = Math.max(
+    liveBoard?.bufferTotal ?? 0,
+    board?.bufferTotal ?? 0,
+    status?.harvestBufferCount ?? 0,
+  );
+  const expectedTotal = stackTotal + bufferTotal;
+  const flushAvailable = !readsBlocked && bufferTotal > 0;
+  const flushWaitingReads = readsBlocked && bufferTotal > 0;
+  const showBufferPanel =
+    writeHarvestAvailable ||
+    bufferTotal > 0 ||
+    flushAvailable ||
+    flushWaitingReads ||
+    (running && live?.mode === "write_harvest");
+  const engineOn = !stopping && (running || !!live?.running);
+  const maxDisabled = engineOn || readsBlocked;
+
+  const regionRows = (["europe", "america", "asia"] as Region[]).map((r) => {
+    const liveR = liveBoard?.byRegion?.[r];
+    const boardR = board?.byRegion?.[r];
+    const stack = Math.max(liveR?.stack ?? 0, boardR?.stack ?? 0);
+    const buf = Math.max(liveR?.buffer ?? 0, boardR?.buffer ?? 0);
+    return { r, stack, buf, expected: stack + buf };
+  }).filter((row) => row.stack > 0 || row.buf > 0);
+
   return (
     <div className="harvest-stage">
       <div className="hire-max">
         <div className="hire-max__head">
           <div>
             <div className="hire-max__kicker">APEX // HARVEST ENGINE</div>
-            <h2 className="hire-max__title">MAX LIVE</h2>
+            <h2 className="hire-max__title">
+              {live?.mode === "write_harvest" ? "WRITE HARVEST" : "MAX LIVE"}
+            </h2>
             <p className="hire-max__sub">
               Fill-day until shelves full · wave ≥{target} · day cap {dayCap} ·
               proxy {proxyOn ? `ON (${status?.proxyPool})` : "OFF"} ·{" "}
               {status?.storage === "firebase" ? "Firebase" : "local"} ·{" "}
               {status?.sources?.length ?? 0} sources
+              {fq
+                ? ` · fb r${fq.readsPct}% / w${fq.writesPct}%`
+                : ""}
             </p>
+            {readsBlocked && (
+              <p className="hire-max__quota-note">
+                ⛔ Reads soft-quota · MAX LIVE wait
+                {writeHarvestAvailable ? " · WRITE HARVEST available (REMOTE → buffer)" : ""}
+                {fq?.resetsHint ? ` · ${fq.resetsHint}` : ""}
+              </p>
+            )}
           </div>
-          <div className="hire-max__actions">
+          <div className="hire-max__actions hire-max__actions--col">
             <button
               type="button"
               className="hire-max__go"
-              disabled={running}
+              disabled={maxDisabled}
               onClick={() => void startMax()}
+              title={
+                readsBlocked
+                  ? "Firebase reads blocked · use WRITE HARVEST"
+                  : "Start MAX LIVE"
+              }
             >
-              {running ? "RUNNING…" : "MAX LIVE"}
+              {engineOn && live?.mode !== "write_harvest"
+                ? "RUNNING…"
+                : readsBlocked
+                  ? "MAX LIVE · wait"
+                  : "MAX LIVE"}
             </button>
+            {writeHarvestAvailable && (
+              <button
+                type="button"
+                className="hire-max__write"
+                disabled={engineOn || writesBlocked}
+                onClick={() => void startWriteHarvest()}
+                title="REMOTE-first harvest into buffer until writes burn / Stop"
+              >
+                {engineOn && live?.mode === "write_harvest"
+                  ? "BUFFER · auto…"
+                  : "WRITE HARVEST · auto"}
+              </button>
+            )}
+            {(flushAvailable || flushWaitingReads || bufferTotal > 0) &&
+              !engineOn && (
+                <button
+                  type="button"
+                  className={
+                    flushAvailable
+                      ? "hire-max__flush"
+                      : "hire-max__flush is-wait"
+                  }
+                  disabled={!flushAvailable}
+                  onClick={() => {
+                    if (flushAvailable) void flushBuffer();
+                  }}
+                  title={
+                    flushAvailable
+                      ? "Flush harvest_buffer → jobs"
+                      : "Wait for reads reset"
+                  }
+                >
+                  {flushAvailable
+                    ? `FLUSH · ${bufferTotal}`
+                    : flushWaitingReads
+                      ? `FLUSH · ${bufferTotal} · wait reads`
+                      : `FLUSH · ${bufferTotal || 0}`}
+                </button>
+              )}
             <button
               type="button"
               className="hire-max__stop"
-              disabled={!running && !stopping}
+              disabled={!engineOn && !stopping}
               onClick={() => void stopMax()}
             >
               {stopping ? t("max.stopping") : t("max.stop")}
             </button>
           </div>
         </div>
+
+        {showBufferPanel && (
+          <div className="hire-max__buffer">
+            <div className="hire-max__buffer-kicker">
+              Buffer panel · stack + buffer = expected after flush
+            </div>
+            <div className="hire-max__buffer-grid">
+              <div className="hire-max__buffer-card">
+                <em>Нынешний стек</em>
+                <b>{stackTotal.toLocaleString("en-US")}</b>
+              </div>
+              <div className="hire-max__buffer-card hire-max__buffer-card--gold">
+                <em>В буфере</em>
+                <b>+{bufferTotal.toLocaleString("en-US")}</b>
+              </div>
+              <div className="hire-max__buffer-card hire-max__buffer-card--cyan">
+                <em>Тотал ожидаемый</em>
+                <b>{expectedTotal.toLocaleString("en-US")}</b>
+              </div>
+            </div>
+            {(liveBoard?.remoteBuffered != null ||
+              board?.buffer?.remote != null) && (
+              <div className="hire-max__buffer-remote">
+                REMOTE in buffer ·{" "}
+                {Math.max(
+                  liveBoard?.remoteBuffered ?? 0,
+                  board?.buffer?.remote ?? 0,
+                )}
+              </div>
+            )}
+            {regionRows.length > 0 && (
+              <div className="hire-max__buffer-regions">
+                {regionRows.map((row) => (
+                  <div key={row.r} className="hire-max__buffer-region">
+                    <span>{trRegion(row.r)}</span>
+                    <span className="mono">
+                      {row.stack} + {row.buf} = {row.expected}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {message && <div className="hire-max__msg">{message}</div>}
 
@@ -378,7 +601,7 @@ export function HireMaxPanel({ onFilled }: Props) {
           <div className="hire-max__log" ref={logBoxRef}>
             {logs.length === 0 ? (
               <div className="hire-max__log-empty">
-                (log empty — press MAX LIVE)
+                (log empty — press MAX LIVE or WRITE HARVEST)
               </div>
             ) : (
               logs.map((line, i) => (

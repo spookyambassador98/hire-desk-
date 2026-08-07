@@ -82,16 +82,24 @@ async function harvestTier(
   segment: HireSegment,
   limit: number,
   log: (m: string) => Promise<void>,
+  opts: { remoteFirst?: boolean } = {},
 ): Promise<JobHit[]> {
   const signal = getStopAbortSignal();
   const tiers = ["primary", "secondary", "tertiary", "import"] as const;
   const out: JobHit[] = [];
   const seen = new Set<string>();
+  const remoteIds = new Set(["remotive", "remoteok", "arbeitnow"]);
 
   for (const tier of tiers) {
     if (isHarvestStopRequested()) break;
     if (out.length >= limit) break;
-    const sources = sourcesByTier(tier);
+    let sources = sourcesByTier(tier);
+    if (opts.remoteFirst) {
+      sources = [
+        ...sources.filter((s) => remoteIds.has(s.id)),
+        ...sources.filter((s) => !remoteIds.has(s.id)),
+      ];
+    }
     for (const src of sources) {
       if (isHarvestStopRequested()) break;
       if (out.length >= limit) break;
@@ -117,12 +125,26 @@ async function harvestTier(
       }
     }
   }
+
+  if (opts.remoteFirst) {
+    out.sort((a, b) => Number(Boolean(b.remote)) - Number(Boolean(a.remote)));
+  }
   return out;
+}
+
+function hitLooksRemote(hit: JobHit) {
+  if (hit.remote === true) return true;
+  const blob = `${hit.location || ""} ${hit.description || ""} ${hit.role || ""}`;
+  return /\bremote\b|\bdistributed\b|\bwork\s+from\s+home\b|\bwfh\b|\banywhere\b/i.test(
+    blob,
+  );
 }
 
 export type RunHireMaxOpts = {
   existingJobs: Job[];
   runTarget?: number;
+  /** WRITE HARVEST: prefer remote boards + remote hits; caller buffers writes. */
+  writeHarvest?: boolean;
   onJobsBatch?: (jobs: Job[]) => Promise<void>;
   onProgress?: (ev: {
     added: number;
@@ -134,11 +156,12 @@ export type RunHireMaxOpts = {
 };
 
 /**
- * MAX LIVE engine — cascade sources until RUN_TARGET or quotas/stop.
+ * MAX LIVE / WRITE HARVEST engine — cascade sources until RUN_TARGET or stop.
  */
 export async function runHireMax(
   opts: RunHireMaxOpts,
 ): Promise<RunHireMaxResult> {
+  const writeHarvest = Boolean(opts.writeHarvest);
   const runTarget = opts.runTarget ?? safeRunTarget();
   const inventory = countJobsByRegion(opts.existingJobs);
   const quota = await readQuotaDay(opts.existingJobs);
@@ -171,14 +194,20 @@ export async function runHireMax(
   ).length;
 
   await log(
-    `MAX LIVE · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET}) · proxy ${proxyModeLabel()} · sources ${enabledSources().length} · segments ${segments.length}`,
+    writeHarvest
+      ? `WRITE HARVEST · REMOTE first · target ≥${runTarget} · → buffer · sources ${enabledSources().length}`
+      : `MAX LIVE · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET}) · proxy ${proxyModeLabel()} · sources ${enabledSources().length} · segments ${segments.length}`,
   );
   await log(
     `⚖ region inventory EU ${inventory.europe ?? 0} · US ${inventory.america ?? 0} · AS ${inventory.asia ?? 0} → scarcest first`,
   );
-  await log(
-    `📦 day shelves ${filledShelves}/${segments.length} full · continue (no reset)`,
-  );
+  if (!writeHarvest) {
+    await log(
+      `📦 day shelves ${filledShelves}/${segments.length} full · continue (no reset)`,
+    );
+  } else {
+    await log(`📦 buffer mode · day shelves ignored · burn writes / Stoп`);
+  }
   if (proxyPoolSize() === 0) {
     await log(
       `⚠ No PROXY_URLS — soft cap ${runTarget} + gaps · set CF gateway or residential (see cloudflare/hire-proxy-worker.js)`,
@@ -189,17 +218,22 @@ export async function runHireMax(
     if (isHarvestStopRequested()) break;
     if (added >= runTarget) break;
 
-    const remaining = segmentRemaining(
-      segment.id as HireSegmentId,
-      quota.bySegment,
-    );
+    const remaining = writeHarvest
+      ? runTarget - added
+      : segmentRemaining(segment.id as HireSegmentId, quota.bySegment);
     if (remaining <= 0) {
-      await log(`${segment.label} · quota full · skip`);
+      if (!writeHarvest) await log(`${segment.label} · quota full · skip`);
       continue;
     }
 
-    const need = Math.min(remaining, runTarget - added, envNum("HIRE_SEGMENT_BATCH", 25));
-    await log(`▶ ${segment.label} · need ${need}`);
+    const need = Math.min(
+      remaining,
+      runTarget - added,
+      envNum("HIRE_SEGMENT_BATCH", writeHarvest ? 18 : 25),
+    );
+    await log(
+      `▶ ${segment.label} · need ${need}${writeHarvest ? " · REMOTE↑" : ""}`,
+    );
     await opts.onProgress?.({
       added,
       skipped,
@@ -208,15 +242,37 @@ export async function runHireMax(
       message: `▶ ${segment.label}`,
     });
 
-    const hits = await harvestTier(segment, need * 2, log);
+    const hits = await harvestTier(segment, need * 2, log, {
+      remoteFirst: writeHarvest,
+    });
+    // Prefer remotes into the keep batch first
+    const ordered = writeHarvest
+      ? [...hits].sort(
+          (a, b) => Number(hitLooksRemote(b)) - Number(hitLooksRemote(a)),
+        )
+      : hits;
     const batch: Job[] = [];
 
-    for (const hit of hits) {
+    for (const hit of ordered) {
       if (isHarvestStopRequested()) break;
       if (added + batch.length >= runTarget) break;
       if (batch.length >= remaining) break;
 
+      // WRITE HARVEST: skip non-remote when we already have remotes in pool
+      if (
+        writeHarvest &&
+        !hitLooksRemote(hit) &&
+        ordered.some(hitLooksRemote) &&
+        batch.filter((j) => j.remote === true).length >= Math.ceil(need * 0.7)
+      ) {
+        skipped += 1;
+        continue;
+      }
+
       const job = hitToJob(hit, segment);
+      if (writeHarvest && hitLooksRemote(hit)) {
+        job.remote = true;
+      }
       const k = jobKey(job);
       if (existingKeys.has(k)) {
         skipped += 1;
@@ -236,10 +292,15 @@ export async function runHireMax(
     if (batch.length) {
       await opts.onJobsBatch?.(batch);
       added += batch.length;
-      await bumpSegmentQuota(segment.id, batch.length);
-      quota.bySegment[segment.id] =
-        (quota.bySegment[segment.id] ?? 0) + batch.length;
-      await log(`💾 ${segment.label} · +${batch.length} (total +${added})`);
+      if (!writeHarvest) {
+        await bumpSegmentQuota(segment.id, batch.length);
+        quota.bySegment[segment.id] =
+          (quota.bySegment[segment.id] ?? 0) + batch.length;
+      }
+      const remotes = batch.filter((j) => j.remote === true).length;
+      await log(
+        `💾 ${segment.label} · +${batch.length}${writeHarvest ? ` (${remotes} remote → buffer)` : ""} (total +${added})`,
+      );
     } else {
       await log(`${segment.label} · 0 kept`);
     }
@@ -247,9 +308,13 @@ export async function runHireMax(
 
   const message = isHarvestStopRequested()
     ? `⏹ Stopped · +${added} · skip ${skipped} · trash ${trashed}`
-    : added >= runTarget
-      ? `✓ Target ≥${runTarget} · +${added} · skip ${skipped} · trash ${trashed}`
-      : `Done · +${added} · skip ${skipped} · trash ${trashed} (under target — sources thin / quotas)`;
+    : writeHarvest
+      ? added >= runTarget
+        ? `WRITE HARVEST pass · +${added} → buffer · trash ${trashed}`
+        : `WRITE HARVEST pass · +${added} → buffer · trash ${trashed} (thin)`
+      : added >= runTarget
+        ? `✓ Target ≥${runTarget} · +${added} · skip ${skipped} · trash ${trashed}`
+        : `Done · +${added} · skip ${skipped} · trash ${trashed} (under target — sources thin / quotas)`;
 
   await log(message);
   return { added, skipped, trashed, message };

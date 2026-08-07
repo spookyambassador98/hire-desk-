@@ -15,6 +15,10 @@ export const FIREBASE_QUOTA_BLOCK_PCT = 95;
 
 export type FirebaseQuotaGate = {
   blocked: boolean;
+  /** Soft reads ≥ block % (MAX LIVE waits; WRITE HARVEST may still run). */
+  readsBlocked: boolean;
+  /** Soft writes ≥ block % — stop WRITE HARVEST. */
+  writesBlocked: boolean;
   day: string;
   readsApprox: number;
   writesApprox: number;
@@ -58,6 +62,8 @@ export function snapshotFirebaseQuota(usage: OpsUsage): FirebaseQuotaGate {
   }
   return {
     blocked,
+    readsBlocked: exhausted || readsBlocked,
+    writesBlocked,
     day: usage.day,
     readsApprox: usage.readsApprox,
     writesApprox: usage.writesApprox,

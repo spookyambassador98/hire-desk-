@@ -5,6 +5,11 @@ import {
   isHarvestStopRequested,
   pauseRemainingMs,
 } from "@/lib/harvest/control";
+import {
+  buildHarvestBufferBoard,
+  countHarvestBuffer,
+  readHarvestBufferStats,
+} from "@/lib/harvest/buffer";
 import { readHarvestLive, readQuotaDay } from "@/lib/harvest/liveStore";
 import {
   HIRE_DAILY_QUOTA,
@@ -16,6 +21,7 @@ import { enabledSources } from "@/lib/harvest/sources";
 import { proxyPoolSize } from "@/lib/harvest/proxyPool";
 import { proxyModeLabel, safeRunTarget } from "@/lib/harvest/harvestFetch";
 import { env } from "@/lib/env";
+import { getFirebaseQuotaGate } from "@/lib/firebaseQuota";
 import { probeFirebase } from "@/lib/firebase";
 import { storageLabel } from "@/lib/persistence";
 import { readJobs } from "@/lib/store";
@@ -47,6 +53,25 @@ export async function GET() {
     storageLabel() === "firebase" ? await probeFirebase() : null;
   const effectiveTarget = safeRunTarget();
 
+  const jobs = await readJobs().catch(() => []);
+  const bufferStats = await readHarvestBufferStats().catch(() => ({
+    total: 0,
+    byRegion: { europe: 0, america: 0, asia: 0 } as Partial<
+      Record<"europe" | "america" | "asia", number>
+    >,
+    bySegment: {},
+    remote: 0,
+    updatedAt: new Date().toISOString(),
+  }));
+  const harvestBufferCount =
+    Number(bufferStats.total) ||
+    (await countHarvestBuffer().catch(() => 0));
+  const bufferBoard = buildHarvestBufferBoard(jobs, {
+    ...bufferStats,
+    total: harvestBufferCount,
+  });
+  const firebaseQuota = await getFirebaseQuotaGate().catch(() => null);
+
   return NextResponse.json({
     runTarget: effectiveTarget,
     configuredTarget: HIRE_RUN_TARGET,
@@ -65,6 +90,10 @@ export async function GET() {
     proxyMode: proxyModeLabel(),
     storage: storageLabel(),
     firebase,
+    firebaseQuota,
+    harvestBufferCount,
+    bufferBoard,
+    jobsTotal: jobs.length,
     paused: isHarvestPaused(),
     pauseRemainingMs: pauseRemainingMs(),
     stopRequested: isHarvestStopRequested(),
