@@ -67,6 +67,11 @@ export function HireDesk({
   const [toast, setToast] = useState<string | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [selectedIndId, setSelectedIndId] = useState<string | null>(null);
+  const [sortOpen, setSortOpen] = useState(false);
+  const [queueSort, setQueueSort] = useState<"priority" | "fit" | "age">(
+    "priority",
+  );
+  const [sortAck, setSortAck] = useState(false);
 
   const selectedJob = useMemo(
     () => jobs.find((j) => j.id === selectedJobId) || null,
@@ -222,6 +227,44 @@ export function HireDesk({
     [queueJobs, activeRail],
   );
 
+  const sortedRailJobs = useMemo(() => {
+    const list = [...railJobs];
+    if (queueSort === "fit") {
+      list.sort((a, b) => b.scores.fit.score - a.scores.fit.score);
+    } else if (queueSort === "age") {
+      list.sort(
+        (a, b) =>
+          Date.parse(b.postedAt || b.createdAt) -
+          Date.parse(a.postedAt || a.createdAt),
+      );
+    } else {
+      list.sort(
+        (a, b) =>
+          b.scores.priority.score - a.scores.priority.score ||
+          b.scores.fit.score - a.scores.fit.score,
+      );
+    }
+    return list;
+  }, [railJobs, queueSort]);
+
+  const railStatus = useMemo(() => {
+    let today = 0;
+    let queue = 0;
+    let maybe = 0;
+    for (const j of railJobs) {
+      if (j.scores.fit.band === "today") today += 1;
+      else if (j.scores.fit.band === "queue") queue += 1;
+      else maybe += 1;
+    }
+    return { today, queue, maybe, n: railJobs.length };
+  }, [railJobs]);
+
+  function applySort(mode: "priority" | "fit" | "age") {
+    setQueueSort(mode);
+    setSortAck(true);
+    flash(t("sort.ok"));
+  }
+
   const visibleJobs = useMemo(() => {
     if (view === "applied") {
       return sortAppliedWithFollowUps(
@@ -232,9 +275,9 @@ export function HireDesk({
         ),
       );
     }
-    if (view === "queue") return railJobs;
+    if (view === "queue") return sortedRailJobs;
     return [];
-  }, [jobs, view, railJobs]);
+  }, [jobs, view, sortedRailJobs]);
 
   const euQueue = queueJobs.filter((j) => j.region === "europe").length;
   const usQueue = queueJobs.filter((j) => j.region === "america").length;
@@ -315,6 +358,75 @@ export function HireDesk({
           </button>
         </nav>
         <div className="hd-top-tools">
+          <div className="hd-sort-wrap">
+            <AnimatePresence>
+              {sortOpen && (
+                <motion.aside
+                  className="hd-sort-panel"
+                  initial={{ opacity: 0, x: 12, scale: 0.96 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 8, scale: 0.98 }}
+                  transition={{ duration: 0.22, ease: EASE }}
+                  aria-label={t("sort.title")}
+                >
+                  <div className="hd-sort-panel__kicker">{t("sort.status")}</div>
+                  <p className="hd-sort-panel__line">
+                    {t("sort.line", {
+                      rail: t(`region.${activeRail}`),
+                      n: railStatus.n,
+                    })}
+                  </p>
+                  <p className="hd-sort-panel__bands">
+                    {t("sort.bands", {
+                      today: railStatus.today,
+                      queue: railStatus.queue,
+                      maybe: railStatus.maybe,
+                    })}
+                  </p>
+                  <p className="hd-sort-panel__hint">{t("sort.hint")}</p>
+                  <div className="hd-sort-panel__modes" role="group">
+                    {(
+                      [
+                        ["priority", "sort.by_pri"],
+                        ["fit", "sort.by_fit"],
+                        ["age", "sort.by_age"],
+                      ] as const
+                    ).map(([mode, key]) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        className={queueSort === mode ? "active" : ""}
+                        onClick={() => applySort(mode)}
+                      >
+                        {t(key)}
+                      </button>
+                    ))}
+                  </div>
+                  {sortAck && (
+                    <motion.div
+                      className="hd-sort-panel__ok"
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      {t("sort.ok")}
+                    </motion.div>
+                  )}
+                </motion.aside>
+              )}
+            </AnimatePresence>
+            <button
+              type="button"
+              className={`hd-sort-btn${sortOpen ? " is-open" : ""}`}
+              aria-expanded={sortOpen}
+              aria-label={t("sort.title")}
+              onClick={() => {
+                setSortOpen((v) => !v);
+                setSortAck(false);
+              }}
+            >
+              {t("sort.btn")}
+            </button>
+          </div>
           <div className="hd-lang" role="group" aria-label="Language">
             <button
               type="button"
@@ -450,7 +562,7 @@ export function HireDesk({
               </div>
             ) : view === "queue" ? (
               <div className="hd-list">
-                {railJobs.map((job, i) => (
+                {sortedRailJobs.map((job, i) => (
                   <JobCardFace
                     key={job.id}
                     job={job}
@@ -459,7 +571,7 @@ export function HireDesk({
                     onOpen={() => openJob(job.id)}
                   />
                 ))}
-                {railJobs.length === 0 && (
+                {sortedRailJobs.length === 0 && (
                   <div className="empty">{t("empty.queue")}</div>
                 )}
               </div>

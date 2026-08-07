@@ -44,7 +44,18 @@ export function textMatchesSegment(
 }
 
 const ASIA_RE =
-  /\b(singapore|tokyo|japan|korea|seoul|hong\s*kong|taiwan|bangkok|jakarta|manila|vietnam|hanoi|ho\s*chi\s*minh|india|bangalore|bengaluru|hyderabad|mumbai|delhi|pune|chennai|shanghai|beijing|shenzhen|hangzhou|guangzhou|sydney|melbourne|auckland|brisbane|perth|apac|asia[- ]?pacific|remote[- ]?apac|philippines|malaysia|indonesia|thailand|australia|new\s*zealand)\b/i;
+  /\b(singapore|tokyo|japan|korea|seoul|hong\s*kong|taiwan|bangkok|jakarta|manila|vietnam|hanoi|ho\s*chi\s*minh|shanghai|beijing|shenzhen|hangzhou|guangzhou|sydney|melbourne|auckland|brisbane|perth|apac|asia[- ]?pacific|remote[- ]?apac|philippines|malaysia|indonesia|thailand|australia|new\s*zealand)\b/i;
+
+/**
+ * Not target Asia for this desk — India + GCC/MENA must never land on Asia rail.
+ */
+export const ASIA_OUT_RE =
+  /\b(india|indian|bangalore|bengaluru|hyderabad|mumbai|delhi|pune|chennai|kolkata|gurgaon|gurugram|noida|dubai|uae|u\.a\.e\.?|united\s+arab|abu\s+dhabi|saudi|riyadh|qatar|doha|kuwait|bahrain|oman|pakistan|bangladesh|sri\s+lanka|nepal|middle\s+east|mena)\b/i;
+
+export function isAsiaOutLocation(text: string | null | undefined): boolean {
+  const t = (text || "").toLowerCase().replace(/\u00a0/g, " ");
+  return Boolean(t.trim()) && ASIA_OUT_RE.test(t);
+}
 
 const AMERICA_RE =
   /\b(usa|u\.s\.a?\.?|united\s+states|canada|latam|mexico|brazil|argentina|colombia|chile|peru|nyc|new\s+york|brooklyn|manhattan|san\s+francisco|sf\s+bay|bay\s+area|los\s+angeles|seattle|austin|boston|chicago|denver|miami|portland|atlanta|dallas|houston|phoenix|san\s+diego|san\s+jose|palo\s+alto|mountain\s+view|washington\s*d\.?c\.?|toronto|vancouver|montreal|ottawa|remote[- ]?us|remote[- ]?usa|americas?|california|texas|massachusetts|colorado|florida|washington\s+state)\b|,?\s*(ca|ny|wa|tx|ma|il|co|fl|or|ga|az|nc|pa)\b(?!\s*[a-z])/i;
@@ -59,6 +70,8 @@ const EUROPE_RE =
 export function detectRegionFromText(text: string): Region | null {
   const t = (text || "").toLowerCase().replace(/\u00a0/g, " ");
   if (!t.trim()) return null;
+  // India / Dubai etc. are never Asia on this desk
+  if (isAsiaOutLocation(t)) return null;
   if (ASIA_RE.test(t)) return "asia";
   if (AMERICA_RE.test(t)) return "america";
   if (EUROPE_RE.test(t)) return "europe";
@@ -75,12 +88,15 @@ export function inferRegionFromText(
 /**
  * Keep hit only if location (or short blob) matches the harvest segment.
  * Empty / ambiguous location → keep with segment.region (remote boards).
+ * India / MENA never accepted on Asia shelves.
  */
 export function regionForSegmentHit(
   locationOrBlob: string | null | undefined,
   segment: HireSegment,
 ): Region | null {
-  const detected = detectRegionFromText(locationOrBlob || "");
+  const loc = locationOrBlob || "";
+  if (segment.region === "asia" && isAsiaOutLocation(loc)) return null;
+  const detected = detectRegionFromText(loc);
   if (detected && detected !== segment.region) return null;
   return detected ?? segment.region;
 }

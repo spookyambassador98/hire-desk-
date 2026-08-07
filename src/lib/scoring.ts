@@ -1,4 +1,5 @@
 import { matchPortfolio, portfolioProofPoints } from "./portfolio";
+import { isAsiaOutLocation } from "./harvest/sources/types";
 import type {
   FitBand,
   FitResult,
@@ -288,7 +289,11 @@ export function computeFit(
   const text = jobText(job);
 
   const antiReason =
-    findRoleTitleAnti(job.role) || findAntiFilter(text);
+    (isAsiaOutLocation(job.location)
+      ? "India / MENA — outside Asia targets"
+      : null) ||
+    findRoleTitleAnti(job.role) ||
+    findAntiFilter(text);
   if (antiReason) {
     return {
       score: 0,

@@ -14,7 +14,10 @@ import {
 } from "./individualScoring";
 import { enrichJobProofs, scoreJob } from "./scoring";
 import { resolveSalary } from "./regions";
-import { detectRegionFromText } from "./harvest/sources/types";
+import {
+  detectRegionFromText,
+  isAsiaOutLocation,
+} from "./harvest/sources/types";
 import type {
   ApplyChannel,
   HireProfile,
@@ -88,10 +91,21 @@ export function withScores(
   profile: HireProfile = DEFAULT_HIRE_PROFILE,
   individuals: Individual[] = [],
 ): ScoredJob[] {
-  const reconciled = jobs.map((j) => ({
-    ...j,
-    region: detectRegionFromText(j.location || "") ?? j.region,
-  }));
+  const reconciled = jobs.map((j) => {
+    const loc = j.location || "";
+    // India / Dubai etc. must never stay on Asia rail
+    if (isAsiaOutLocation(loc)) {
+      const detected = detectRegionFromText(loc);
+      return {
+        ...j,
+        region: detected ?? (j.region === "asia" ? "europe" : j.region),
+      };
+    }
+    return {
+      ...j,
+      region: detectRegionFromText(loc) ?? j.region,
+    };
+  });
   const ctx = buildPriorityContext(reconciled, profile, individuals);
   return reconciled
     .map((j) => {
