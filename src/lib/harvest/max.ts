@@ -47,6 +47,9 @@ export const HIRE_RUN_TARGET = envNum("HIRE_RUN_TARGET", 80);
  */
 export const KW_AI = [
   "ai solution architect",
+  "ai-native full-stack product builder",
+  "ai native fullstack product builder",
+  "ai-native product builder",
   "full-stack ai developer",
   "fullstack ai developer",
   "full stack ai",
@@ -238,7 +241,7 @@ export function segmentRemaining(
 
 /** Title/blob match for AI product priority roles (harvest ranking). */
 export const PRIORITY_AI_ROLE_RE =
-  /\b(ai\s+solution\s+architect|full[-\s]?stack\s+ai|prompt\s+engineer|ai[-\s]?powered\s+product|no[-\s]?code|low[-\s]?code|ai\s+engineer|solution\s+maker|solution\s+architect|ai\s+product\s+developer)\b/i;
+  /\b(ai[-\s]?native\s+full[-\s]?stack\s+product\s+builder|ai[-\s]?native\s+product\s+builder|ai\s+solution\s+architect|full[-\s]?stack\s+ai|prompt\s+engineer|ai[-\s]?powered\s+product|no[-\s]?code|low[-\s]?code|ai\s+engineer|solution\s+maker|solution\s+architect|ai\s+product\s+developer)\b/i;
 
 export function matchesPriorityAiRole(text: string): boolean {
   return PRIORITY_AI_ROLE_RE.test(text || "");

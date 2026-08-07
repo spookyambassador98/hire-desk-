@@ -213,7 +213,7 @@ export async function runHireMax(
       : `MAX LIVE · REMOTE + AI Product track · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET}) · proxy ${proxyModeLabel()} · sources ${enabledSources().length} · segments ${segments.length}`,
   );
   await log(
-    `🎯 priority · AI Solution Architect · Full-Stack AI · Prompt / AI Product · No-Code Lead · AI Engineer · Solution Maker`,
+    `🎯 priority · AI-Native Full-Stack Product Builder · AI Solution Architect · Full-Stack AI · Prompt / AI Product · No-Code Lead · AI Engineer · Solution Maker`,
   );
   await log(
     `⚖ region inventory EU ${inventory.europe ?? 0} · US ${inventory.america ?? 0} · AS ${inventory.asia ?? 0} → scarcest first`,

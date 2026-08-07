@@ -24,6 +24,16 @@ import { DEFAULT_HIRE_PROFILE } from "./types";
 
 const ROLE_POSITIVE: Array<{ re: RegExp; w: number; label: string }> = [
   {
+    re: /\bai[-\s]?native\s+full[-\s]?stack\s+product\s+builder\b/i,
+    w: 37,
+    label: "AI-Native Full-Stack Product Builder",
+  },
+  {
+    re: /\bai[-\s]?native\s+product\s+builder\b/i,
+    w: 36,
+    label: "AI-Native Product Builder",
+  },
+  {
     re: /\bai\s+solution\s+architect\b/i,
     w: 36,
     label: "AI Solution Architect",
@@ -146,7 +156,7 @@ function findRoleTitleAnti(role: string): string | null {
   const r = role || "";
   // Explicit allow — never anti these priority titles
   if (
-    /\b(ai\s+solution\s+architect|full[-\s]?stack\s+ai|prompt\s+engineer|ai[-\s]?powered\s+product|no[-\s]?code|low[-\s]?code|ai\s+engineer|solution\s+maker|solution\s+architect)\b/i.test(
+    /\b(ai[-\s]?native\s+(full[-\s]?stack\s+)?product\s+builder|ai\s+solution\s+architect|full[-\s]?stack\s+ai|prompt\s+engineer|ai[-\s]?powered\s+product|no[-\s]?code|low[-\s]?code|ai\s+engineer|solution\s+maker|solution\s+architect)\b/i.test(
       r,
     )
   ) {
