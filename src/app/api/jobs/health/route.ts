@@ -4,7 +4,7 @@ import path from "node:path";
 import { isFirebaseExhausted } from "@/lib/opsUsage";
 import { peekStoreCounts, storageLabel } from "@/lib/persistence";
 import { readJobs } from "@/lib/store";
-import bundledSeedJobs from "../../../data/recovery/seed-jobs.json";
+import bundledSeedJobs from "@/data/recovery/seed-jobs.json";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

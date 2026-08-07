@@ -37,6 +37,8 @@ import { extractContactsFromJob } from "./extractContacts";
 import { stripHtml } from "./text";
 import { parseHarvestPayload } from "./harvest/parsePaste";
 import { jobDedupeKey } from "./harvest/dedupe";
+import bundledSeedJobs from "@/data/recovery/seed-jobs.json";
+import bundledSeedIndividuals from "@/data/recovery/seed-individuals.json";
 
 function startOfUtcDay(iso = new Date().toISOString()): string {
   return iso.slice(0, 10);
@@ -488,13 +490,34 @@ export async function deskPayload(
   profile: HireProfile = DEFAULT_HIRE_PROFILE,
 ) {
   try {
-    const jobsRaw = await readJobs();
+    let jobsRaw = await readJobs();
+    // Hard guarantee: never serve an empty desk while we have a recovery seed
+    if (!jobsRaw.length) {
+      const seed = bundledSeedJobs as Job[];
+      if (Array.isArray(seed) && seed.length) {
+        console.error(
+          `[deskPayload] empty store → injecting bundled seed (${seed.length})`,
+        );
+        jobsRaw = seed;
+        try {
+          await upsertRawJobs(seed);
+        } catch (err) {
+          console.error("[deskPayload] seed upsert skipped", err);
+        }
+      }
+    }
     const { isFirebaseExhausted } = await import("@/lib/opsUsage");
     // Contact backfill can write dozens of docs — skip while quota is dead
     if (!isFirebaseExhausted()) {
       await backfillIndividualsFromJobs(jobsRaw);
     }
-    const indRaw = await readIndividuals();
+    let indRaw = await readIndividuals();
+    if (!indRaw.length) {
+      const seedInd = bundledSeedIndividuals as Individual[];
+      if (Array.isArray(seedInd) && seedInd.length) {
+        indRaw = seedInd;
+      }
+    }
     return {
       jobs: withScores(jobsRaw, profile, indRaw),
       individuals: withIndividualScores(indRaw, jobsRaw, profile),
@@ -503,10 +526,14 @@ export async function deskPayload(
     };
   } catch (err) {
     console.error("[deskPayload] fail-soft", err);
+    const seed = bundledSeedJobs as Job[];
+    const seedInd = bundledSeedIndividuals as Individual[];
+    const jobsRaw = Array.isArray(seed) ? seed : [];
+    const indRaw = Array.isArray(seedInd) ? seedInd : [];
     return {
-      jobs: [],
-      individuals: [],
-      quota: quotaSnapshot([], [], profile),
+      jobs: withScores(jobsRaw, profile, indRaw),
+      individuals: withIndividualScores(indRaw, jobsRaw, profile),
+      quota: quotaSnapshot(jobsRaw, indRaw, profile),
       profile,
     };
   }

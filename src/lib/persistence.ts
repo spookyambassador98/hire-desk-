@@ -7,8 +7,8 @@ import {
   noteFirestoreError,
 } from "@/lib/opsUsage";
 import type { Individual, Job } from "@/lib/types";
-import bundledSeedJobs from "../../data/recovery/seed-jobs.json";
-import bundledSeedIndividuals from "../../data/recovery/seed-individuals.json";
+import bundledSeedJobs from "@/data/recovery/seed-jobs.json";
+import bundledSeedIndividuals from "@/data/recovery/seed-individuals.json";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const JOBS_FILE = path.join(DATA_DIR, "jobs.json");
@@ -96,6 +96,11 @@ async function readIndividualsWithFallback(
   if (diskSeed.length) return diskSeed;
   const bundled = bundledSeedIndividuals as Individual[];
   return Array.isArray(bundled) && bundled.length ? bundled : [];
+}
+
+async function ensureDataDir() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.mkdir(path.join(DATA_DIR, "recovery"), { recursive: true });
 }
 
 async function readJsonFile<T>(file: string, fallback: T): Promise<T> {
