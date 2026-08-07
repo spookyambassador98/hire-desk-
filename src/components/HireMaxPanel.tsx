@@ -32,6 +32,8 @@ type LiveBufferBoard = {
   bufferTotal: number;
   expectedTotal: number;
   remoteBuffered?: number;
+  bufferBySegment?: Partial<Record<string, number>>;
+  stackBySegment?: Partial<Record<string, number>>;
   byRegion?: Partial<
     Record<Region, { stack: number; buffer: number; expected?: number }>
   >;
@@ -68,8 +70,16 @@ type BufferBoardPayload = {
   stackTotal: number;
   bufferTotal: number;
   expectedTotal: number;
-  stack: { total: number; remote?: number };
-  buffer: { total: number; remote?: number };
+  stack: {
+    total: number;
+    remote?: number;
+    bySegment?: Partial<Record<string, number>>;
+  };
+  buffer: {
+    total: number;
+    remote?: number;
+    bySegment?: Partial<Record<string, number>>;
+  };
   byRegion: Record<
     Region,
     { stack: number; buffer: number; expected: number }
@@ -656,18 +666,57 @@ export function HireMaxPanel({ onFilled }: Props) {
         {message && <div className="hire-max__msg">{message}</div>}
 
         <div className="hire-max__engine">
+          <div className="hire-max__quotas-head">
+            <span>
+              {bufferTotal > 0 || live?.mode === "write_harvest"
+                ? "Полки · золото = в буфере (WRITE) · cyan = сегодня MAX LIVE"
+                : "Day shelves · MAX LIVE today"}
+            </span>
+            {bufferTotal > 0 && (
+              <span className="hire-max__quotas-hint">
+                В стек попадёт только после{" "}
+                <b>ВЛИТЬ</b> ({bufferTotal} в буфере)
+              </span>
+            )}
+          </div>
           <div className="hire-max__quotas">
-            {(status?.quotas || []).map((q) => (
-              <div key={q.segmentId} className="hire-max__q">
+            {(status?.quotas || []).map((q) => {
+              const bufSeg = Math.max(
+                liveBoard?.bufferBySegment?.[q.segmentId] ?? 0,
+                board?.buffer?.bySegment?.[q.segmentId] ?? 0,
+              );
+              const showBuf = bufferTotal > 0 || bufSeg > 0;
+              const bufPct = Math.min(
+                100,
+                Math.round((bufSeg / Math.max(1, q.quota)) * 100),
+              );
+              const isAiShelf = q.segmentId.includes("_ai");
+              return (
+              <div
+                key={q.segmentId}
+                className={`hire-max__q${isAiShelf ? " hire-max__q--ai" : ""}${showBuf && bufSeg > 0 ? " has-buf" : ""}`}
+              >
                 <div className="hire-max__q-label">{q.label}</div>
                 <div className="hire-max__q-bar">
+                  {showBuf && (
+                    <span
+                      className="hire-max__q-bar-buf"
+                      style={{ width: `${bufPct}%` }}
+                    />
+                  )}
                   <span style={{ width: `${q.pct}%` }} />
                 </div>
                 <div className="hire-max__q-meta">
-                  {q.today}/{q.quota}
+                  {showBuf && (
+                    <span className="hire-max__q-buf">buf {bufSeg}</span>
+                  )}
+                  <span>
+                    today {q.today}/{q.quota}
+                  </span>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
 
           <div className="hire-max__log-wrap">

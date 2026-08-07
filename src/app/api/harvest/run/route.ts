@@ -86,6 +86,8 @@ async function liveBufferBoard(stackJobs: Job[]) {
     expectedTotal: board.expectedTotal,
     byRegion: board.byRegion,
     remoteBuffered: board.buffer.remote,
+    bufferBySegment: board.buffer.bySegment ?? {},
+    stackBySegment: board.stack.bySegment ?? {},
   };
 }
 
@@ -275,7 +277,7 @@ async function executeHarvestRun(
         onProgress: async (ev) => {
           const stopped = isHarvestStopRequested();
           if (stopped) stopHeartbeat();
-          await pushHarvestLog(ev.message, {
+          await patchHarvestLive({
             running: !stopped,
             added: baseAdded + ev.added,
             skipped: baseSkipped + ev.skipped,
@@ -509,7 +511,7 @@ async function executeWriteHarvestRun() {
         onProgress: async (ev) => {
           const stopped = isHarvestStopRequested();
           if (stopped) stopHeartbeat();
-          await pushHarvestLog(ev.message, {
+          await patchHarvestLive({
             running: !stopped,
             mode: "write_harvest",
             added: bufferTotalLive || baseBuf + ev.added,

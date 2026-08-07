@@ -25,6 +25,8 @@ export type HarvestLiveBufferBoard = {
     Record<"europe" | "america" | "asia", { stack: number; buffer: number }>
   >;
   remoteBuffered?: number;
+  bufferBySegment?: Partial<Record<string, number>>;
+  stackBySegment?: Partial<Record<string, number>>;
 };
 
 export type HarvestLiveState = {

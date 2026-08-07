@@ -179,7 +179,10 @@ export async function runHireMax(
   const runTarget = opts.runTarget ?? safeRunTarget();
   const inventory = countJobsByRegion(opts.existingJobs);
   const quota = await readQuotaDay(opts.existingJobs);
-  const segments = prioritizedSegments(quota.bySegment, inventory);
+  const allSegments = prioritizedSegments(quota.bySegment, inventory);
+  const segments = writeHarvest
+    ? allSegments.filter((s) => s.family === "ai")
+    : allSegments;
   const existingKeys = new Set(opts.existingJobs.map(jobKey));
 
   let added = 0;
@@ -223,7 +226,9 @@ export async function runHireMax(
       `📦 day shelves ${filledShelves}/${segments.length} full · continue (no reset)`,
     );
   } else {
-    await log(`📦 buffer mode · day shelves ignored · burn writes / Stoп`);
+    await log(
+      `📦 buffer mode · только полки AI Product (${segments.map((s) => s.id).join(", ")}) · в jobs только ВЛИТЬ`,
+    );
   }
   if (proxyPoolSize() === 0) {
     await log(
