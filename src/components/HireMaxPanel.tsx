@@ -243,6 +243,7 @@ export function HireMaxPanel({ onFilled }: Props) {
   const [intake, setIntake] = useState<IntakeHit[]>([]);
   const [stopping, setStopping] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [flushing, setFlushing] = useState(false);
   const [tick, setTick] = useState(0);
   const [flashId, setFlashId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -401,15 +402,32 @@ export function HireMaxPanel({ onFilled }: Props) {
   }
 
   async function flushBuffer() {
-    setMessage("FLUSH buffer → jobs…");
+    setFlushing(true);
+    setMessage("ВЛИТЬ · сливаю буфер → jobs…");
     try {
-      const res = await fetch("/api/harvest/flush-buffer", { method: "POST" });
-      const data = (await res.json()) as { message?: string };
-      setMessage(data.message || "Flush done");
+      const res = await fetch("/api/harvest/flush-buffer", {
+        method: "POST",
+        cache: "no-store",
+      });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        message?: string;
+        flushed?: number;
+        remaining?: number;
+        writeOnly?: boolean;
+      };
+      setMessage(
+        data.message ||
+          (data.flushed
+            ? `ВЛИТЬ · +${data.flushed}`
+            : "ВЛИТЬ · готово"),
+      );
       await loadStatus();
-      onFilled?.();
+      if ((data.flushed ?? 0) > 0) onFilled?.();
     } catch {
-      setMessage("Flush failed");
+      setMessage("ВЛИТЬ fail · сеть");
+    } finally {
+      setFlushing(false);
     }
   }
 
@@ -463,8 +481,9 @@ export function HireMaxPanel({ onFilled }: Props) {
     status?.harvestBufferCount ?? 0,
   );
   const expectedTotal = stackTotal + bufferTotal;
-  const flushAvailable = !readsBlocked && bufferTotal > 0;
-  const flushWaitingReads = readsBlocked && bufferTotal > 0;
+  const canFlush = bufferTotal > 0 && !engineOn && !flushing;
+  const flushAvailable = canFlush && !readsBlocked;
+  const flushWaitingReads = canFlush && readsBlocked;
   const showBufferPanel =
     writeHarvestAvailable ||
     bufferTotal > 0 ||
@@ -542,31 +561,35 @@ export function HireMaxPanel({ onFilled }: Props) {
             <button
               type="button"
               className={
-                flushAvailable && !engineOn
+                flushAvailable
                   ? "hire-max__flush"
-                  : "hire-max__flush is-wait"
+                  : flushWaitingReads
+                    ? "hire-max__flush hire-max__flush--force"
+                    : "hire-max__flush is-wait"
               }
-              disabled={!flushAvailable || engineOn}
+              disabled={!canFlush}
               onClick={() => {
-                if (flushAvailable && !engineOn) void flushBuffer();
+                if (canFlush) void flushBuffer();
               }}
               title={
                 engineOn
                   ? "Дождись стопа · потом ВЛИТЬ"
                   : flushAvailable
-                    ? "Слить harvest_buffer → jobs (как lead-desk)"
+                    ? "Слить harvest_buffer → jobs"
                     : flushWaitingReads
-                      ? "Reads ≥95% · после 00:00 UTC"
+                      ? "Reads blocked · слив write-only (без полного скана desk)"
                       : "Буфер пуст — сначала WRITE HARVEST"
               }
             >
-              {flushAvailable && !engineOn
-                ? `ВЛИТЬ · ${bufferTotal}`
-                : flushWaitingReads
-                  ? `ВЛИТЬ · ${bufferTotal} · жди reads`
-                  : bufferTotal > 0
-                    ? `ВЛИТЬ · ${bufferTotal}`
-                    : "ВЛИТЬ · пусто"}
+              {flushing
+                ? "ВЛИТЬ · …"
+                : flushAvailable
+                  ? `ВЛИТЬ · ${bufferTotal}`
+                  : flushWaitingReads
+                    ? `ВЛИТЬ · ${bufferTotal} · write-only`
+                    : bufferTotal > 0
+                      ? `ВЛИТЬ · ${bufferTotal}`
+                      : "ВЛИТЬ · пусто"}
             </button>
             <button
               type="button"
@@ -601,27 +624,31 @@ export function HireMaxPanel({ onFilled }: Props) {
               <button
                 type="button"
                 className={
-                  flushAvailable && !engineOn
+                  flushAvailable
                     ? "hire-max__flush hire-max__flush--pill"
-                    : "hire-max__flush hire-max__flush--pill is-wait"
+                    : flushWaitingReads
+                      ? "hire-max__flush hire-max__flush--pill hire-max__flush--force"
+                      : "hire-max__flush hire-max__flush--pill is-wait"
                 }
-                disabled={!flushAvailable || engineOn}
+                disabled={!canFlush}
                 onClick={() => {
-                  if (flushAvailable && !engineOn) void flushBuffer();
+                  if (canFlush) void flushBuffer();
                 }}
                 title={
                   flushAvailable
                     ? "Слить буфер в jobs"
                     : flushWaitingReads
-                      ? "Жди сброс reads (~00:00 UTC)"
+                      ? "Write-only слив при blocked reads"
                       : "Нечего сливать"
                 }
               >
-                {flushAvailable && !engineOn
-                  ? `ВЛИТЬ · ${bufferTotal}`
-                  : flushWaitingReads
-                    ? `ВЛИТЬ · жди reads · ${bufferTotal}`
-                    : `ВЛИТЬ · ${bufferTotal || 0}`}
+                {flushing
+                  ? "ВЛИТЬ…"
+                  : flushAvailable
+                    ? `ВЛИТЬ · ${bufferTotal}`
+                    : flushWaitingReads
+                      ? `ВЛИТЬ · ${bufferTotal} · write-only`
+                      : `ВЛИТЬ · ${bufferTotal || 0}`}
               </button>
             </div>
             <div className="hire-max__buffer-grid">

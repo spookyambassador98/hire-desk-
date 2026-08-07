@@ -455,6 +455,17 @@ export async function ingestJobsBatch(jobs: Job[]) {
   return { added, individualsAdded };
 }
 
+/** Flush harvest buffer → desk without full Firestore job scan (reads dead). */
+export async function ingestJobsBatchWriteOnly(jobs: Job[]) {
+  if (!jobs.length) return { added: 0, individualsAdded: 0 };
+  const cleaned = jobs.map((j) => ({
+    ...j,
+    description: stripHtml(j.description),
+  }));
+  await upsertRawJobs(cleaned);
+  return { added: cleaned.length, individualsAdded: 0 };
+}
+
 export function quotaSnapshot(
   jobs: Job[],
   individuals: Individual[] = [],

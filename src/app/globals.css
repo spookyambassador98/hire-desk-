@@ -1986,8 +1986,15 @@ body::after {
   background: rgba(0, 0, 0, 0.3);
 }
 
+.hire-max__flush--force {
+  border-color: rgba(212, 175, 55, 0.55);
+  color: var(--gold);
+  background: rgba(212, 175, 55, 0.08);
+}
+
 .hire-max__flush:disabled {
-  cursor: default;
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .hire-max__stop {

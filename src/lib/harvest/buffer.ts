@@ -224,7 +224,42 @@ export async function readHarvestBuffer(): Promise<HarvestBufferRow[]> {
     setMemRows(disk);
     return disk;
   }
+  const fb = await tryReadFirebaseBuffer();
+  if (fb.length) {
+    setMemRows(fb);
+    await writeDiskBuffer(fb).catch(() => undefined);
+    const board = tallyJobs(fb);
+    setMemStats(board);
+    await writeDiskStats(board).catch(() => undefined);
+    return fb;
+  }
   return [];
+}
+
+/** Load buffer docs from Firestore (survives Render restarts / other instances). */
+async function tryReadFirebaseBuffer(): Promise<HarvestBufferRow[]> {
+  if (!firebaseConfigured()) return [];
+  try {
+    const snap = await firestore().collection(FS_BUFFER).limit(500).get();
+    await bumpOpsUsage({ reads: Math.max(1, snap.size) });
+    if (snap.empty) return [];
+    return snap.docs.map((d) => {
+      const data = d.data() as HarvestBufferRow;
+      return { ...data, id: data.id || d.id };
+    });
+  } catch (err) {
+    noteFirestoreError(err);
+    return [];
+  }
+}
+
+export async function resetHarvestBufferStats() {
+  const empty = emptyBoard();
+  setMemStats(empty);
+  setMemRows([]);
+  await writeDiskStats(empty).catch(() => undefined);
+  await writeDiskBuffer([]).catch(() => undefined);
+  await tryWriteFirebaseStats(empty);
 }
 
 export async function countHarvestBuffer(): Promise<number> {
