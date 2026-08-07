@@ -23,6 +23,34 @@ import { DEFAULT_HIRE_PROFILE } from "./types";
  */
 
 const ROLE_POSITIVE: Array<{ re: RegExp; w: number; label: string }> = [
+  {
+    re: /\bai\s+solution\s+architect\b/i,
+    w: 36,
+    label: "AI Solution Architect",
+  },
+  {
+    re: /\bfull[-\s]?stack\s+ai\b/i,
+    w: 36,
+    label: "Full-Stack AI Developer",
+  },
+  {
+    re: /\bprompt\s+engineer\b/i,
+    w: 35,
+    label: "Prompt Engineer",
+  },
+  {
+    re: /\bai[-\s]?powered\s+product\b/i,
+    w: 35,
+    label: "AI-Powered Product Developer",
+  },
+  {
+    re: /\b(no[-\s]?code|low[-\s]?code).{0,24}\b(technical\s+lead|tech\s+lead|lead)\b|\b(technical\s+lead|tech\s+lead).{0,24}\b(no[-\s]?code|low[-\s]?code)\b/i,
+    w: 34,
+    label: "No-Code / Low-Code Technical Lead",
+  },
+  { re: /\bsolution\s+maker\b/i, w: 33, label: "Solution Maker" },
+  { re: /\bai\s+engineer\b/i, w: 32, label: "AI Engineer" },
+  { re: /\bsolution\s+architect\b/i, w: 30, label: "Solution Architect" },
   { re: /\bfounding\s+engineer\b/i, w: 35, label: "Founding Engineer" },
   { re: /\b0\s*[-–to]+\s*1\b|\bfirst\s+engineer\b/i, w: 34, label: "0→1 / First engineer" },
   { re: /\bproduct\s+builder\b/i, w: 34, label: "Product Builder" },
@@ -63,8 +91,8 @@ const ANTI_FILTERS: Array<{ re: RegExp; reason: string }> = [
     reason: "ML / research scientist role",
   },
   {
-    re: /\bllm\s+engineer\b|\bai\s+engineer\b|\bprompt\s+engineer\b/i,
-    reason: "LLM / AI engineer role",
+    re: /\bllm\s+research\b|\bfoundation\s+model\s+train/i,
+    reason: "LLM research / training role",
   },
   {
     re: /\b(pytorch|tensorflow|jax)\b.*\b(required|must|experience)\b|\b(required|must)\b.*\b(pytorch|tensorflow)\b/i,
@@ -110,18 +138,26 @@ function findAntiFilter(text: string): string | null {
   return null;
 }
 
-/** Role title gates — avoid false positives from company blurbs that mention AI. */
+/**
+ * Role title gates — block research/ML science titles only.
+ * AI Solution Architect / Prompt / Full-Stack AI / No-Code Lead are priority keeps.
+ */
 function findRoleTitleAnti(role: string): string | null {
   const r = role || "";
+  // Explicit allow — never anti these priority titles
   if (
-    /\b(ml|machine\s+learning|llm|data\s+science|ai\s+product|ai\s+research|prompt\s+engineer|research\s+scientist)\b/i.test(
+    /\b(ai\s+solution\s+architect|full[-\s]?stack\s+ai|prompt\s+engineer|ai[-\s]?powered\s+product|no[-\s]?code|low[-\s]?code|ai\s+engineer|solution\s+maker|solution\s+architect)\b/i.test(
       r,
     )
   ) {
-    return "AI/ML-titled role";
+    return null;
   }
-  if (/\bai\s+engineer\b/i.test(r)) {
-    return "AI engineer title";
+  if (
+    /\b(machine\s+learning\s+engineer|ml\s+engineer|research\s+scientist|data\s+scientist|ai\s+research|llm\s+researcher)\b/i.test(
+      r,
+    )
+  ) {
+    return "ML / research science title";
   }
   return null;
 }

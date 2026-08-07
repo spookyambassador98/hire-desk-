@@ -16,6 +16,7 @@ import {
 import {
   HIRE_RUN_TARGET,
   countJobsByRegion,
+  matchesPriorityAiRole,
   prioritizedSegments,
   segmentRemaining,
   type HireSegment,
@@ -140,6 +141,19 @@ function hitLooksRemote(hit: JobHit) {
   );
 }
 
+function hitPriorityScore(hit: JobHit): number {
+  const blob = `${hit.role}\n${hit.description || ""}`;
+  let s = 0;
+  if (hitLooksRemote(hit)) s += 100;
+  if (matchesPriorityAiRole(hit.role) || matchesPriorityAiRole(blob)) s += 80;
+  if (hit.remote === true) s += 10;
+  return s;
+}
+
+function sortHitsPriority(hits: JobHit[]): JobHit[] {
+  return [...hits].sort((a, b) => hitPriorityScore(b) - hitPriorityScore(a));
+}
+
 export type RunHireMaxOpts = {
   existingJobs: Job[];
   runTarget?: number;
@@ -195,8 +209,11 @@ export async function runHireMax(
 
   await log(
     writeHarvest
-      ? `WRITE HARVEST · REMOTE first · target ≥${runTarget} · → buffer · sources ${enabledSources().length}`
-      : `MAX LIVE · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET}) · proxy ${proxyModeLabel()} · sources ${enabledSources().length} · segments ${segments.length}`,
+      ? `WRITE HARVEST · REMOTE + AI roles first · target ≥${runTarget} · → buffer · sources ${enabledSources().length}`
+      : `MAX LIVE · REMOTE + AI Product track · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET}) · proxy ${proxyModeLabel()} · sources ${enabledSources().length} · segments ${segments.length}`,
+  );
+  await log(
+    `🎯 priority · AI Solution Architect · Full-Stack AI · Prompt / AI Product · No-Code Lead · AI Engineer · Solution Maker`,
   );
   await log(
     `⚖ region inventory EU ${inventory.europe ?? 0} · US ${inventory.america ?? 0} · AS ${inventory.asia ?? 0} → scarcest first`,
@@ -232,7 +249,7 @@ export async function runHireMax(
       envNum("HIRE_SEGMENT_BATCH", writeHarvest ? 18 : 25),
     );
     await log(
-      `▶ ${segment.label} · need ${need}${writeHarvest ? " · REMOTE↑" : ""}`,
+      `▶ ${segment.label} · need ${need} · REMOTE↑ AI↑`,
     );
     await opts.onProgress?.({
       added,
@@ -242,15 +259,12 @@ export async function runHireMax(
       message: `▶ ${segment.label}`,
     });
 
+    const preferAiRemote = true; // REMOTE + AI product roles are always search priority
     const hits = await harvestTier(segment, need * 2, log, {
-      remoteFirst: writeHarvest,
+      remoteFirst: true,
     });
-    // Prefer remotes into the keep batch first
-    const ordered = writeHarvest
-      ? [...hits].sort(
-          (a, b) => Number(hitLooksRemote(b)) - Number(hitLooksRemote(a)),
-        )
-      : hits;
+    // Prefer remote + priority AI roles into the keep batch first
+    const ordered = sortHitsPriority(hits);
     const batch: Job[] = [];
 
     for (const hit of ordered) {
@@ -258,21 +272,32 @@ export async function runHireMax(
       if (added + batch.length >= runTarget) break;
       if (batch.length >= remaining) break;
 
-      // WRITE HARVEST: skip non-remote when we already have remotes in pool
+      const isPri =
+        matchesPriorityAiRole(hit.role) ||
+        matchesPriorityAiRole(`${hit.role} ${hit.description || ""}`);
+      const isRemote = hitLooksRemote(hit);
+
+      // Prefer remote + priority AI roles; soft-skip fillers once quota half-filled
       if (
-        writeHarvest &&
-        !hitLooksRemote(hit) &&
-        ordered.some(hitLooksRemote) &&
-        batch.filter((j) => j.remote === true).length >= Math.ceil(need * 0.7)
+        !isPri &&
+        !isRemote &&
+        ordered.some(
+          (h) =>
+            hitLooksRemote(h) ||
+            matchesPriorityAiRole(h.role),
+        ) &&
+        batch.filter(
+          (j) =>
+            j.remote === true ||
+            matchesPriorityAiRole(j.role),
+        ).length >= Math.ceil(need * 0.55)
       ) {
         skipped += 1;
         continue;
       }
 
       const job = hitToJob(hit, segment);
-      if (writeHarvest && hitLooksRemote(hit)) {
-        job.remote = true;
-      }
+      if (isRemote) job.remote = true;
       const k = jobKey(job);
       if (existingKeys.has(k)) {
         skipped += 1;
@@ -298,8 +323,9 @@ export async function runHireMax(
           (quota.bySegment[segment.id] ?? 0) + batch.length;
       }
       const remotes = batch.filter((j) => j.remote === true).length;
+      const aiHits = batch.filter((j) => matchesPriorityAiRole(j.role)).length;
       await log(
-        `💾 ${segment.label} · +${batch.length}${writeHarvest ? ` (${remotes} remote → buffer)` : ""} (total +${added})`,
+        `💾 ${segment.label} · +${batch.length} (${remotes} remote · ${aiHits} AI-priority${writeHarvest ? " → buffer" : ""}) (total +${added})`,
       );
     } else {
       await log(`${segment.label} · 0 kept`);

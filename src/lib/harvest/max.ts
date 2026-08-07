@@ -2,6 +2,7 @@ import { envNum } from "@/lib/env";
 import type { Region } from "@/lib/types";
 
 export type RoleFamily =
+  | "ai"
   | "founding"
   | "fullstack"
   | "frontend"
@@ -9,16 +10,19 @@ export type RoleFamily =
   | "ops";
 
 export type HireSegmentId =
+  | "europe_ai"
   | "europe_founding"
   | "europe_fullstack"
   | "europe_frontend"
   | "europe_backend"
   | "europe_ops"
+  | "america_ai"
   | "america_founding"
   | "america_fullstack"
   | "america_frontend"
   | "america_backend"
   | "america_ops"
+  | "asia_ai"
   | "asia_founding"
   | "asia_fullstack"
   | "asia_frontend"
@@ -37,7 +41,29 @@ export type HireSegment = {
 export const HIRE_DAILY_QUOTA = envNum("HIRE_DAILY_QUOTA", 40);
 export const HIRE_RUN_TARGET = envNum("HIRE_RUN_TARGET", 80);
 
-/** Shared keyword banks — product builder profile, not ML/LLM. */
+/**
+ * Priority search bank — AI product / prompt / no-code lead roles.
+ * Remote boards prefer these first (MAX LIVE + WRITE HARVEST).
+ */
+export const KW_AI = [
+  "ai solution architect",
+  "full-stack ai developer",
+  "fullstack ai developer",
+  "full stack ai",
+  "prompt engineer",
+  "ai-powered product developer",
+  "ai powered product",
+  "no-code technical lead",
+  "low-code technical lead",
+  "nocode lead",
+  "lowcode lead",
+  "ai engineer",
+  "solution maker",
+  "ai product developer",
+  "solution architect ai",
+];
+
+/** Shared keyword banks — product builder + AI product track. */
 const KW_FOUNDING = [
   "founding engineer",
   "founding fullstack",
@@ -104,6 +130,11 @@ function seg(
 }
 
 export const HIRE_SEGMENTS: HireSegment[] = [
+  // AI product track first — search priority
+  seg("europe_ai", "Europe · AI Product / Prompt", "europe", "ai", KW_AI),
+  seg("america_ai", "America · AI Product / Prompt", "america", "ai", KW_AI),
+  seg("asia_ai", "Asia · AI Product / Prompt", "asia", "ai", KW_AI),
+
   seg("europe_founding", "Europe · Founding 0→1", "europe", "founding", KW_FOUNDING),
   seg("europe_fullstack", "Europe · Fullstack", "europe", "fullstack", KW_FULLSTACK),
   seg("europe_frontend", "Europe · Frontend", "europe", "frontend", KW_FRONTEND),
@@ -151,9 +182,18 @@ export function anySegmentOpen(
 
 export type RegionInventory = Partial<Record<Region, number>>;
 
+function familyRank(family: RoleFamily): number {
+  // Lower = earlier. AI product track always first.
+  if (family === "ai") return 0;
+  if (family === "founding") return 1;
+  if (family === "fullstack") return 2;
+  if (family === "frontend") return 3;
+  if (family === "backend") return 4;
+  return 5;
+}
+
 /**
- * Fill scarcest region in the DB first, then scarcest segment today.
- * Example: Asia 0 / Europe 99 / America 100 → all Asia shelves run before EU/US.
+ * AI shelves first, then scarcest region, then scarcest segment today.
  */
 export function prioritizedSegments(
   todayCounts: Partial<Record<HireSegmentId, number>>,
@@ -166,6 +206,9 @@ export function prioritizedSegments(
     ...HIRE_SEGMENTS.slice(0, rot),
   ];
   return [...rotated].sort((a, b) => {
+    const fa = familyRank(a.family);
+    const fb = familyRank(b.family);
+    if (fa !== fb) return fa - fb;
     const ra = regionInventory[a.region] ?? 0;
     const rb = regionInventory[b.region] ?? 0;
     if (ra !== rb) return ra - rb;
@@ -191,4 +234,12 @@ export function segmentRemaining(
   todayCounts: Partial<Record<HireSegmentId, number>>,
 ) {
   return Math.max(0, HIRE_DAILY_QUOTA - (todayCounts[id] ?? 0));
+}
+
+/** Title/blob match for AI product priority roles (harvest ranking). */
+export const PRIORITY_AI_ROLE_RE =
+  /\b(ai\s+solution\s+architect|full[-\s]?stack\s+ai|prompt\s+engineer|ai[-\s]?powered\s+product|no[-\s]?code|low[-\s]?code|ai\s+engineer|solution\s+maker|solution\s+architect|ai\s+product\s+developer)\b/i;
+
+export function matchesPriorityAiRole(text: string): boolean {
+  return PRIORITY_AI_ROLE_RE.test(text || "");
 }

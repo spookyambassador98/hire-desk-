@@ -493,7 +493,7 @@ export function HireMaxPanel({ onFilled }: Props) {
                 className="hire-max__write"
                 disabled={engineOn || writesBlocked}
                 onClick={() => void startWriteHarvest()}
-                title="REMOTE-first harvest into buffer until writes burn / Stop"
+                title="REMOTE + AI roles (Solution Architect / Prompt / No-Code) → buffer until writes burn / Stop"
               >
                 {engineOn && live?.mode === "write_harvest"
                   ? "BUFFER · auto…"

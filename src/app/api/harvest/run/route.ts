@@ -412,9 +412,9 @@ async function executeWriteHarvestRun() {
       segment: null,
       recentAdds: [],
       bufferBoard: board0,
-      message: `WRITE HARVEST · REMOTE → buffer · stack ${board0.stackTotal} · buf ${board0.bufferTotal} → ${board0.expectedTotal}`,
+      message: `WRITE HARVEST · REMOTE + AI → buffer · stack ${board0.stackTotal} · buf ${board0.bufferTotal} → ${board0.expectedTotal}`,
       logs: [
-        `[${stamp()}] ── WRITE HARVEST · REMOTE priority · → harvest_buffer`,
+        `[${stamp()}] ── WRITE HARVEST · REMOTE + AI Solution/Prompt/No-Code · → harvest_buffer`,
         `[${stamp()}] stack ${board0.stackTotal} · buffer ${board0.bufferTotal} · expected ${board0.expectedTotal}`,
         `[${stamp()}] sources ${enabledSources().map((s) => s.id).join(", ") || "none"}`,
       ],
@@ -460,7 +460,7 @@ async function executeWriteHarvestRun() {
       const passTarget = safeRunTarget();
       const passDeadline = Date.now() + WRITE_PASS_BUDGET_MS;
       await pushHarvestLog(
-        `🔁 WRITE HARVEST pass #${pass} · writes ${gate?.writesPct ?? "?"}% · REMOTE↑ · buffer ${bufferTotalLive}`,
+        `🔁 WRITE HARVEST pass #${pass} · writes ${gate?.writesPct ?? "?"}% · REMOTE↑ AI↑ · buffer ${bufferTotalLive}`,
         {
           running: true,
           mode: "write_harvest",
