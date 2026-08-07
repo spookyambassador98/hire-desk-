@@ -487,15 +487,29 @@ export function quotaSnapshot(
 export async function deskPayload(
   profile: HireProfile = DEFAULT_HIRE_PROFILE,
 ) {
-  const jobsRaw = await readJobs();
-  await backfillIndividualsFromJobs(jobsRaw);
-  const indRaw = await readIndividuals();
-  return {
-    jobs: withScores(jobsRaw, profile, indRaw),
-    individuals: withIndividualScores(indRaw, jobsRaw, profile),
-    quota: quotaSnapshot(jobsRaw, indRaw, profile),
-    profile,
-  };
+  try {
+    const jobsRaw = await readJobs();
+    const { isFirebaseExhausted } = await import("@/lib/opsUsage");
+    // Contact backfill can write dozens of docs — skip while quota is dead
+    if (!isFirebaseExhausted()) {
+      await backfillIndividualsFromJobs(jobsRaw);
+    }
+    const indRaw = await readIndividuals();
+    return {
+      jobs: withScores(jobsRaw, profile, indRaw),
+      individuals: withIndividualScores(indRaw, jobsRaw, profile),
+      quota: quotaSnapshot(jobsRaw, indRaw, profile),
+      profile,
+    };
+  } catch (err) {
+    console.error("[deskPayload] fail-soft", err);
+    return {
+      jobs: [],
+      individuals: [],
+      quota: quotaSnapshot([], [], profile),
+      profile,
+    };
+  }
 }
 
 /** One-shot extract contacts from jobs already in DB (no fake seed). */

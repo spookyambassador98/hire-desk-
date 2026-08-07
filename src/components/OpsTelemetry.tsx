@@ -120,6 +120,11 @@ export function OpsTelemetry() {
 
   useEffect(() => {
     let cancelled = false;
+    let id: number | null = null;
+    const schedule = (ms: number) => {
+      if (id != null) window.clearInterval(id);
+      id = window.setInterval(() => void tick(), ms);
+    };
     const tick = async () => {
       try {
         const res = await fetch("/api/ops/telemetry", { cache: "no-store" });
@@ -129,18 +134,22 @@ export function OpsTelemetry() {
         if (!cancelled) {
           setData(json);
           setErr(null);
+          // Back off hard when Firebase quota is dead — probe was burning reads
+          const exhausted = Boolean(json.firebase?.usage?.exhausted);
+          schedule(exhausted ? 120_000 : 30_000);
         }
       } catch (e) {
         if (!cancelled) {
           setErr(e instanceof Error ? e.message : "telemetry fail");
+          schedule(60_000);
         }
       }
     };
     void tick();
-    const id = window.setInterval(() => void tick(), 8000);
+    schedule(30_000);
     return () => {
       cancelled = true;
-      window.clearInterval(id);
+      if (id != null) window.clearInterval(id);
     };
   }, []);
 

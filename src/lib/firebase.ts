@@ -123,13 +123,31 @@ export async function probeFirebase(): Promise<{
     if (!firebaseConfigured()) {
       return { ok: false, error: "HIRE_STORAGE not firebase or env missing" };
     }
-    const { bumpOpsUsage, clearFirebaseExhausted } =
+    const { bumpOpsUsage, clearFirebaseExhausted, isFirebaseExhausted } =
       await import("@/lib/opsUsage");
 
+    // Do not keep hammering Google once quota is gone — burns nothing, returns fast.
+    if (isFirebaseExhausted()) {
+      return {
+        ok: false,
+        exhausted: true,
+        error: "Firebase RESOURCE_EXHAUSTED · waiting for UTC reset",
+        projectId: env("FIREBASE_PROJECT_ID") || undefined,
+      };
+    }
+
     const cached = (globalThis as typeof globalThis & {
-      __hireFbProbe?: { at: number; result: { ok: boolean; error?: string; projectId?: string; exhausted?: boolean } };
+      __hireFbProbe?: {
+        at: number;
+        result: {
+          ok: boolean;
+          error?: string;
+          projectId?: string;
+          exhausted?: boolean;
+        };
+      };
     }).__hireFbProbe;
-    if (cached && Date.now() - cached.at < 20_000) {
+    if (cached && Date.now() - cached.at < 60_000) {
       return cached.result;
     }
 

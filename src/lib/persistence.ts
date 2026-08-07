@@ -3,6 +3,7 @@ import path from "node:path";
 import { firebaseConfigured, firestore } from "@/lib/firebase";
 import {
   bumpOpsUsage,
+  isFirebaseExhausted,
   noteFirestoreError,
 } from "@/lib/opsUsage";
 import type { Individual, Job } from "@/lib/types";
@@ -14,8 +15,10 @@ const INDIVIDUALS_FILE = path.join(DATA_DIR, "individuals.json");
 const FS_JOBS = "hire_jobs";
 const FS_INDIVIDUALS = "hire_individuals";
 
-/** Avoid full collection scans on every telemetry / status poll. */
-const CACHE_TTL_MS = 60_000;
+/** Soft TTL while healthy — avoid full collection scans on every poll. */
+const CACHE_TTL_MS = 5 * 60_000;
+/** When quota is dead, keep serving memory forever until process restart / UTC reset. */
+const CACHE_TTL_EXHAUSTED_MS = 24 * 60 * 60_000;
 
 type StoreCache = {
   jobs: Job[] | null;
@@ -40,14 +43,22 @@ function cache(): StoreCache {
   return g.__hirePersistCache;
 }
 
+function ttlMs() {
+  return isFirebaseExhausted() ? CACHE_TTL_EXHAUSTED_MS : CACHE_TTL_MS;
+}
+
 function jobsFresh(c: StoreCache) {
-  return c.jobs != null && Date.now() - c.jobsAt < CACHE_TTL_MS;
+  return c.jobs != null && Date.now() - c.jobsAt < ttlMs();
 }
 
 function individualsFresh(c: StoreCache) {
   return (
-    c.individuals != null && Date.now() - c.individualsAt < CACHE_TTL_MS
+    c.individuals != null && Date.now() - c.individualsAt < ttlMs()
   );
+}
+
+function canTouchFirebase() {
+  return firebaseConfigured() && !isFirebaseExhausted();
 }
 
 async function ensureDataDir() {
@@ -240,23 +251,44 @@ async function upsertIndividualsFirestore(rows: Individual[]) {
 
 export type ReadOpts = { fresh?: boolean };
 
+/**
+ * Prefer memory → Firestore → local JSON.
+ * Never throw RESOURCE_EXHAUSTED up to the homepage — serve stale / empty.
+ */
 export async function readRawJobs(opts: ReadOpts = {}): Promise<Job[]> {
   const c = cache();
   if (!opts.fresh && jobsFresh(c)) return c.jobs!;
+  // Stale cache beats crashing the desk while quota is dead
+  if (isFirebaseExhausted() && c.jobs) return c.jobs;
 
-  const jobs = firebaseConfigured()
-    ? await readJobsFirestore()
-    : await readJsonFile<Job[]>(JOBS_FILE, []);
-  c.jobs = jobs;
-  c.jobsAt = Date.now();
-  return jobs;
+  try {
+    const jobs = canTouchFirebase()
+      ? await readJobsFirestore()
+      : await readJsonFile<Job[]>(JOBS_FILE, c.jobs ?? []);
+    c.jobs = jobs;
+    c.jobsAt = Date.now();
+    // Mirror to local so Render disk can serve if Firebase dies mid-day
+    if (canTouchFirebase()) {
+      void writeJsonFile(JOBS_FILE, jobs).catch(() => undefined);
+    }
+    return jobs;
+  } catch (err) {
+    noteFirestoreError(err);
+    if (c.jobs) return c.jobs;
+    return readJsonFile<Job[]>(JOBS_FILE, []);
+  }
 }
 
 export async function writeRawJobs(jobs: Job[]) {
-  if (firebaseConfigured()) {
-    await writeJobsFirestore(jobs);
-  } else {
-    await writeJsonFile(JOBS_FILE, jobs);
+  // Always keep a local mirror for outage mode
+  await writeJsonFile(JOBS_FILE, jobs).catch(() => undefined);
+  if (canTouchFirebase()) {
+    try {
+      await writeJobsFirestore(jobs);
+    } catch (err) {
+      noteFirestoreError(err);
+      // local already written — desk stays usable
+    }
   }
   const c = cache();
   c.jobs = jobs;
@@ -266,13 +298,21 @@ export async function writeRawJobs(jobs: Job[]) {
 /** Append/merge jobs without rewriting the whole collection. */
 export async function upsertRawJobs(jobs: Job[]) {
   if (!jobs.length) return;
-  if (firebaseConfigured()) {
-    await upsertJobsFirestore(jobs);
-  } else {
+  if (canTouchFirebase()) {
+    try {
+      await upsertJobsFirestore(jobs);
+    } catch (err) {
+      noteFirestoreError(err);
+    }
+  }
+  // Local merge always
+  try {
     const existing = await readJsonFile<Job[]>(JOBS_FILE, []);
     const byId = new Map(existing.map((j) => [j.id, j]));
     for (const j of jobs) byId.set(j.id, j);
     await writeJsonFile(JOBS_FILE, [...byId.values()]);
+  } catch {
+    /* ignore */
   }
   const c = cache();
   if (c.jobs) {
@@ -281,31 +321,31 @@ export async function upsertRawJobs(jobs: Job[]) {
     c.jobs = [...byId.values()];
     c.jobsAt = Date.now();
   } else {
-    c.jobsAt = 0; // force refresh next read
+    c.jobsAt = 0;
   }
 }
 
 export async function deleteRawJob(id: string): Promise<boolean> {
-  if (firebaseConfigured()) {
-    await deleteJobFirestore(id);
-    const c = cache();
-    if (c.jobs) {
-      const next = c.jobs.filter((j) => j.id !== id);
-      if (next.length === c.jobs.length) return false;
-      c.jobs = next;
-      c.jobsAt = Date.now();
-      return true;
+  if (canTouchFirebase()) {
+    try {
+      await deleteJobFirestore(id);
+    } catch (err) {
+      noteFirestoreError(err);
     }
-    return true;
   }
   const existing = await readJsonFile<Job[]>(JOBS_FILE, []);
   const next = existing.filter((j) => j.id !== id);
-  if (next.length === existing.length) return false;
-  await writeJsonFile(JOBS_FILE, next);
+  const changed = next.length !== existing.length;
+  if (changed) await writeJsonFile(JOBS_FILE, next).catch(() => undefined);
   const c = cache();
-  c.jobs = next;
-  c.jobsAt = Date.now();
-  return true;
+  if (c.jobs) {
+    const filtered = c.jobs.filter((j) => j.id !== id);
+    const hit = filtered.length !== c.jobs.length;
+    c.jobs = filtered;
+    c.jobsAt = Date.now();
+    return hit || changed;
+  }
+  return changed;
 }
 
 export async function readRawIndividuals(
@@ -313,20 +353,36 @@ export async function readRawIndividuals(
 ): Promise<Individual[]> {
   const c = cache();
   if (!opts.fresh && individualsFresh(c)) return c.individuals!;
+  if (isFirebaseExhausted() && c.individuals) return c.individuals;
 
-  const rows = firebaseConfigured()
-    ? await readIndividualsFirestore()
-    : await readJsonFile<Individual[]>(INDIVIDUALS_FILE, []);
-  c.individuals = rows;
-  c.individualsAt = Date.now();
-  return rows;
+  try {
+    const rows = canTouchFirebase()
+      ? await readIndividualsFirestore()
+      : await readJsonFile<Individual[]>(
+          INDIVIDUALS_FILE,
+          c.individuals ?? [],
+        );
+    c.individuals = rows;
+    c.individualsAt = Date.now();
+    if (canTouchFirebase()) {
+      void writeJsonFile(INDIVIDUALS_FILE, rows).catch(() => undefined);
+    }
+    return rows;
+  } catch (err) {
+    noteFirestoreError(err);
+    if (c.individuals) return c.individuals;
+    return readJsonFile<Individual[]>(INDIVIDUALS_FILE, []);
+  }
 }
 
 export async function writeRawIndividuals(rows: Individual[]) {
-  if (firebaseConfigured()) {
-    await writeIndividualsFirestore(rows);
-  } else {
-    await writeJsonFile(INDIVIDUALS_FILE, rows);
+  await writeJsonFile(INDIVIDUALS_FILE, rows).catch(() => undefined);
+  if (canTouchFirebase()) {
+    try {
+      await writeIndividualsFirestore(rows);
+    } catch (err) {
+      noteFirestoreError(err);
+    }
   }
   const c = cache();
   c.individuals = rows;
@@ -335,13 +391,20 @@ export async function writeRawIndividuals(rows: Individual[]) {
 
 export async function upsertRawIndividuals(rows: Individual[]) {
   if (!rows.length) return;
-  if (firebaseConfigured()) {
-    await upsertIndividualsFirestore(rows);
-  } else {
+  if (canTouchFirebase()) {
+    try {
+      await upsertIndividualsFirestore(rows);
+    } catch (err) {
+      noteFirestoreError(err);
+    }
+  }
+  try {
     const existing = await readJsonFile<Individual[]>(INDIVIDUALS_FILE, []);
     const byId = new Map(existing.map((r) => [r.id, r]));
     for (const r of rows) byId.set(r.id, r);
     await writeJsonFile(INDIVIDUALS_FILE, [...byId.values()]);
+  } catch {
+    /* ignore */
   }
   const c = cache();
   if (c.individuals) {

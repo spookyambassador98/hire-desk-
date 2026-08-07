@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { firebaseConfigured, firestore } from "@/lib/firebase";
-import { bumpOpsUsage, noteFirestoreError } from "@/lib/opsUsage";
+import { bumpOpsUsage, isFirebaseExhausted, noteFirestoreError } from "@/lib/opsUsage";
 import type { HireSegmentId } from "./max";
 import { HIRE_SEGMENTS } from "./max";
 import type { Job } from "@/lib/types";
@@ -100,7 +100,7 @@ async function writeLiveDisk(next: HarvestLiveState) {
 }
 
 async function readLiveFirebase(): Promise<HarvestLiveState | null> {
-  if (!firebaseConfigured()) return null;
+  if (!firebaseConfigured() || isFirebaseExhausted()) return null;
   try {
     const snap = await firestore().collection("meta").doc(META_LIVE).get();
     await bumpOpsUsage({ reads: 1 });
@@ -113,7 +113,7 @@ async function readLiveFirebase(): Promise<HarvestLiveState | null> {
 }
 
 async function writeLiveFirebase(next: HarvestLiveState) {
-  if (!firebaseConfigured()) return;
+  if (!firebaseConfigured() || isFirebaseExhausted()) return;
   const gLive = globalThis as typeof globalThis & {
     __hireLiveFbTimer?: ReturnType<typeof setTimeout> | null;
     __hireLiveFbPending?: HarvestLiveState | null;
@@ -254,7 +254,7 @@ export function rebuildQuotaFromJobs(
 }
 
 async function readQuotaFirebase(): Promise<HarvestQuotaDay | null> {
-  if (!firebaseConfigured()) return null;
+  if (!firebaseConfigured() || isFirebaseExhausted()) return null;
   try {
     const snap = await firestore().collection("meta").doc(META_QUOTA).get();
     await bumpOpsUsage({ reads: 1 });
@@ -267,7 +267,7 @@ async function readQuotaFirebase(): Promise<HarvestQuotaDay | null> {
 }
 
 async function writeQuotaFirebase(next: HarvestQuotaDay) {
-  if (!firebaseConfigured()) return;
+  if (!firebaseConfigured() || isFirebaseExhausted()) return;
   try {
     await firestore().collection("meta").doc(META_QUOTA).set(next, {
       merge: true,
