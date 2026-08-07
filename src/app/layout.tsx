@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Manrope, Syne } from "next/font/google";
+import { DisableContextMenu } from "@/components/DisableContextMenu";
 import "./globals.css";
 
 const display = Syne({
@@ -46,6 +47,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${display.variable} ${body.variable} ${mono.variable}`}>
+        <DisableContextMenu />
         {children}
       </body>
     </html>
