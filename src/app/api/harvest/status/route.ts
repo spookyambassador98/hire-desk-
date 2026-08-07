@@ -7,8 +7,7 @@ import {
 } from "@/lib/harvest/control";
 import {
   buildHarvestBufferBoard,
-  countHarvestBuffer,
-  readHarvestBufferStats,
+  getHarvestBufferSnapshot,
 } from "@/lib/harvest/buffer";
 import { readHarvestLive, readQuotaDay } from "@/lib/harvest/liveStore";
 import {
@@ -54,22 +53,19 @@ export async function GET() {
   const effectiveTarget = safeRunTarget();
 
   const jobs = await readJobs().catch(() => []);
-  const bufferStats = await readHarvestBufferStats().catch(() => ({
-    total: 0,
-    byRegion: { europe: 0, america: 0, asia: 0 } as Partial<
-      Record<"europe" | "america" | "asia", number>
-    >,
-    bySegment: {},
-    remote: 0,
-    updatedAt: new Date().toISOString(),
-  }));
-  const harvestBufferCount =
-    Number(bufferStats.total) ||
-    (await countHarvestBuffer().catch(() => 0));
-  const bufferBoard = buildHarvestBufferBoard(jobs, {
-    ...bufferStats,
-    total: harvestBufferCount,
-  });
+  const { rows: bufferRows, stats: bufferStats } =
+    await getHarvestBufferSnapshot().catch(() => ({
+      rows: [],
+      stats: {
+        total: 0,
+        byRegion: {},
+        bySegment: {},
+        remote: 0,
+        updatedAt: new Date().toISOString(),
+      },
+    }));
+  const harvestBufferCount = bufferRows.length;
+  const bufferBoard = buildHarvestBufferBoard(jobs, bufferStats);
   const firebaseQuota = await getFirebaseQuotaGate().catch(() => null);
 
   return NextResponse.json({
@@ -92,6 +88,7 @@ export async function GET() {
     firebase,
     firebaseQuota,
     harvestBufferCount,
+    bufferRowsOnServer: bufferRows.length,
     bufferBoard,
     jobsTotal: jobs.length,
     paused: isHarvestPaused(),

@@ -196,8 +196,43 @@ async function tryReadFirebaseStats(): Promise<BufferCountBoard | null> {
   }
 }
 
+export async function getHarvestBufferSnapshot(): Promise<{
+  rows: HarvestBufferRow[];
+  stats: BufferCountBoard;
+}> {
+  const rows = await readHarvestBuffer();
+  if (rows.length) {
+    const stats = tallyJobs(rows);
+    setMemStats(stats);
+    await writeDiskStats(stats).catch(() => undefined);
+    await tryWriteFirebaseStats(stats).catch(() => undefined);
+    return { rows, stats };
+  }
+  const stale =
+    (await readDiskStats().catch(() => null)) ??
+    (await tryReadFirebaseStats().catch(() => null)) ??
+    emptyBoard();
+  if ((stale.total || 0) > 0) {
+    await resetHarvestBufferStats().catch(() => undefined);
+  }
+  return { rows: [], stats: emptyBoard() };
+}
+
 export async function readHarvestBufferStats(): Promise<BufferCountBoard> {
   if (g.__hireHarvestBufferStats && g.__hireHarvestBufferStats.total >= 0) {
+    // If memory has stats but no rows loaded, don't trust inflated totals.
+    if (
+      g.__hireHarvestBufferStats.total > 0 &&
+      memRows().length === 0
+    ) {
+      const disk = await readDiskBuffer();
+      if (!disk.length) {
+        const fb = await tryReadFirebaseBuffer();
+        if (!fb.length) {
+          return emptyBoard();
+        }
+      }
+    }
     return g.__hireHarvestBufferStats;
   }
   const disk = await readDiskStats();

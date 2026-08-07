@@ -99,6 +99,7 @@ type StatusPayload = {
   firebase?: { ok: boolean; error?: string; projectId?: string } | null;
   firebaseQuota?: FirebaseQuota | null;
   harvestBufferCount?: number;
+  bufferRowsOnServer?: number;
   bufferBoard?: BufferBoardPayload;
   jobsTotal?: number;
   paused?: boolean;
@@ -470,18 +471,21 @@ export function HireMaxPanel({ onFilled }: Props) {
   const writeHarvestAvailable = !writesBlocked;
   const board = status?.bufferBoard;
   const liveBoard = live?.bufferBoard;
+  const engineOn = !stopping && (running || !!live?.running);
   const stackTotal = Math.max(
     liveBoard?.stackTotal ?? 0,
     board?.stackTotal ?? 0,
     status?.jobsTotal ?? 0,
   );
-  const bufferTotal = Math.max(
-    liveBoard?.bufferTotal ?? 0,
-    board?.bufferTotal ?? 0,
-    status?.harvestBufferCount ?? 0,
-  );
+  /** Prefer reconciled server rows — stale live 70 without files is misleading. */
+  const bufferTotal = engineOn
+    ? Math.max(
+        liveBoard?.bufferTotal ?? 0,
+        board?.buffer?.total ?? 0,
+        status?.harvestBufferCount ?? 0,
+      )
+    : Math.max(board?.buffer?.total ?? 0, status?.harvestBufferCount ?? 0);
   const expectedTotal = stackTotal + bufferTotal;
-  const engineOn = !stopping && (running || !!live?.running);
   const canFlush = bufferTotal > 0 && !engineOn && !flushing;
   const flushAvailable = canFlush && !readsBlocked;
   const flushWaitingReads = canFlush && readsBlocked;

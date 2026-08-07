@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   clearHarvestBuffer,
-  countHarvestBuffer,
-  readHarvestBuffer,
-  readHarvestBufferStats,
-  resetHarvestBufferStats,
+  getHarvestBufferSnapshot,
 } from "@/lib/harvest/buffer";
 import { getFirebaseQuotaGate } from "@/lib/firebaseQuota";
 import { jobDedupeKey } from "@/lib/harvest/dedupe";
@@ -30,19 +27,9 @@ export async function POST() {
     const gate = await getFirebaseQuotaGate().catch(() => null);
     const readsBlocked = Boolean(gate?.readsBlocked || gate?.exhausted);
 
-    const buffered = await readHarvestBuffer();
-    const stats = await readHarvestBufferStats().catch(() => ({
-      total: 0,
-      byRegion: {},
-      bySegment: {},
-      remote: 0,
-      updatedAt: new Date().toISOString(),
-    }));
+    const { rows: buffered, stats } = await getHarvestBufferSnapshot();
 
     if (!buffered.length) {
-      if ((stats.total || 0) > 0) {
-        await resetHarvestBufferStats().catch(() => undefined);
-      }
       return NextResponse.json({
         ok: false,
         flushed: 0,
@@ -50,7 +37,7 @@ export async function POST() {
         remaining: 0,
         message:
           stats.total > 0
-            ? `⛔ Буфер пуст на сервере (stats было ${stats.total}) · stats сброшены · перезапусти WRITE HARVEST`
+            ? `⛔ Буфер пуст на сервере · stats сброшены · нужен новый WRITE HARVEST`
             : "Буфер пуст — нечего сливать",
         firebaseQuota: gate,
       });
@@ -85,7 +72,8 @@ export async function POST() {
     }
 
     const cleared = await clearHarvestBuffer(clearIds);
-    const remaining = await countHarvestBuffer().catch(() => 0);
+    const after = await getHarvestBufferSnapshot();
+    const remaining = after.rows.length;
 
     const msg =
       fresh.length > 0

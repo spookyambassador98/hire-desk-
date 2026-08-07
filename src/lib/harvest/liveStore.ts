@@ -242,7 +242,15 @@ export async function pushHarvestLog(
   extra: Partial<HarvestLiveState> = {},
 ) {
   const cur = readHarvestLiveMemory();
-  const logs = [...cur.logs, `[${stamp()}] ${line}`].slice(-120);
+  const entry = `[${stamp()}] ${line}`;
+  const last = cur.logs[cur.logs.length - 1];
+  if (last === entry) {
+    return writeHarvestLive({
+      ...extra,
+      heartbeatAt: new Date().toISOString(),
+    });
+  }
+  const logs = [...cur.logs, entry].slice(-120);
   return writeHarvestLive({
     ...extra,
     logs,
