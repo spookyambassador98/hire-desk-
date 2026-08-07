@@ -1,5 +1,5 @@
 import type { ApplyChannel, Region } from "@/lib/types";
-import type { HireSegment } from "../max";
+import { matchesAiHarvestCatch, type HireSegment } from "../max";
 
 export type JobHit = {
   sourceId: string;
@@ -39,6 +39,7 @@ export function textMatchesSegment(
   text: string,
   segment: HireSegment,
 ): boolean {
+  if (segment.family === "ai") return matchesAiHarvestCatch(text);
   const t = text.toLowerCase();
   return segment.keywords.some((kw) => t.includes(kw.toLowerCase()));
 }
@@ -99,4 +100,27 @@ export function regionForSegmentHit(
   const detected = detectRegionFromText(loc);
   if (detected && detected !== segment.region) return null;
   return detected ?? segment.region;
+}
+
+/**
+ * Remote boards often list "Worldwide" or "Americas, Europe".
+ * Accept when: empty/worldwide, mentions this shelf, or sole detect matches.
+ */
+export function regionForRemoteSegmentHit(
+  locationOrBlob: string | null | undefined,
+  segment: HireSegment,
+): Region | null {
+  const loc = (locationOrBlob || "").trim();
+  if (segment.region === "asia" && isAsiaOutLocation(loc)) return null;
+  if (!loc || /\b(worldwide|anywhere|global|remote)\b/i.test(loc)) {
+    return segment.region;
+  }
+  const mentionsShelf =
+    segment.region === "america"
+      ? /\b(america|americas|usa|u\.s\.a?\.?|canada|latam|united\s+states)\b/i
+      : segment.region === "europe"
+        ? /\b(europe|eu\b|emea|uk\b|united\s+kingdom|england|germany|france|netherlands|ireland)\b/i
+        : ASIA_RE;
+  if (mentionsShelf.test(loc)) return segment.region;
+  return regionForSegmentHit(loc, segment);
 }

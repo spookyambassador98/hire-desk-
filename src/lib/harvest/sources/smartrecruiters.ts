@@ -1,7 +1,7 @@
 import { envSourceOn } from "@/lib/env";
 import { envBoardList, sleep } from "./envBoards";
 import type { JobHit, JobSource } from "./types";
-import { inferRegionFromText, textMatchesSegment } from "./types";
+import { regionForRemoteSegmentHit, textMatchesSegment } from "./types";
 import { harvestFetch } from "../harvestFetch";
 
 /**
@@ -69,11 +69,11 @@ export const smartrecruitersSource: JobSource = {
               .join(", ");
             const blob = `${j.name} ${loc}`.slice(0, 2000);
             if (!textMatchesSegment(blob, ctx.segment)) continue;
-            const region = inferRegionFromText(
-              `${loc} ${j.name}`,
-              ctx.segment.region,
+            const region = regionForRemoteSegmentHit(
+              loc || (j.location?.remote ? "Remote" : ""),
+              ctx.segment,
             );
-            if (region !== ctx.segment.region) continue;
+            if (!region) continue;
             hits.push({
               sourceId: `smartrecruiters:${company}`,
               company: j.company?.name || company,

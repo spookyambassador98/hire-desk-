@@ -15,8 +15,11 @@ export const htmlBoardsSource: JobSource = {
   enabled: () => envSourceOn("SOURCES_HTML", true),
   async harvest(ctx) {
     const hits: JobHit[] = [];
-    const kw = ctx.segment.keywords[0] || "product engineer";
-    await ctx.log(`HTML · «${kw}» · ${ctx.segment.label}`);
+    const kws = ctx.segment.keywords.slice(0, 4);
+    const kw = kws[0] || "ai engineer";
+    await ctx.log(
+      `HTML · «${kws.join(" · ") || kw}» · ${ctx.segment.label}`,
+    );
 
     const careerUrls = (env("CAREER_HTML_URLS") || "")
       .split(/[\n,]+/)
@@ -69,54 +72,57 @@ export const htmlBoardsSource: JobSource = {
           : ctx.segment.region === "asia"
             ? "Asia"
             : "United States";
-      const indeed = `https://www.indeed.com/jobs?q=${encodeURIComponent(kw)}&l=${encodeURIComponent(loc)}`;
-      try {
-        const res = await harvestFetch(indeed, {
-          headers: { Accept: "text/html" },
-          signal: ctx.signal ?? AbortSignal.timeout(14_000),
-        });
-        if (res.ok) {
-          const html = await res.text();
-          const $ = cheerio.load(html);
-          $("h2.jobTitle a, a.jcs-JobTitle, .jobTitle-color-purple").each(
-            (_, el) => {
-              if (hits.length >= ctx.limit) return;
-              const title = $(el).text().trim();
-              const href = $(el).attr("href") || "";
-              if (!title || !textMatchesSegment(title, ctx.segment)) return;
-              const company =
-                $(el)
-                  .closest("[data-jk], .job_seen_beacon, .cardOutline")
-                  .find("[data-testid='company-name'], .companyName")
-                  .first()
-                  .text()
-                  .trim() || "Indeed company";
-              hits.push({
-                sourceId: "indeed",
-                company,
-                role: title,
-                region: ctx.segment.region,
-                location: loc,
-                remote: /remote/i.test(title) ? true : null,
-                description: `Indeed · ${kw}`,
-                url: href.startsWith("http")
-                  ? href
-                  : `https://www.indeed.com${href}`,
-                channel: "other",
-                salaryMin: null,
-                salaryMax: null,
-                salaryCurrency: null,
-              });
-            },
+      for (const q of kws.length ? kws : [kw]) {
+        if (hits.length >= ctx.limit) break;
+        const indeed = `https://www.indeed.com/jobs?q=${encodeURIComponent(q)}&l=${encodeURIComponent(loc)}`;
+        try {
+          const res = await harvestFetch(indeed, {
+            headers: { Accept: "text/html" },
+            signal: ctx.signal ?? AbortSignal.timeout(14_000),
+          });
+          if (res.ok) {
+            const html = await res.text();
+            const $ = cheerio.load(html);
+            $("h2.jobTitle a, a.jcs-JobTitle, .jobTitle-color-purple").each(
+              (_, el) => {
+                if (hits.length >= ctx.limit) return;
+                const title = $(el).text().trim();
+                const href = $(el).attr("href") || "";
+                if (!title || !textMatchesSegment(title, ctx.segment)) return;
+                const company =
+                  $(el)
+                    .closest("[data-jk], .job_seen_beacon, .cardOutline")
+                    .find("[data-testid='company-name'], .companyName")
+                    .first()
+                    .text()
+                    .trim() || "Indeed company";
+                hits.push({
+                  sourceId: "indeed",
+                  company,
+                  role: title,
+                  region: ctx.segment.region,
+                  location: loc,
+                  remote: /remote/i.test(title) ? true : null,
+                  description: `Indeed · ${q}`,
+                  url: href.startsWith("http")
+                    ? href
+                    : `https://www.indeed.com${href}`,
+                  channel: "other",
+                  salaryMin: null,
+                  salaryMax: null,
+                  salaryCurrency: null,
+                });
+              },
+            );
+            await ctx.log(`Indeed · «${q}» · proxy · +${hits.length}`);
+          } else {
+            await ctx.log(`Indeed · «${q}» · HTTP ${res.status}`);
+          }
+        } catch (err) {
+          await ctx.log(
+            `Indeed · ${err instanceof Error ? err.message : "fail"}`,
           );
-          await ctx.log(`Indeed · proxy · partial +${hits.length}`);
-        } else {
-          await ctx.log(`Indeed · HTTP ${res.status}`);
         }
-      } catch (err) {
-        await ctx.log(
-          `Indeed · ${err instanceof Error ? err.message : "fail"}`,
-        );
       }
     } else if (proxyPoolSize() === 0) {
       await ctx.log("Indeed · skipped (no PROXY_URLS)");

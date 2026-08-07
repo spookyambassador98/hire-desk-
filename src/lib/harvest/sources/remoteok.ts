@@ -1,6 +1,6 @@
 import { envSourceOn } from "@/lib/env";
 import type { JobHit, JobSource } from "./types";
-import { inferRegionFromText, textMatchesSegment } from "./types";
+import { regionForRemoteSegmentHit, textMatchesSegment } from "./types";
 import { harvestFetch } from "../harvestFetch";
 
 /**
@@ -47,11 +47,11 @@ export const remoteokSource: JobSource = {
           2000,
         );
         if (!textMatchesSegment(blob, ctx.segment)) continue;
-        const region = inferRegionFromText(
-          `${j.location || ""} ${j.position}`,
-          ctx.segment.region,
+        const region = regionForRemoteSegmentHit(
+          j.location || "Remote",
+          ctx.segment,
         );
-        if (region !== ctx.segment.region) continue;
+        if (!region) continue;
         let postedAt: string | null = null;
         if (typeof j.date === "number" && j.date > 0) {
           postedAt = new Date(j.date * 1000).toISOString();

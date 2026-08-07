@@ -47,7 +47,6 @@ export const dynamic = "force-dynamic";
 /** Leave headroom before Render kills the request. */
 const WAVE_DEADLINE_MS = envNum("HIRE_WAVE_DEADLINE_MS", 250_000);
 const WAVE_GAP_MS = envNum("HIRE_WAVE_GAP_MS", 2_000);
-const WRITE_PASS_BUDGET_MS = envNum("HIRE_WRITE_PASS_MS", 200_000);
 
 type RunMode = "max_live" | "write_harvest";
 
@@ -390,11 +389,12 @@ async function executeWriteHarvestRun() {
     }
   };
 
-  let bufferTotalLive = 0;
+      let bufferTotalLive = 0;
   let sessionSkipped = 0;
   let sessionTrashed = 0;
   let pass = 0;
   let writesBurned = false;
+  let emptyStreak = 0;
 
   try {
     const stackJobs = await readJobs().catch(() => [] as Job[]);
@@ -460,9 +460,11 @@ async function executeWriteHarvestRun() {
 
       pass += 1;
       const passTarget = safeRunTarget();
-      const passDeadline = Date.now() + WRITE_PASS_BUDGET_MS;
+      const expandShelves = emptyStreak >= 1;
       await pushHarvestLog(
-        `🔁 WRITE HARVEST pass #${pass} · writes ${gate?.writesPct ?? "?"}% · REMOTE↑ AI↑ · buffer ${bufferTotalLive}`,
+        `🔁 WRITE HARVEST pass #${pass} · writes ${gate?.writesPct ?? "?"}% · REMOTE↑ AI↑ · buffer ${bufferTotalLive}${
+          expandShelves ? " · expand shelves" : ""
+        }`,
         {
           running: true,
           mode: "write_harvest",
@@ -476,6 +478,7 @@ async function executeWriteHarvestRun() {
         existingJobs: known,
         runTarget: passTarget,
         writeHarvest: true,
+        writeExpandShelves: expandShelves,
         onJobsBatch: async (chunk) => {
           if (isHarvestStopRequested()) return;
           const n = await writeHarvestBuffer(chunk);
@@ -529,26 +532,35 @@ async function executeWriteHarvestRun() {
       sessionSkipped += result.skipped;
       sessionTrashed += result.trashed;
 
-      // If pass found nothing new, stop (sources dry)
+      // Lead-desk style: dry pass ≠ stop — keep spinning until Stop / writes / time
       if (result.added === 0) {
+        emptyStreak += 1;
         await pushHarvestLog(
-          `○ WRITE HARVEST dry pass · buffer ${bufferTotalLive}`,
+          `○ WRITE HARVEST dry pass #${pass} · streak ${emptyStreak} · buffer ${bufferTotalLive} · продолжаю`,
           {
             running: true,
             added: bufferTotalLive,
-            message: `○ Dry · buffer ${bufferTotalLive}`,
+            message: `○ Dry #${emptyStreak} · buffer ${bufferTotalLive} · keep going`,
           },
         );
-        break;
+        if (emptyStreak >= 5) {
+          await pushHarvestLog(
+            `⚪ 5 dry подряд · expand + rotate · buffer ${bufferTotalLive}`,
+            {
+              running: true,
+              added: bufferTotalLive,
+              message: `⚪ Dry streak reset · buffer ${bufferTotalLive}`,
+            },
+          );
+          emptyStreak = 1; // stay expanded
+        }
+      } else {
+        emptyStreak = 0;
       }
 
       if (isHarvestStopRequested()) break;
-      if (Date.now() >= passDeadline) {
-        // continue next pass in same request if time left on maxDuration
-        await sleep(WAVE_GAP_MS);
-      } else {
-        await sleep(WAVE_GAP_MS);
-      }
+
+      await sleep(WAVE_GAP_MS);
 
       // Soft time guard for Render
       if (Date.now() - Date.parse(startedAt) > WAVE_DEADLINE_MS) {

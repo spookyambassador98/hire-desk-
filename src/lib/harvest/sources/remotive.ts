@@ -1,10 +1,7 @@
 import { envSourceOn } from "@/lib/env";
 import { harvestFetch } from "../harvestFetch";
 import type { JobHit, JobSource } from "./types";
-import {
-  inferRegionFromText,
-  textMatchesSegment,
-} from "./types";
+import { regionForRemoteSegmentHit, textMatchesSegment } from "./types";
 
 /**
  * Remotive public API — stable primary source.
@@ -45,11 +42,11 @@ export const remotiveSource: JobSource = {
         if (hits.length >= ctx.limit) break;
         const blob = `${j.title} ${j.category} ${j.description}`.slice(0, 2000);
         if (!textMatchesSegment(blob, ctx.segment)) continue;
-        const region = inferRegionFromText(
-          `${j.candidate_required_location} ${j.title}`,
-          ctx.segment.region,
+        const region = regionForRemoteSegmentHit(
+          j.candidate_required_location || "Remote",
+          ctx.segment,
         );
-        if (region !== ctx.segment.region) continue;
+        if (!region) continue;
         hits.push({
           sourceId: "remotive",
           company: j.company_name,
@@ -57,7 +54,9 @@ export const remotiveSource: JobSource = {
           region,
           location: j.candidate_required_location || "Remote",
           remote: true,
-          description: (j.description || "").replace(/<[^>]+>/g, " ").slice(0, 1200),
+          description: (j.description || "")
+            .replace(/<[^>]+>/g, " ")
+            .slice(0, 1200),
           url: j.url,
           channel: "other",
           salaryMin: null,

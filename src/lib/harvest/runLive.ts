@@ -159,6 +159,11 @@ export type RunHireMaxOpts = {
   runTarget?: number;
   /** WRITE HARVEST: prefer remote boards + remote hits; caller buffers writes. */
   writeHarvest?: boolean;
+  /**
+   * WRITE only: if AI shelves were dry, also pull founding/fullstack
+   * so the buffer still fills (SORT can filter later).
+   */
+  writeExpandShelves?: boolean;
   onJobsBatch?: (jobs: Job[]) => Promise<void>;
   onProgress?: (ev: {
     added: number;
@@ -176,12 +181,19 @@ export async function runHireMax(
   opts: RunHireMaxOpts,
 ): Promise<RunHireMaxResult> {
   const writeHarvest = Boolean(opts.writeHarvest);
+  const writeExpand = Boolean(opts.writeExpandShelves);
   const runTarget = opts.runTarget ?? safeRunTarget();
   const inventory = countJobsByRegion(opts.existingJobs);
   const quota = await readQuotaDay(opts.existingJobs);
   const allSegments = prioritizedSegments(quota.bySegment, inventory);
   const segments = writeHarvest
-    ? allSegments.filter((s) => s.family === "ai")
+    ? allSegments.filter((s) =>
+        writeExpand
+          ? s.family === "ai" ||
+            s.family === "founding" ||
+            s.family === "fullstack"
+          : s.family === "ai",
+      )
     : allSegments;
   const existingKeys = new Set(opts.existingJobs.map(jobKey));
 
@@ -212,7 +224,9 @@ export async function runHireMax(
 
   await log(
     writeHarvest
-      ? `WRITE HARVEST · REMOTE + AI roles first · target ≥${runTarget} · → buffer · sources ${enabledSources().length}`
+      ? `WRITE HARVEST · REMOTE + AI roles first · target ≥${runTarget} · → buffer · sources ${enabledSources().length}${
+          writeExpand ? " · expand founding/fullstack" : ""
+        }`
       : `MAX LIVE · REMOTE + AI Product track · target ≥${runTarget} (cfg ${HIRE_RUN_TARGET}) · proxy ${proxyModeLabel()} · sources ${enabledSources().length} · segments ${segments.length}`,
   );
   await log(
@@ -310,7 +324,9 @@ export async function runHireMax(
       }
 
       const fit = computeFit(job);
-      if (fit.antiFiltered || fit.score < 20) {
+      // WRITE: keep thin AI/product hits; MAX LIVE stays stricter
+      const minFit = writeHarvest ? 8 : 20;
+      if (fit.antiFiltered || fit.score < minFit) {
         trashed += 1;
         continue;
       }

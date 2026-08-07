@@ -46,24 +46,27 @@ export const HIRE_RUN_TARGET = envNum("HIRE_RUN_TARGET", 80);
  * Remote boards prefer these first (MAX LIVE + WRITE HARVEST).
  */
 export const KW_AI = [
+  "ai engineer",
+  "prompt engineer",
   "ai solution architect",
-  "ai-native full-stack product builder",
-  "ai native fullstack product builder",
-  "ai-native product builder",
   "full-stack ai developer",
   "fullstack ai developer",
   "full stack ai",
-  "prompt engineer",
   "ai-powered product developer",
   "ai powered product",
+  "ai-native full-stack product builder",
+  "ai native fullstack product builder",
+  "ai-native product builder",
   "no-code technical lead",
   "low-code technical lead",
   "nocode lead",
   "lowcode lead",
-  "ai engineer",
   "solution maker",
   "ai product developer",
   "solution architect ai",
+  "generative ai",
+  "ai architect",
+  "ai product",
 ];
 
 /** Shared keyword banks — product builder + AI product track. */
@@ -257,4 +260,35 @@ export const SORT_AI_ROLE_RE =
 
 export function matchesSortAiRole(text: string): boolean {
   return SORT_AI_ROLE_RE.test(text || "");
+}
+
+/**
+ * Harvest net for AI shelves — wider than SORT/priority titles so boards
+ * like Greenhouse/Remotive actually return rows (then ranked/filtered later).
+ */
+export function matchesAiHarvestCatch(text: string): boolean {
+  const t = text || "";
+  if (!t.trim()) return false;
+  if (matchesPriorityAiRole(t) || matchesSortAiRole(t)) return true;
+  if (
+    /\b(ai|genai|gen\s*ai|llm|prompt|copilot)\b/i.test(t) &&
+    /\b(engineer|architect|developer|builder|lead|product|platform|solution|maker|specialist)\b/i.test(
+      t,
+    )
+  ) {
+    return true;
+  }
+  if (
+    /\b(no[-\s]?code|low[-\s]?code|nocode|lowcode)\b/i.test(t) &&
+    /\b(lead|engineer|developer|builder|technical|product)\b/i.test(t)
+  ) {
+    return true;
+  }
+  if (
+    /\bsolutions?\s+architect\b/i.test(t) &&
+    /\b(ai|llm|genai|prompt|ml|machine\s+learning)\b/i.test(t)
+  ) {
+    return true;
+  }
+  return false;
 }
