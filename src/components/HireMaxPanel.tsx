@@ -232,10 +232,12 @@ export function HireMaxPanel({ onFilled }: Props) {
   const [logs, setLogs] = useState<string[]>([]);
   const [intake, setIntake] = useState<IntakeHit[]>([]);
   const [stopping, setStopping] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [tick, setTick] = useState(0);
   const [flashId, setFlashId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const logBoxRef = useRef<HTMLDivElement | null>(null);
+  const logsRef = useRef<string[]>([]);
   const feedRef = useRef<HTMLDivElement | null>(null);
   const userStoppedRef = useRef(false);
   const seenIds = useRef(new Set<string>());
@@ -293,14 +295,41 @@ export function HireMaxPanel({ onFilled }: Props) {
   }, []);
 
   useEffect(() => {
+    logsRef.current = logs;
     if (logBoxRef.current) {
-      logBoxRef.current.scrollTop = logBoxRef.current.scrollHeight;
+      const box = logBoxRef.current;
+      const nearBottom =
+        box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+      if (nearBottom) box.scrollTop = box.scrollHeight;
     }
   }, [logs]);
 
   useEffect(() => {
     if (feedRef.current) feedRef.current.scrollTop = 0;
   }, [intake.length]);
+
+  async function copyLogs() {
+    const snapshot = logsRef.current;
+    const text = snapshot.length
+      ? snapshot.join("\n")
+      : "(лог пуст — жми MAX LIVE или WRITE HARVEST)";
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    }
+  }
 
   async function kickoffRun(mode: "max_live" | "write_harvest") {
     const label = mode === "write_harvest" ? "WRITE HARVEST" : "MAX LIVE";
@@ -500,32 +529,35 @@ export function HireMaxPanel({ onFilled }: Props) {
                   : "WRITE HARVEST · auto"}
               </button>
             )}
-            {(flushAvailable || flushWaitingReads || bufferTotal > 0) &&
-              !engineOn && (
-                <button
-                  type="button"
-                  className={
-                    flushAvailable
-                      ? "hire-max__flush"
-                      : "hire-max__flush is-wait"
-                  }
-                  disabled={!flushAvailable}
-                  onClick={() => {
-                    if (flushAvailable) void flushBuffer();
-                  }}
-                  title={
-                    flushAvailable
-                      ? "Flush harvest_buffer → jobs"
-                      : "Wait for reads reset"
-                  }
-                >
-                  {flushAvailable
-                    ? `FLUSH · ${bufferTotal}`
+            <button
+              type="button"
+              className={
+                flushAvailable && !engineOn
+                  ? "hire-max__flush"
+                  : "hire-max__flush is-wait"
+              }
+              disabled={!flushAvailable || engineOn}
+              onClick={() => {
+                if (flushAvailable && !engineOn) void flushBuffer();
+              }}
+              title={
+                engineOn
+                  ? "Дождись стопа · потом ВЛИТЬ"
+                  : flushAvailable
+                    ? "Слить harvest_buffer → jobs (как lead-desk)"
                     : flushWaitingReads
-                      ? `FLUSH · ${bufferTotal} · wait reads`
-                      : `FLUSH · ${bufferTotal || 0}`}
-                </button>
-              )}
+                      ? "Reads ≥95% · после 00:00 UTC"
+                      : "Буфер пуст — сначала WRITE HARVEST"
+              }
+            >
+              {flushAvailable && !engineOn
+                ? `ВЛИТЬ · ${bufferTotal}`
+                : flushWaitingReads
+                  ? `ВЛИТЬ · ${bufferTotal} · жди reads`
+                  : bufferTotal > 0
+                    ? `ВЛИТЬ · ${bufferTotal}`
+                    : "ВЛИТЬ · пусто"}
+            </button>
             <button
               type="button"
               className="hire-max__stop"
@@ -534,13 +566,53 @@ export function HireMaxPanel({ onFilled }: Props) {
             >
               {stopping ? t("max.stopping") : t("max.stop")}
             </button>
+            <button
+              type="button"
+              className="hire-max__copy-log"
+              onClick={() => void copyLogs()}
+              title="Скопировать live-лог"
+            >
+              {copied ? "Скопировано" : "Копировать лог"}
+            </button>
           </div>
         </div>
 
         {showBufferPanel && (
           <div className="hire-max__buffer">
-            <div className="hire-max__buffer-kicker">
-              Buffer panel · stack + buffer = expected after flush
+            <div className="hire-max__buffer-head">
+              <div>
+                <div className="hire-max__buffer-kicker">
+                  Панель буфера · harvest
+                </div>
+                <div className="hire-max__buffer-title">
+                  Стек + буфер = ожидание после слива
+                </div>
+              </div>
+              <button
+                type="button"
+                className={
+                  flushAvailable && !engineOn
+                    ? "hire-max__flush hire-max__flush--pill"
+                    : "hire-max__flush hire-max__flush--pill is-wait"
+                }
+                disabled={!flushAvailable || engineOn}
+                onClick={() => {
+                  if (flushAvailable && !engineOn) void flushBuffer();
+                }}
+                title={
+                  flushAvailable
+                    ? "Слить буфер в jobs"
+                    : flushWaitingReads
+                      ? "Жди сброс reads (~00:00 UTC)"
+                      : "Нечего сливать"
+                }
+              >
+                {flushAvailable && !engineOn
+                  ? `ВЛИТЬ · ${bufferTotal}`
+                  : flushWaitingReads
+                    ? `ВЛИТЬ · жди reads · ${bufferTotal}`
+                    : `ВЛИТЬ · ${bufferTotal || 0}`}
+              </button>
             </div>
             <div className="hire-max__buffer-grid">
               <div className="hire-max__buffer-card">
@@ -598,7 +670,18 @@ export function HireMaxPanel({ onFilled }: Props) {
             ))}
           </div>
 
-          <div className="hire-max__log" ref={logBoxRef}>
+          <div className="hire-max__log-wrap">
+            <div className="hire-max__log-head">
+              <span>Live log</span>
+              <button
+                type="button"
+                className="hire-max__copy-log hire-max__copy-log--inline"
+                onClick={() => void copyLogs()}
+              >
+                {copied ? "Скопировано" : "Копировать лог"}
+              </button>
+            </div>
+            <div className="hire-max__log" ref={logBoxRef}>
             {logs.length === 0 ? (
               <div className="hire-max__log-empty">
                 (log empty — press MAX LIVE or WRITE HARVEST)
@@ -608,6 +691,7 @@ export function HireMaxPanel({ onFilled }: Props) {
                 <div key={`${i}-${line.slice(0, 24)}`}>{line}</div>
               ))
             )}
+          </div>
           </div>
 
           {status?.sources && status.sources.length > 0 && (
