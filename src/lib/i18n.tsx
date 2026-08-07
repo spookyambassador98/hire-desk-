@@ -16,7 +16,7 @@ import {
   type Locale,
 } from "@/lib/i18n/dicts";
 import type { IndividualKind, JobStatus, Region } from "@/lib/types";
-import { jobPostedAt } from "@/lib/regions";
+import { jobIntakeAt } from "@/lib/regions";
 import { scheduleChips as rawScheduleChips, salaryLabel as rawSalary } from "@/lib/text";
 
 export type { Locale };
@@ -212,7 +212,7 @@ export function useI18n() {
 
 export function useJobAge(job: { postedAt?: string | null; createdAt: string }) {
   const { trAge } = useI18n();
-  return trAge(jobPostedAt(job));
+  return trAge(jobIntakeAt(job));
 }
 
 export type { JobStatus };

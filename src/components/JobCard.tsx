@@ -10,7 +10,7 @@ import { useI18n } from "@/lib/i18n";
 import type { JobStatus, ScoredJob } from "@/lib/types";
 import { renderApply, renderTemplate } from "@/lib/templates";
 import { previewText } from "@/lib/text";
-import { jobPostedAt, regionClass } from "@/lib/regions";
+import { jobIntakeAt, regionClass } from "@/lib/regions";
 
 type Props = {
   job: ScoredJob;
@@ -49,7 +49,7 @@ export function JobCard({
   });
   const anti = job.scores.fit.antiFiltered;
   const rClass = regionClass(job.region);
-  const age = trAge(jobPostedAt(job));
+  const age = trAge(jobIntakeAt(job));
   const sched = trSchedule(job);
   const fu = showFollowUp ? getFollowUpInfo(job) : null;
   const fuTemplate = showFollowUp ? followUpTemplateForJob(job) : null;

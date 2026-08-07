@@ -8,7 +8,7 @@ import {
 } from "@/lib/followUp";
 import { useTranslatedFields } from "@/hooks/useTranslatedText";
 import { useI18n } from "@/lib/i18n";
-import { jobPostedAt, regionClass } from "@/lib/regions";
+import { jobIntakeAt, regionClass } from "@/lib/regions";
 import type { JobStatus, ScoredJob } from "@/lib/types";
 import { renderApply, renderTemplate } from "@/lib/templates";
 import { descriptionParagraphs, previewText } from "@/lib/text";
@@ -56,7 +56,7 @@ export function JobPopup({
   const fuTemplate = job ? followUpTemplateForJob(job) : null;
   const anti = job?.scores.fit.antiFiltered;
   const sched = job ? trSchedule(job) : [];
-  const age = job ? trAge(jobPostedAt(job)) : null;
+  const age = job ? trAge(jobIntakeAt(job)) : null;
 
   return createPortal(
     <AnimatePresence>
@@ -112,7 +112,7 @@ export function JobPopup({
                       style={{
                         color: age.stale ? "var(--red)" : "var(--cyan)",
                       }}
-                      title={jobPostedAt(job)}
+                      title={jobIntakeAt(job)}
                     >
                       {age.label}
                     </span>
@@ -296,7 +296,7 @@ export function JobCardFace({
   const anti = job.scores.fit.antiFiltered;
   const fu = showFollowUp ? getFollowUpInfo(job) : null;
   const sched = trSchedule(job);
-  const age = trAge(jobPostedAt(job));
+  const age = trAge(jobIntakeAt(job));
 
   return (
     <motion.article

@@ -26,6 +26,27 @@ export function jobPostedAt(job: {
   return job.postedAt || job.createdAt;
 }
 
+/** Desk intake clock — age in queue from the moment the job hit our DB. */
+export function jobIntakeAt(job: { createdAt: string }): string {
+  return job.createdAt;
+}
+
+export function jobIntakeMs(job: { createdAt: string }): number {
+  const t = Date.parse(job.createdAt);
+  return Number.isNaN(t) ? 0 : t;
+}
+
+/**
+ * Permanent queue sorter: fresher intake rises, older sinks.
+ * Higher age → lower in the list.
+ */
+export function compareByIntakeFresh(
+  a: { createdAt: string },
+  b: { createdAt: string },
+): number {
+  return jobIntakeMs(b) - jobIntakeMs(a);
+}
+
 /**
  * Human age chip: "age 5h" / "age 3d" / "age 2w".
  * Prefer hours under 48h, then days.
