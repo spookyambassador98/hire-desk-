@@ -246,3 +246,15 @@ export const PRIORITY_AI_ROLE_RE =
 export function matchesPriorityAiRole(text: string): boolean {
   return PRIORITY_AI_ROLE_RE.test(text || "");
 }
+
+/**
+ * Desk SORT view — only the AI track the user wants on screen:
+ * AI Solution Architect · Full-Stack AI · Prompt / AI-Powered Product ·
+ * No-Code/Low-Code Technical Lead · AI Engineer · Solution Maker.
+ */
+export const SORT_AI_ROLE_RE =
+  /\b(?:ai[-\s]?native\s+(?:full[-\s]?stack\s+)?product\s+builder|ai\s+solution\s+architect|full[-\s]?stack\s+ai(?:\s+developer)?|prompt\s+engineer|ai[-\s]?powered\s+product(?:\s+developer)?|(?:no[-\s]?code|low[-\s]?code).{0,32}(?:technical\s+lead|tech\s+lead|\blead\b)|(?:technical\s+lead|tech\s+lead).{0,32}(?:no[-\s]?code|low[-\s]?code)|ai\s+engineer|solution\s+maker)\b/i;
+
+export function matchesSortAiRole(text: string): boolean {
+  return SORT_AI_ROLE_RE.test(text || "");
+}

@@ -14,6 +14,7 @@ import {
 import { JobCardFace, JobPopup } from "@/components/JobPopup";
 import type { HireActivity } from "@/lib/activity";
 import { sortAppliedWithFollowUps } from "@/lib/followUp";
+import { matchesSortAiRole } from "@/lib/harvest/max";
 import { useI18n } from "@/lib/i18n";
 import { compareByIntakeFresh } from "@/lib/regions";
 import { TEMPLATES } from "@/lib/templates";
@@ -59,6 +60,10 @@ function isRemoteJob(job: ScoredJob): boolean {
   );
 }
 
+function isSortAiJob(job: ScoredJob): boolean {
+  return matchesSortAiRole(job.role);
+}
+
 export function HireDesk({
   initialJobs,
   initialIndividuals,
@@ -78,6 +83,8 @@ export function HireDesk({
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [selectedIndId, setSelectedIndId] = useState<string | null>(null);
   const [remoteMode, setRemoteMode] = useState(false);
+  /** AI-track only · three region columns */
+  const [sortMode, setSortMode] = useState(false);
   /** Bumps so age chips recompute while the desk stays open */
   const [ageTick, setAgeTick] = useState(0);
 
@@ -277,6 +284,22 @@ export function HireDesk({
       );
   }, [remoteQueueJobs, remoteRail, ageTick]);
 
+  const sortAiJobs = useMemo(() => {
+    void ageTick;
+    return queueJobs
+      .filter((j) => isSortAiJob(j))
+      .sort(
+        (a, b) =>
+          b.scores.priority.score - a.scores.priority.score ||
+          compareByIntakeFresh(a, b) ||
+          b.scores.fit.score - a.scores.fit.score,
+      );
+  }, [queueJobs, ageTick]);
+
+  function sortJobsForRail(id: Region) {
+    return sortAiJobs.filter((j) => j.region === id);
+  }
+
   const visibleJobs = useMemo(() => {
     if (view === "applied") {
       return sortAppliedWithFollowUps(
@@ -419,11 +442,32 @@ export function HireDesk({
             aria-pressed={remoteMode}
             aria-label={t("remote.btn")}
             onClick={() => {
-              setRemoteMode((v) => !v);
+              setRemoteMode((v) => {
+                const next = !v;
+                if (next) setSortMode(false);
+                return next;
+              });
               setView("queue");
             }}
           >
             {t("remote.btn")}
+          </button>
+          <button
+            type="button"
+            className={`hd-sort-btn${sortMode ? " is-on" : ""}`}
+            aria-pressed={sortMode}
+            aria-label={t("sort.btn")}
+            title={t("sort.hint")}
+            onClick={() => {
+              setSortMode((v) => {
+                const next = !v;
+                if (next) setRemoteMode(false);
+                return next;
+              });
+              setView("queue");
+            }}
+          >
+            {t("sort.btn")}
           </button>
           <div className="hd-lang" role="group" aria-label="Language">
             <button
@@ -468,7 +512,9 @@ export function HireDesk({
 
       <main
         className={`hd-main${view === "harvest" ? " hd-main--harvest" : ""}${
-          remoteMode && view === "queue" ? " hd-main--remote-split" : ""
+          (remoteMode || sortMode) && view === "queue"
+            ? " hd-main--remote-split"
+            : ""
         }`}
       >
         <AnimatePresence mode="wait">
@@ -480,75 +526,117 @@ export function HireDesk({
             transition={{ duration: 0.32, ease: EASE }}
           >
             {view === "queue" ? (
-              <div
-                className={`hd-queue-stage${remoteMode ? " is-split" : ""}`}
-              >
-                <AnimatePresence initial={false}>
-                  {remoteMode && (
-                    <motion.section
-                      key="remote-left"
-                      className="hd-remote-pane hd-remote-pane--left"
-                      initial={{ opacity: 0, x: "-12%", scaleX: 0.92 }}
-                      animate={{ opacity: 1, x: 0, scaleX: 1 }}
-                      exit={{ opacity: 0, x: "-10%", scaleX: 0.94 }}
-                      transition={{ duration: 0.55, ease: EASE }}
-                      style={{ transformOrigin: "left center" }}
-                    >
-                      <div className="hd-remote-pane__kicker">
-                        {t("remote.left")}
-                      </div>
-                      {renderRails(
-                        remoteRail,
-                        selectRemoteRail,
-                        remoteRailCount,
-                      )}
-                      <div className="hd-list">
-                        {remoteRailJobs.map((job, i) => (
-                          <JobCardFace
-                            key={job.id}
-                            job={job}
-                            index={i}
-                            rank={i + 1}
-                            onOpen={() => openJob(job.id)}
-                          />
-                        ))}
-                        {remoteRailJobs.length === 0 && (
-                          <div className="empty">{t("remote.empty")}</div>
-                        )}
-                      </div>
-                    </motion.section>
-                  )}
-                </AnimatePresence>
-
-                <motion.section
-                  className={`hd-remote-pane hd-remote-pane--right${
-                    remoteMode ? "" : " is-solo"
-                  }`}
-                  layout
-                  transition={{ duration: 0.55, ease: EASE }}
+              sortMode ? (
+                <div className="hd-queue-stage is-sort-split">
+                  <p className="hd-sort-hint">{t("sort.hint")}</p>
+                  {RAILS.map((rail) => {
+                    const list = sortJobsForRail(rail.id);
+                    return (
+                      <motion.section
+                        key={rail.id}
+                        className={`hd-sort-pane hd-sort-pane--${rail.cls}`}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, ease: EASE }}
+                      >
+                        <div className="hd-sort-pane__kicker">
+                          {t("sort.kicker", { rail: t(rail.titleKey) })}
+                        </div>
+                        <p className="hd-sort-pane__meta">
+                          {t("rail.jobs_quota", {
+                            jobs: list.length,
+                            left: railQuotaLeft(rail.id),
+                          })}
+                        </p>
+                        <div className="hd-list">
+                          {list.map((job, i) => (
+                            <JobCardFace
+                              key={job.id}
+                              job={job}
+                              index={i}
+                              rank={i + 1}
+                              onOpen={() => openJob(job.id)}
+                            />
+                          ))}
+                          {list.length === 0 && (
+                            <div className="empty">{t("sort.empty")}</div>
+                          )}
+                        </div>
+                      </motion.section>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div
+                  className={`hd-queue-stage${remoteMode ? " is-split" : ""}`}
                 >
-                  {remoteMode && (
-                    <div className="hd-remote-pane__kicker">
-                      {t("remote.right")}
-                    </div>
-                  )}
-                  {renderRails(activeRail, selectRail, railCount)}
-                  <div className="hd-list">
-                    {railJobs.map((job, i) => (
-                      <JobCardFace
-                        key={job.id}
-                        job={job}
-                        index={i}
-                        rank={i + 1}
-                        onOpen={() => openJob(job.id)}
-                      />
-                    ))}
-                    {railJobs.length === 0 && (
-                      <div className="empty">{t("empty.queue")}</div>
+                  <AnimatePresence initial={false}>
+                    {remoteMode && (
+                      <motion.section
+                        key="remote-left"
+                        className="hd-remote-pane hd-remote-pane--left"
+                        initial={{ opacity: 0, x: "-12%", scaleX: 0.92 }}
+                        animate={{ opacity: 1, x: 0, scaleX: 1 }}
+                        exit={{ opacity: 0, x: "-10%", scaleX: 0.94 }}
+                        transition={{ duration: 0.55, ease: EASE }}
+                        style={{ transformOrigin: "left center" }}
+                      >
+                        <div className="hd-remote-pane__kicker">
+                          {t("remote.left")}
+                        </div>
+                        {renderRails(
+                          remoteRail,
+                          selectRemoteRail,
+                          remoteRailCount,
+                        )}
+                        <div className="hd-list">
+                          {remoteRailJobs.map((job, i) => (
+                            <JobCardFace
+                              key={job.id}
+                              job={job}
+                              index={i}
+                              rank={i + 1}
+                              onOpen={() => openJob(job.id)}
+                            />
+                          ))}
+                          {remoteRailJobs.length === 0 && (
+                            <div className="empty">{t("remote.empty")}</div>
+                          )}
+                        </div>
+                      </motion.section>
                     )}
-                  </div>
-                </motion.section>
-              </div>
+                  </AnimatePresence>
+
+                  <motion.section
+                    className={`hd-remote-pane hd-remote-pane--right${
+                      remoteMode ? "" : " is-solo"
+                    }`}
+                    layout
+                    transition={{ duration: 0.55, ease: EASE }}
+                  >
+                    {remoteMode && (
+                      <div className="hd-remote-pane__kicker">
+                        {t("remote.right")}
+                      </div>
+                    )}
+                    {renderRails(activeRail, selectRail, railCount)}
+                    <div className="hd-list">
+                      {railJobs.map((job, i) => (
+                        <JobCardFace
+                          key={job.id}
+                          job={job}
+                          index={i}
+                          rank={i + 1}
+                          onOpen={() => openJob(job.id)}
+                        />
+                      ))}
+                      {railJobs.length === 0 && (
+                        <div className="empty">{t("empty.queue")}</div>
+                      )}
+                    </div>
+                  </motion.section>
+                </div>
+              )
             ) : view === "harvest" ? (
               <HarvestPanel
                 onImported={() => void reload()}
