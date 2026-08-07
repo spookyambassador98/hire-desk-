@@ -13,6 +13,8 @@ data/harvest-live.json
 data/harvest-quotas.json
 data/activities.json
 data/*.tmp
+!data/recovery/
+!data/recovery/**
 secrets/
 *firebase*adminsdk*.json
 

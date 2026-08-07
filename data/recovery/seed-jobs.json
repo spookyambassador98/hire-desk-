@@ -1,0 +1,2773 @@
+[
+  {
+    "id": "job_6f625bd1",
+    "company": "openai",
+    "role": "RE / RS - Foundations, Search",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nThe Foundations Research team works on high-risk, high-reward ideas that could shape the next decade of AI. Our goal is to advance the science and data that enable our training and scaling efforts, with a particular focus on future frontier models.  Pushing the boundaries of data, scaling laws, optimization techniques, model architectures, and efficiency improvements to propel our science. \n\nThe Search team sits within Foundations, building agentic search by co-designing model–system interfaces with the core search stack (serving, indexing, retrieval) to translate model intent into reliable, real-world actions. Operating at the frontier of AI and information retrieval, the team develops large-scale systems that transform and index vast corpora, enabling models to reason over global knowledge and act dependably. In close partnership with researchers, we rapidly bring modeling breakthroughs into production and redefine how intelligent systems discover, retrieve, and synthesize information at planetary scale.\n\n\n\nAbout the Role\n\nWe’re looking for a researcher focused on our embedding retrieval efforts. You’ll work with a a team of world-class research scientists and eng",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/020b2aae-8be0-408c-ab49-20eefa8541af",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.920Z",
+    "updatedAt": "2026-08-05T08:18:05.920Z",
+    "proofProjects": [
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches ops → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Matches ops → Outreach ops console — queue, parsers, templates."
+  },
+  {
+    "id": "job_48c01d91",
+    "company": "openai",
+    "role": "Software Engineer, Accelerators",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "ABOUT THE TEAM\n\nOpenAI’s Hardware organization develops AI-native silicon and system-level solutions for the unique demands of advanced AI workloads. Building on efforts like Jalapeño, the team is developing future generations of AI-native silicon and tightly integrated systems to power the next generation of frontier models. By co-designing chips, systems, tools, and methodologies, the team helps deliver faster, more efficient, and production-ready hardware for OpenAI’s supercomputing platform.\n\n\nABOUT THE ROLE\n\nOn the Accelerators team, you will help OpenAI evaluate and bring up new compute platforms that can support large-scale AI training and inference.\n\nYour work will range from prototyping system software on new accelerators to enabling performance optimizations across our AI workloads.\n\nYou’ll work across the stack, collaborating with both hardware and software aspects - working on kernels, sharding strategies, scaling across distributed systems, and performance modeling.\n\nYou'll help adapt OpenAI's software stack to non-traditional hardware and drive efficiency improvements in core AI workloads. This is not a compiler-focused role, rather bridging ML algorithms with system ",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/f386b209-1259-4b79-bf5a-aa97fc7ce77b",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.911Z",
+    "updatedAt": "2026-08-05T08:18:05.911Z",
+    "proofProjects": [
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches ops → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Matches ops → Outreach ops console — queue, parsers, templates."
+  },
+  {
+    "id": "job_6d5ebc1f",
+    "company": "openai",
+    "role": "Software Engineer, Privacy",
+    "region": "europe",
+    "location": "Dublin, Ireland",
+    "remote": null,
+    "description": "About the Team\n\nThe Privacy Team at OpenAI is committed to building a secure and trustworthy platform. Our area of responsibility encompasses all OpenAI products and systems that process user data. We provide cross-functional partners with the tools needed to ensure that all products adhere to the highest standards of data privacy and legal compliance. Our approach to prioritizing responsible data use is integral to OpenAI's mission of safely introducing Artificial General Intelligence (AGI) that offers widespread benefits.\n\nAbout the Role\n\nWe’re in search of a Software Engineer with experience building data pipelines and working closely with members of the Legal team. This role is perfect for someone who's passionate about the intersection of systems, privacy, and legal compliance. You will architect, design, and write backend systems responsible for handling some of the most sensitive data at OpenAI.\n\nThis role is based in Dublin, Ireland. We use a hybrid work model of 3 days in the office per week and offer relocation assistance to new employees.\n\nIn this role, you will:\n\n - Design, build, and maintain back-end systems and services that power privacy and data compliance function",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/fb5862cc-244c-410b-b287-47df89ad1e43",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.911Z",
+    "updatedAt": "2026-08-05T08:18:05.911Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches pipeline → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_6b34ea1a",
+    "company": "openai",
+    "role": "Machine Learning Engineer, Integrity",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nThe Integrity team at OpenAI is dedicated to ensuring that our cutting-edge technology is not only revolutionary, but also secure from a myriad of adversarial threats. We strive to maintain the integrity of our platforms as they scale.\n\nThe Integrity team is at the front lines of defending against misuse in all its forms: content abuse, scaled attacks, and other actions that could undermine the user experience or harm our operational stability.\n\nAbout the Role\n\nAs a Machine Learning Engineer in OpenAI's Integrity team, you will have the opportunity to work with some of the brightest minds in AI. You’ll work on state-of-the-art models and classifiers, experiment with new architecture and approaches, and push forward our abilities in content and user understanding. You’ll help turn research breakthroughs into tangible solutions that improve the trust and safety of our platform. If you're excited about training LLMs and building ML models, this role is your chance to make a significant mark.\n\nIn this role, you will:\n\n - Innovate and Deploy: Design and deploy advanced machine learning models that solve real-world problems. Bring OpenAI's research from concept to impleme",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/ecf1abec-898c-4acb-a984-42858836a1ff",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.910Z",
+    "updatedAt": "2026-08-05T08:18:05.910Z",
+    "proofProjects": [
+      {
+        "projectId": "asema",
+        "name": "Asema Trading",
+        "demoUrl": "https://demo-trading-one.vercel.app/",
+        "why": "Matches lms → Trading-school SaaS — fullstack product from ops to learner UI."
+      }
+    ],
+    "whyFit": "Matches lms → Trading-school SaaS — fullstack product from ops to learner UI."
+  },
+  {
+    "id": "job_9619cd4a",
+    "company": "openai",
+    "role": "Solutions Engineer, Pre-Sales",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nThe Technical Success team is responsible for ensuring the safe and effective deployment of ChatGPT and OpenAI API applications for developers and enterprises. We act as a trusted advisor and thought leader for our customers, ensuring developers and enterprises maximize value from our models and products. As a Solutions Engineer you’ll help our customers transform their business through solutions such as customer service, automated content generation, and novel applications that make use of our newest, most exciting models.\n\n \n\nAbout the Role\n\nWe are seeking a solutions engineer to partner with our customers and ensure they achieve tangible business value from our models through ChatGPT and the OpenAI API. You will partner with senior business stakeholders to understand their pre-sales needs, guide their AI strategy, and identify the highest value use cases and applications. You will work with business and technical teams to demonstrate the value of our solutions and recommend architectural patterns to kickstart their implementation and development.\n\nThis role is based in San Francisco, CA. We use a hybrid work model of 3 days in the office per week and offer reloca",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/98a36c10-3497-4955-9cc0-a6f211e4dc1b",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.910Z",
+    "updatedAt": "2026-08-05T08:18:05.910Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches lead → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_bf32b05a",
+    "company": "openai",
+    "role": "Software Engineer, Fleet Management",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "The Fleet team at OpenAI supports the computing environment that powers our cutting-edge research and product development. We oversee large-scale systems that span data centers, GPUs, networking, and more, ensuring high availability, performance, and efficiency. Our work enables OpenAI’s models to operate seamlessly at scale, supporting both internal research and external products like ChatGPT. We prioritize safety, reliability, and responsible AI deployment over unchecked growth.\n\n\n\nAbout the Role\n\nThe Software Engineer, Operating Systems & Orchestration will focus on building systems to manage hardware, configurations, vendors, and the people interacting with our infrastructure. You will design and develop solutions that integrate individual nodes and servers into unified clusters, directly contributing to advancing AI research by streamlining the overall research user experience. This role is based in San Francisco, CA. We use a hybrid work model of 3 days in the office per week and offer relocation assistance to new employees.\n\n\n\nIn this role, you will:\n\n - Design and build systems to manage both cloud and bare-metal fleets at scale.\n\n - Develop tools that integrate low-level h",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/7809102e-e82a-4678-bf7c-221de8acc0d6",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.910Z",
+    "updatedAt": "2026-08-05T08:18:05.910Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "apex",
+        "name": "APEX / Leads Club",
+        "demoUrl": "https://leads-club.vercel.app",
+        "why": "Matches growth → Product packaging + lead ops ecosystem (Leads Club)."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; APEX / Leads Club as secondary angle."
+  },
+  {
+    "id": "job_e62f8a94",
+    "company": "openai",
+    "role": "Software Engineer, Youth Well-Being",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nThe Youth Well-Being product team is part of the Integrity pillar at OpenAI, responsible for ensuring that our state-of-the-art AI technologies are deployed in safe, age-appropriate, and beneficial ways—especially for youth and families.\n\nWe work across OpenAI’s entire product surface area, from ChatGPT to future-facing tools, to architect safety and trust into the foundation of our systems. Our mission: empower families while meeting the highest standards of regulatory compliance and ethical responsibility.\n\nThis work is core to OpenAI’s mission to ensure AGI benefits all of humanity. Safety, especially for the most vulnerable users, is more important to us than unfettered growth.\n\n\nAbout the Role\n\nWe’re looking for a Senior Software Engineer to help architect and build the foundational systems that power family- and youth-facing experiences at scale. You’ll help define how teens and guardians engage with OpenAI products—ensuring those experiences are safe, compliant, and empowering.\n\nYou’ll operate across a broad technical surface: building identity primitives, age assurance pipelines, and guardian tools that support both proactive and reactive interventions. You’",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/f4e8a433-ae96-44ac-a7f9-97070335395f",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.909Z",
+    "updatedAt": "2026-08-05T08:18:05.909Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches pipeline → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_7aa6577a",
+    "company": "openai",
+    "role": "Software Engineer, Data Infrastructure",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nData Platform at OpenAI owns the foundational data stack powering critical product, research, and analytics workflows. We operate some of the largest Spark compute fleets in production; design, and build data lakes and metadata systems on Iceberg and Delta with a vision toward exabyte-scale architecture; run high throughput streaming platforms on Kafka and Flink; provide orchestration with Airflow; and support ML feature engineering tooling such as Chronon. Our mission is to deliver reliable, secure, and efficient data access at scale and accelerate intelligent, AI assisted data workflows.\n\nJoin us to build and operate these core platforms that underpin OpenAI products, research, and analytics.\n\nWe’re not just scaling infrastructure – we’re redefining how people interact with data. Our vision includes intelligent interfaces and AI-assisted workflows that make working with data faster, more reliable, and more intuitive.\n\nAbout the Role\n\nThis role focuses on building and operating data infrastructure that supports massive compute fleets and storage systems, designed for high performance and scalability. You’ll help design, build, and operate the next generation of dat",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/f763c6b3-5167-4a67-b691-4c3fa2c44156",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.909Z",
+    "updatedAt": "2026-08-05T08:18:05.909Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_7a38082c",
+    "company": "openai",
+    "role": "Account Director - Tokyo",
+    "region": "europe",
+    "location": "Tokyo, Japan",
+    "remote": null,
+    "description": "About the team\n\nOpenAI’s mission is to build safe artificial general intelligence (AGI) which benefits all of humanity. This long-term undertaking brings the world’s best scientists, engineers, and business professionals into one lab together to accomplish this.\n\nIn pursuit of this mission, our Go To Market (GTM) team is responsible for helping customers learn how to leverage and deploy our highly capable AI products across their business. The team is made of Sales, Solutions, Support, Marketing, and Partnership professionals that work together to create valuable solutions that will help bring AI to as many users as possible.\n\n\n\nAbout the role\n\nOur Sales team has a unique mission to help customers understand the deep impact that highly capable AI models can bring to their business and users. This role is a mixture of technical understanding, vision, partnership, and value-driven strategy.\n\nYou’ll be a key driver of opportunities through the entire sales cycle, from pipeline generation to closure. You’ll work with researchers, engineers, and solution strategists to help customers evolve their industry with AI.\n\n\n\nThis role is based in Tokyo, Japan. We use a hybrid work model of 3 da",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/18f58952-c242-4562-8732-073a0ae8029e",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.909Z",
+    "updatedAt": "2026-08-05T08:18:05.909Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches pipeline → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_bf566234",
+    "company": "vercel",
+    "role": "Software Engineer, Trust & Safety",
+    "region": "europe",
+    "location": "Remote - United States",
+    "remote": true,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;h2&gt;About Vercel:&lt;/h2&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;Vercel is the agentic infrastructure company. We free people and agents to ship what’s next.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;For more than a decade, Vercel has shaped how the web is built. As the team behind Next.js, v0, and AI SDK, we create products that help builders move from idea to production with speed, security, and exceptional developer experience.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;Now, software is entering a new era, and the next generation of products will not just be used by people. They will be built, extended, and operated by agents.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;We are building the platform for that future, trusted by companies like&amp;nbsp;&lt;strong&gt;OpenAI, PayPal, Ramp, Supreme, and millions of developers worldwide&lt;/strong&gt;. Whether you’re building our products, supporting our customers, growing our community, or shaping our story, you’ll help define what comes next.&lt;/span&gt;&lt;/p&gt;&lt;/div&gt",
+    "salary": null,
+    "url": "https://job-boards.greenhouse.io/vercel/jobs/5788954004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:vercel",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.895Z",
+    "updatedAt": "2026-08-05T08:18:05.895Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      }
+    ],
+    "whyFit": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+  },
+  {
+    "id": "job_a819797e",
+    "company": "vercel",
+    "role": "Senior Product Designer, Growth",
+    "region": "europe",
+    "location": "Hybrid - San Francisco, New York City",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;h2&gt;About Vercel:&lt;/h2&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;Vercel is the agentic infrastructure company. We free people and agents to ship what’s next.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;For more than a decade, Vercel has shaped how the web is built. As the team behind Next.js, v0, and AI SDK, we create products that help builders move from idea to production with speed, security, and exceptional developer experience.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;Now, software is entering a new era, and the next generation of products will not just be used by people. They will be built, extended, and operated by agents.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;We are building the platform for that future, trusted by companies like&amp;nbsp;&lt;strong&gt;OpenAI, PayPal, Ramp, Supreme, and millions of developers worldwide&lt;/strong&gt;. Whether you’re building our products, supporting our customers, growing our community, or shaping our story, you’ll help define what comes next.&lt;/span&gt;&lt;/p&gt;&lt;/div&gt",
+    "salary": null,
+    "url": "https://job-boards.greenhouse.io/vercel/jobs/6131210004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:vercel",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.894Z",
+    "updatedAt": "2026-08-05T08:18:05.894Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "apex",
+        "name": "APEX / Leads Club",
+        "demoUrl": "https://leads-club.vercel.app",
+        "why": "Matches growth → Product packaging + lead ops ecosystem (Leads Club)."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; APEX / Leads Club as secondary angle."
+  },
+  {
+    "id": "job_a7de63d6",
+    "company": "vercel",
+    "role": "Director, Solutions Architect",
+    "region": "europe",
+    "location": "Hybrid - San Francisco, New York City, Austin",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;h2&gt;About Vercel:&lt;/h2&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;Vercel is the agentic infrastructure company. We free people and agents to ship what’s next.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;For more than a decade, Vercel has shaped how the web is built. As the team behind Next.js, v0, and AI SDK, we create products that help builders move from idea to production with speed, security, and exceptional developer experience.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;Now, software is entering a new era, and the next generation of products will not just be used by people. They will be built, extended, and operated by agents.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;We are building the platform for that future, trusted by companies like&amp;nbsp;&lt;strong&gt;OpenAI, PayPal, Ramp, Supreme, and millions of developers worldwide&lt;/strong&gt;. Whether you’re building our products, supporting our customers, growing our community, or shaping our story, you’ll help define what comes next.&lt;/span&gt;&lt;/p&gt;&lt;/div&gt",
+    "salary": null,
+    "url": "https://job-boards.greenhouse.io/vercel/jobs/6119846004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:vercel",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.894Z",
+    "updatedAt": "2026-08-05T08:18:05.894Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      }
+    ],
+    "whyFit": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+  },
+  {
+    "id": "job_34e3a547",
+    "company": "figma",
+    "role": "Technical Program Manager, Data",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p&gt;Figma&#39;s platform helps teams bring ideas to life — and Data Science is central to how we measure, improve, and scale it. We&#39;re on a mission to make data self-serve for every Figmate: moving from a world where every data question requires filing a request to a DS or DE, to one where anyone can ask a question in plain language and get a trustworthy answer in minutes. We&#39;re hiring Figma&#39;s first dedicated Technical Program Manager for Data Science to own that mission — driving our multi-phase Self-Serve Analytics program from semantic layer expansion through the Figma Data Assistant, while building the operatio",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/6009613004?gh_jid=6009613004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.894Z",
+    "updatedAt": "2026-08-05T08:18:05.894Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Matches mission → Live orbital HUD — realtime 3D ops console."
+  },
+  {
+    "id": "job_634e7a7c",
+    "company": "figma",
+    "role": "Software Engineer, Machine Learning",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;section page-centered&quot;&gt;\n&lt;div&gt;\n&lt;p&gt;Figma is seeking a versatile and experienced Machine Learning / AI Engineer to join our growing AI team, working at the intersection of applied machine learning, infrastructure, and product innovation. Whether you’re building intelligent search systems, crafting scalable data pipelines, or enhancing AI-powered creativity tools, your work will drive user productivity, shape new product experiences, and advance the state of AI at Figma.&lt;/p&gt;\n&lt;p&gt;You’ll collaborate closely with engineers, researchers, designers, and product managers across multiple team",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/5551532004?gh_jid=5551532004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.894Z",
+    "updatedAt": "2026-08-05T08:18:05.894Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches pipeline → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_e0000d50",
+    "company": "figma",
+    "role": "Software Engineer, AI Platforms",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;section page-centered&quot;&gt;\n&lt;div class=&quot;section page-centered&quot;&gt;\n&lt;p&gt;AI Platform teams build the core frameworks, abstractions, and systems that support AI features across Figma. We create new capabilities that AI product teams can build on, while collaborating with teams from around the company to improve our performance, reliability, and technical quality. We’re looking for strong infrastructure and platform-minded engineers to contribute to our agent infrastructure, context retrieval &amp;amp; ranking platform, and core AI services, in order to accelerate our most critical company-wide",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/5691886004?gh_jid=5691886004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.894Z",
+    "updatedAt": "2026-08-05T08:18:05.894Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Matches mission → Live orbital HUD — realtime 3D ops console."
+  },
+  {
+    "id": "job_afe79a56",
+    "company": "figma",
+    "role": "Product Manager, AI Growth",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p&gt;We’re looking for a strategic, entrepreneurial Product Manager to help shape product-led growth for our newest AI products. Figma has an ambitious, forward-looking roadmap that we’re rapidly executing on as product development and design rapidly change with AI. This role will help drive the company’s strategy for growth of these products and ensure users discover value in Figma as their workflows rapidly evolve.&amp;nbsp;&lt;/p&gt;\n&lt;h2&gt;&lt;strong&gt;What you’ll do at Figma:&lt;/strong&gt;&lt;/h2&gt;\n&lt;ul&gt;\n&lt;li&gt;Partner closely with other product teams to develop and execute on a strategy for driving adoption",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/5989185004?gh_jid=5989185004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.892Z",
+    "updatedAt": "2026-08-05T08:18:05.892Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "apex",
+        "name": "APEX / Leads Club",
+        "demoUrl": "https://leads-club.vercel.app",
+        "why": "Matches growth → Product packaging + lead ops ecosystem (Leads Club)."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; APEX / Leads Club as secondary angle."
+  },
+  {
+    "id": "job_55bd00f0",
+    "company": "figma",
+    "role": "Manager, Software Engineering - AI Product",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p&gt;We&#39;re seeking a dynamic manager to lead a team on our early-stage journey of providing Figma’s users with personalized, streamline and intuitive solutions. As Figma’s customer base continues to expand and diversify, and new technological advancements in AI and generative design emerge, the opportunity for AI experience engineering is greater than ever. You’ll collaborate closely with a cutting edge AI Research team and your work will help raise the ceiling of what’s possible for designers and lower the floor of who can design.&lt;/p&gt;\n&lt;p&gt;We are seeking an accomplished and experienced leader who has built scrapp",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/5838098004?gh_jid=5838098004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.891Z",
+    "updatedAt": "2026-08-05T08:18:05.891Z",
+    "proofProjects": [
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches scrap, lead → Outreach ops console — queue, parsers, templates."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Lead Desk as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_5362faa6",
+    "company": "figma",
+    "role": "Manager, Data Science - AI Product",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p&gt;The AI Products Data Science org is at the center of next generation products within Figma. With a charge to uplevel Figma’s use of data, the team works alongside other Data Scientists and Engineering to identify ways to implement and democratize new statistical methods, build data frameworks, and incorporate data within Figma’s product development process. The team contributes to the company’s goals by collaborating closely with product managers, engineers, and our finance team to uncover new opportunities, identify inefficiencies and recommend improvements through data-driven insights. &lt;br&gt;&lt;br&gt;This is a full ",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/5983820004?gh_jid=5983820004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.887Z",
+    "updatedAt": "2026-08-05T08:18:05.887Z",
+    "proofProjects": [
+      {
+        "projectId": "asema",
+        "name": "Asema Trading",
+        "demoUrl": "https://demo-trading-one.vercel.app/",
+        "why": "Matches finance → Trading-school SaaS — fullstack product from ops to learner UI."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Asema Trading as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_86fe715a",
+    "company": "figma",
+    "role": "Director, Research - AI Evals",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;The Figma Research team is hiring an Director, Research - AI Evals to own how we measure the quality of Figma&#39;s AI-powered experiences. As Figma ships more AI capabilities across our products, the question &quot;is this really good?&quot; has never mattered more — and answering it rigorously is what this role exists to do. You&#39;ll define what &quot;good&quot; means for our AI features, build the frameworks and quality bars to measure it, and turn that into trusted signal that product teams rely on to decide what to ship.&lt;/p&gt;\n&lt;p class=",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/6112112004?gh_jid=6112112004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.887Z",
+    "updatedAt": "2026-08-05T08:18:05.887Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Art of Look as secondary angle."
+  },
+  {
+    "id": "job_33180b2b",
+    "company": "figma",
+    "role": "Director, Data Science",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p&gt;The AI Product&#39;s Data Science org is at the center of the next generation of products at Figma, spanning Make, Figma Agent, Design Systems, and other areas. Data is critical to setting strategy and measurement across these areas. This org engages closely with AI Research and is a driving force behind our evals work and the future of product measurement at scale. With a charge to uplevel Figma’s use of data, the team works alongside other Data Scientists and Engineering to identify ways to implement and democratize new statistical methods, build data frameworks, and incorporate data within Figma’s product development pr",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/6130865004?gh_jid=6130865004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.887Z",
+    "updatedAt": "2026-08-05T08:18:05.887Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Art of Look as secondary angle."
+  },
+  {
+    "id": "job_245de5c5",
+    "company": "stripe",
+    "role": "Tax Technology Lead",
+    "region": "europe",
+    "location": "San Francisco, Seattle, New York",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are &lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies - from the world’s largest enterprises to the most ambitious startups - use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone&#39;s reach while doing the most important work of your career.&lt;/span&gt;&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;The Tax team is focused on building the most tech-advanced tax department in the industry, leveraging automation, custom engineering, and real-time data to maintain a competitive advantage. The Tax Technology Lead serves as the lead architect for the Tax team&#39;s digital transformation, reporting to the Head of Tax. This role accelerates technology adoption to transition Tax into a high-velocity, tech-first depa",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7905025",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.887Z",
+    "updatedAt": "2026-08-05T08:18:05.887Z",
+    "proofProjects": [
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches automation, lead → Outreach ops console — queue, parsers, templates."
+      },
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      }
+    ],
+    "whyFit": "Lead Desk as primary proof; FOAMCORE as secondary angle."
+  },
+  {
+    "id": "job_9e646326",
+    "company": "stripe",
+    "role": "Staff Product Manager, ML Foundations and GenAI",
+    "region": "europe",
+    "location": "Seattle, San Francisco, New York, US - Remote",
+    "remote": true,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;You will be joining Stripe’s ML Foundations and Gen AI team to incubate new ML applications and improve our ML capabilities across Stripe. Our team is responsible for unlocking novel ML and LLM techniques and applications across Stripe’s product suite to drive business outcomes, as well as providing infrastructure, tooling and support for ML teams.&lt;/p&gt;\n&lt;h2&gt;&lt;strong&gt;What you’ll do&lt;/strong&gt;&lt;/h2&gt;\n&lt;p&gt;As a senior product leader, you will lead a cross-fu",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7517535",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.886Z",
+    "updatedAt": "2026-08-05T08:18:05.886Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_4421e8ce",
+    "company": "stripe",
+    "role": "Sales Excellence Manager, Global Sales Vendors",
+    "region": "europe",
+    "location": "Remote in the US",
+    "remote": true,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are &lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world&#39;s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone&#39;s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;The Global Sales Vendors team partners with third-party external sales organizations to drive Stripe&#39;s revenue growth and expand access to Stripe&#39;s financial infrastructure. We design and scale the sales motions, processes, and performance frameworks that enable our vendor salesforce to deliver consistent results and exceptional customer experiences.&lt;/p&gt;\n&lt;p&gt;We work at the intersection of strategy and execution, partnering closely with Vendor Operations M",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8011418",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.885Z",
+    "updatedAt": "2026-08-05T08:18:05.885Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_0ddf1465",
+    "company": "stripe",
+    "role": "ML Engineer Manager, AI Conversation Platform",
+    "region": "europe",
+    "location": "Toronto, Canada",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Engineering Manager, AI Conversation Platform&lt;/strong&gt;&lt;/h2&gt;\n&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;The newly formed Conversation Platform team aims to build a conversation platform for all merchants who use Stripe. We are doing so by (a) automating the easy tasks, and (b) assisting our users in the difficult tasks. Some examples include customizing the Stripe landing page to suggest bespoke integrations, allowing users to command the Stripe API in natural language, and resolving user i",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8022713",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.869Z",
+    "updatedAt": "2026-08-05T08:18:05.869Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches command, mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; FOAMCORE as secondary angle."
+  },
+  {
+    "id": "job_9c5c058b",
+    "company": "stripe",
+    "role": "Machine Learning Engineer",
+    "region": "europe",
+    "location": "Toronto",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Our Applied ML team aims to reform how our users interact with Stripe. We are doing so by (a) automating the easy tasks, and (b) assisting our users in the difficult tasks. Some examples include helping our users resolve issues with Stripe faster or making it easier for our users to sign up and navigate Stripe. We are using the latest LLMs as well as fine-tuning our own models. We&#39;re an end-to-end team going from ideas to models to shipping in production. You can learn more abou",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8014859",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.869Z",
+    "updatedAt": "2026-08-05T08:18:05.869Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "asema",
+        "name": "Asema Trading",
+        "demoUrl": "https://demo-trading-one.vercel.app/",
+        "why": "Matches lms → Trading-school SaaS — fullstack product from ops to learner UI."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Asema Trading as secondary angle."
+  },
+  {
+    "id": "job_b9bcc670",
+    "company": "stripe",
+    "role": "Full Stack Engineer, Expansion",
+    "region": "europe",
+    "location": "N/A",
+    "remote": null,
+    "description": "&lt;h2&gt;Who we are&lt;/h2&gt;\n&lt;h3&gt;About Stripe&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world&#39;s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone&#39;s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;About the team&lt;/h3&gt;\n&lt;p&gt;Web Presence and Platform is organized into two pillars, each of which is grouped into pods that focus on the central tenets of the Stripe public mission. The Presence pillar creates industry-leading designs for Stripe front door surfaces, educating customers about the power of our platform, sharing ideas and expertise with the public, and driving adoption. The Platform pillar builds the internal machinery that powers these surfaces, and is responsible for making our websites fast, stable, and easy to update.&lt;/p&gt;\n&lt;p&gt;Together we design and build str",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7775622",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.868Z",
+    "updatedAt": "2026-08-05T08:18:05.868Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_19bdf4f9",
+    "company": "stripe",
+    "role": "Engineering Manager, AI Conversation Platform",
+    "region": "europe",
+    "location": "Toronto, Canada",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Engineering Manager, AI Conversation Platform&lt;/strong&gt;&lt;/h2&gt;\n&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;The newly formed Conversation Platform team aims to build a conversation platform for all merchants who use Stripe. We are doing so by (a) automating the easy tasks, and (b) assisting our users in the difficult tasks. Some examples include customizing the Stripe landing page to suggest bespoke integrations, allowing users to command the Stripe API in natural language, and resolving user i",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7943804",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.868Z",
+    "updatedAt": "2026-08-05T08:18:05.868Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches command, mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; FOAMCORE as secondary angle."
+  },
+  {
+    "id": "job_9757165b",
+    "company": "stripe",
+    "role": "AI Product Manager, Professional Services",
+    "region": "europe",
+    "location": "New York/ San Francisco",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies, from the world’s largest enterprises to the most ambitious startups, use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;The Global Transformation Team is a small, high-leverage team with a global remit. We lead the programs that transform how ProServ works, so our users realize the full value of Stripe faster. That means making ProServ AI-native, building one prescriptive methodology that scales worldwide, and creating the knowledge systems that make every engagement smarter than the last. We care about craft, consistency, and landing change, not just shipping it. Everything we build is global by d",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8064526",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.868Z",
+    "updatedAt": "2026-08-05T08:18:05.868Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_0731416a",
+    "company": "stripe",
+    "role": "AI Engineer",
+    "region": "europe",
+    "location": "Chicago",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who We Are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world&#39;s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone&#39;s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About The Team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;The Solutions Architecture (SA) organization helps Stripe&#39;s most strategic customers design and validate technical solutions that drive their business forward. Within SA, our team builds the tools, workflows, and custom technical assets that make the broader SA org more effective—turning individual ingenuity into org-wide capability.&lt;/p&gt;\n&lt;p&gt;We are looking for AI Engineers who are energized by working close to the business and the users we serve. You&#39;ll op",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8044460",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.868Z",
+    "updatedAt": "2026-08-05T08:18:05.868Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_475141f9",
+    "company": "stripe",
+    "role": "AEO and GEO Marketing Manager",
+    "region": "europe",
+    "location": "Remote in the US",
+    "remote": true,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Growth Marketing is a team of performance-driven marketers and channel specialists. We partner closely with growth, creative, analytics, and regional marketing to drive revenue through self-serve and sales motions. We work globally, across all Stripe offerings and with all company segments - from startups to the largest enterprises.&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;In this role, you’d be joining a global, cross-functional team dedicated to testing and scaling cutting-edge acquisition ",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7844214",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.867Z",
+    "updatedAt": "2026-08-05T08:18:05.867Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_a169a75a",
+    "company": "Transreport Limited",
+    "role": "AI Product Marketing Intern (3-6 months)",
+    "region": "europe",
+    "location": "London",
+    "remote": false,
+    "description": " Transreport builds technology that makes travel more accessible. Our flagship product, Passenger Assistance, lets disabled and older passengers request support for their rail journeys - through an app, online, or via chat — so they arrive at the station confident that help will be there. \n On the other side, train operators and frontline staff use our platform to coordinate that support in real time. It is used every day across the UK rail network, has facilitated over 10 million assistance requests, and serves more than 1 million users. \n We are a Series A company, recognised with a King's Award for Innovation and backed by the Department for Transport. \n  The Opportunity  \n Passenger Assistance is a mature, proven product with strong commercial momentum. The opportunity now is to build the content and storytelling engine that helps our sales team scale — so the right people understand what the product does, why it matters, and how to champion it internally. \n This role is for someone who wants to own that challenge. You will get deep into the product, understand how it works from a user's perspective, and turn that understanding into content that moves sales conversations forwar",
+    "salary": null,
+    "url": "https://www.arbeitnow.co.uk/jobs/companies/transreport-limited/ai-product-marketing-intern-3-6-months-london-348307",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:arbeitnow",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.856Z",
+    "updatedAt": "2026-08-05T08:18:05.856Z",
+    "proofProjects": [],
+    "whyFit": "No strong portfolio keyword hit — lead with sticky pitch + Asema as general fullstack proof."
+  },
+  {
+    "id": "job_ed5a2f17",
+    "company": "IRIS OS",
+    "role": "Founding CTO / AI Engineer",
+    "region": "europe",
+    "location": "London",
+    "remote": false,
+    "description": " Right now, who gets funded depends on who you happen to know. If you're in Silicon Valley with the right warm intros, you raise. If you're a brilliant founder in Lagos, Karachi, Bogotá or anywhere outside the default networks, you spend months in cold email purgatory, regardless of how good your company or non-profit is. \n IRIS is rebuilding that. She's a personal AI fundraising agent for the most exceptional founders. She gets to know each founder, their stage and what they're raising, then makes the warm introductions that move their round forward. \n IRIS works both sides of that connection. For investors, she's signal: a stream of qualified, pre-vetted founders matched to their real thesis, with the warm path already mapped, and far less noise than their inbox. The founders get access; the investors get the right founders in front of them. Underneath, IRIS is a relationship intelligence layer, part network operating system, part CRM, part autonomous agent, that learns from every interaction and gets sharper the more the network uses her. \n She lives where founders and investors already work, across email, WhatsApp, phone and web. We're starting with women founders in Europe, an",
+    "salary": null,
+    "url": "https://www.arbeitnow.co.uk/jobs/companies/iris-os/founding-cto-ai-engineer-london-238055",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:arbeitnow",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.856Z",
+    "updatedAt": "2026-08-05T08:18:05.856Z",
+    "proofProjects": [
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches crm → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Matches crm → Outreach ops console — queue, parsers, templates."
+  },
+  {
+    "id": "job_058f82d0",
+    "company": "Tangible",
+    "role": "Information Security Engineer (CISO track)",
+    "region": "europe",
+    "location": "London",
+    "remote": true,
+    "description": " Fully remote · CET timezone or close - Full-time · Reports to the CTO \n  About the role  \n You'll be our first dedicated information security hire. Right now security is a part-time job for engineering leadership and external vendor; we want it to be your full-time one. The work is hands-on: AWS, infrastructure as code, detection and response, auditors. As the company grows, the role grows into CISO. \n We sell to financial institutions, and their security teams question everything we do, so you'll be the person with good answers. \n Tasks \n  What you'll do  \n \n Own security in our AWS environment: IAM and least privilege, network segmentation, encryption, logging and detection (GuardDuty, Security Hub, CloudTrail), fixing what you find. \n Build security into the development pipeline: secrets management, dependency and container scanning, code review for risky changes, threat modeling with the engineers. \n Automate. Detection rules, alerting, compliance evidence, IaC guardrails. If a control can be code instead of a meeting, make it code. \n Run vulnerability management and incident response. Write the runbooks, run the drills. \n Set the rules for our AI and LLM use: which data goes ",
+    "salary": null,
+    "url": "https://www.arbeitnow.co.uk/jobs/companies/tangible/information-security-engineer-ciso-track-london-493529",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:arbeitnow",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.856Z",
+    "updatedAt": "2026-08-05T08:18:05.856Z",
+    "proofProjects": [
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches pipeline, lead → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Matches pipeline, lead → Outreach ops console — queue, parsers, templates."
+  },
+  {
+    "id": "job_82633b95",
+    "company": "Clera",
+    "role": "AI Engineer",
+    "region": "europe",
+    "location": "remote",
+    "remote": false,
+    "description": " About the Role  We're a fast-moving, early-stage startup operating in the  AI-powered talent acquisition  space, and we're hiring  AI Engineers  to tackle two of our most critical technical challenges: scaling our backend infrastructure and optimizing the LLM and AI agent flows that power our core product. You'll join a small, high-agency engineering team where your work has direct and immediate impact on platform performance and user experience.  We're looking to bring on  1–2 exceptionally strong, startup-motivated engineers  who are passionate about building reliable, production-grade AI systems.  What You'll Do    Take full ownership of backend scalability — design, build, and maintain services and systems that perform reliably at scale.    Tune, iterate on, and optimize LLM integrations and AI agent orchestration pipelines to improve reliability, efficiency, and output quality.    Collaborate closely with a fast-moving team, shipping meaningfully and often.    Contribute to shaping engineering culture and technical direction as an early team member.    What We're Looking For   Requirements (dealbreakers):     Based in Stockholm, or legally eligible to work and willing to relo",
+    "salary": null,
+    "url": "https://www.arbeitnow.com/jobs/companies/clera/remote-ai-engineer-236976",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:arbeitnow",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.856Z",
+    "updatedAt": "2026-08-05T08:18:05.856Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches pipeline → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_7f8836ae",
+    "company": "SumUp",
+    "role": "Senior Full Stack Engineer - Sidekick",
+    "region": "europe",
+    "location": "Berlin, Berlin, Germany",
+    "remote": false,
+    "description": " The Sidekick team builds and owns the progressive web app that SumUps field sales agents rely on every day, a tool that brings together everything a seller needs in one place: creating offers on the go, signing up new merchants, managing hardware sales, and tracking commissions in real time. It's one of our most impactful internal products, sitting at the heart of a primary revenue driver for the business. \n As our Senior Full Stack Engineer, you'll take genuine ownership of features end-to-end, from scoping through to production, working closely with product, engaging directly with sales stakeholders, and having a real say in what gets built and why. If you want autonomy, meaningful scope, and work that directly enables the people driving SumUp's growth, this is the role. \n  What you'll do  \n \n Build and maintain features across the full stack of our progressive web app, spanning the field sales experience, back office tooling for sales agents, and emerging LLM-powered support tooling, owning work from scoping through to production \n Participate actively in product discovery, joining user research sessions, reviewing usage data, and contributing to prioritisation discussions alon",
+    "salary": null,
+    "url": "https://www.arbeitnow.com/jobs/companies/sumup/senior-full-stack-engineer-sidekick-berlin-228318",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:arbeitnow",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.855Z",
+    "updatedAt": "2026-08-05T08:18:05.855Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Art of Look as secondary angle."
+  },
+  {
+    "id": "job_7d5df9b5",
+    "company": "A.Team",
+    "role": "Senior Independent AI Engineer / Architect",
+    "region": "europe",
+    "location": "Americas, Europe, Israel",
+    "remote": true,
+    "description": " Senior Independent AI Engineer / Architect \n  Remote | Americas, Europe, or Israel  \n   \n Most AI engineers can find work. \n   \n Finding work worth doing is harder. \n   \n A.Team is an invite-only network of senior AI engineers, ML engineers, and AI architects building production AI systems for startups, enterprises, and global companies. \n   \n Since 2020, builders in the network have earned more than $200M working with companies including Lyft, Google X, HCA, Unilever, Sightful, D-ID, and others. \n   \n The Work \n You'll join small teams solving real problems. \n   \n Not demos. \n Not proof-of-concepts that never ship. \n Not another thin wrapper around an API. \n  Recent work has included: \n   \n \n  AI-native products built from 0→1 \n Agent architectures and orchestration systems \n Enterprise AI deployments \n Retrieval, evaluation, and reliability infrastructure \n LLM-powered workflows and products \n Machine learning platforms operating at scale \n \n   \n You'll work directly with founders, CTOs, and product leaders, helping shape both technical direction and execution. \n   \n Why Builders Join \n The best opportunities rarely make it to the open market. \n   \n A.Team exists to solve that. ",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/software-development/senior-independent-ai-engineer-architect-1919266",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_ai:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:18:05.855Z",
+    "updatedAt": "2026-08-05T08:18:05.855Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches lead → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_825d4a82",
+    "company": "openai",
+    "role": "Product Engineer, GTM Innovation",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nThe GTM (Go-To-Market) Innovation team is an internal powerhouse revolutionizing how we engage customers through groundbreaking applications of our technology. As an incubator, we amplify the impact of Sales, Technical Success, Enablement, and Revenue Operations by deploying our technology at scale. This team applies advanced capabilities to real-world interactions — reshaping conversations with customers, learning from every exchange, and finding novel ways to show the value of our technology.\n\n\nAbout the Role\n\nWe’re looking for product mindset software engineers to join the GTM Innovation team.\n\n\nAs a product engineer on this team, you’ll help OpenAI meet the world at scale. You’ll partner closely with go-to-market teams to understand their workflows, identify leverage points, and ship novel solutions using OpenAI’s API platform.\n\n\nYou’ll move quickly from prototype to production, and your work will directly shape how customers experience our technology in the field. This role is ideal for engineers who want to be close to users, own end-to-end outcomes, and help define entirely new categories of enterprise software.\n\n\n\nIn this role, you will:\n\n - Build high-impac",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/3bb3c9f8-78d1-4df5-b47e-235f8ed5cbf9",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_founding:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:54.594Z",
+    "updatedAt": "2026-08-05T08:17:54.594Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      }
+    ],
+    "whyFit": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+  },
+  {
+    "id": "job_69d62d46",
+    "company": "openai",
+    "role": "Full Stack Software Engineer, GTM Innovation",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nThe GTM (Go-To-Market) Innovation team is an internal powerhouse revolutionizing how we engage customers through groundbreaking applications of our technology. As an incubator, we amplify the impact of Sales, Technical Success, Enablement, and Revenue Operations by deploying our technology at scale. This team applies advanced capabilities to real-world interactions — reshaping conversations with customers, learning from every exchange, and finding novel ways to show the value of our technology.\n\n\nAbout the Role\n\nWe’re looking for Full Stack software engineers with a product mindset to join the GTM Innovation team.\n\n\nAs a product engineer on this team, you’ll help OpenAI meet the world at scale. You’ll partner closely with go-to-market teams to understand their workflows, identify leverage points, and ship novel solutions using OpenAI’s API platform.\n\n\nYou’ll move quickly from prototype to production, and your work will directly shape how customers experience our technology in the field. This role is ideal for engineers who want to be close to users, own end-to-end outcomes, and help define entirely new categories of enterprise software.\n\n\n\nIn this role, you will:\n\n ",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/a2c9f105-b41a-41db-afd8-e70a54b3f21c",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_founding:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:54.593Z",
+    "updatedAt": "2026-08-05T08:17:54.593Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      }
+    ],
+    "whyFit": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+  },
+  {
+    "id": "job_afee9efe",
+    "company": "stripe",
+    "role": "Staff Full Stack Engineer - Premium Merchant Experiences",
+    "region": "europe",
+    "location": "Dublin",
+    "remote": null,
+    "description": "&lt;h3&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h3&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;The Premium Merchant Experiences team helps businesses using Stripe succeed by providing high-quality, contextual, and timely premium support options. Our Dublin-based team is a startup within Stripe, building a greenfield product – offering both automated, AI-driven support and improved access to technical experts across Stripe. In addition to building directly for Stripe&#39;s merchants, we are responsible for building robust internal tooling that empowers Stripe employees in supp",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7925073",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_founding:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:54.575Z",
+    "updatedAt": "2026-08-05T08:17:54.575Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_43100f06",
+    "company": "LYON INCORPORATED LTD",
+    "role": "Founding Engineer",
+    "region": "europe",
+    "location": "Liverpool",
+    "remote": true,
+    "description": " Founding Engineers Wanted – Build LYON INC From the Ground Up \n LYON INC is an early-stage UK-registered technology startup building a next-generation digital management platform that integrates: \n * Social Media Management \n * Automation Tools \n * AI-Driven Analytics \n * Website &#x26; Brand Integration \n We are currently in active prototype development and preparing for structured fundraising. \n This is NOT a traditional salaried job. \n We are looking for committed builders who want to join at the foundation level and grow with the company. \n ⸻ \n Tasks \n What We’re Looking For \n We are seeking: \n * Mobile Engineers (Flutter / Native iOS / Android) \n * Backend / API Engineers \n * Frontend Dashboard Engineers \n * Cybersecurity / DevSecOps Specialists \n You should: \n * Be comfortable working in an early-stage environment \n * Take ownership of features and architecture decisions \n * Be proactive and self-directed \n * Be genuinely interested in building a scalable SaaS platform \n Startup experience is a plus, but strong technical ownership mindset is essential. \n ⸻ \n Requirements \n Our Vision \n We are building a globally scalable product with UK operational standards and internationa",
+    "salary": null,
+    "url": "https://www.arbeitnow.co.uk/jobs/companies/lyon-incorporated-ltd/founding-engineer-liverpool-449064",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_founding:arbeitnow",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:54.575Z",
+    "updatedAt": "2026-08-05T08:17:54.575Z",
+    "proofProjects": [
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches automation, ops → Outreach ops console — queue, parsers, templates."
+      },
+      {
+        "projectId": "asema",
+        "name": "Asema Trading",
+        "demoUrl": "https://demo-trading-one.vercel.app/",
+        "why": "Matches saas → Trading-school SaaS — fullstack product from ops to learner UI."
+      }
+    ],
+    "whyFit": "Lead Desk as primary proof; Asema Trading as secondary angle."
+  },
+  {
+    "id": "job_97e70a17",
+    "company": "openai",
+    "role": "Software Engineer, Core Services",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nThe Core Services team is responsible for building and managing foundational services. It acts as the bridge between core infrastructure (e.g. compute, storage, networking) and product engineering teams, and enables product teams to move fast, build reliably, and scale efficiently.\n\nAbout the Role\n\nAs a software engineer in the core services team, you will design and operate critical backend platforms such as caching systems, workflow orchestration, metadata stores, and file services. You’ll focus on building highly reliable, scalable, and performant systems that serve as the backbone of our products.\n\nWe’re looking for people who are passionate about building infrastructure that empowers product teams, love working on distributed systems challenges, and enjoy creating well-designed APIs and abstractions that accelerate development.\n\nThis role is based in San Francisco, CA. We use a hybrid work model of 3 days in the office per week and offer relocation assistance to new employees.\n\nIn this role, you will:\n\n - Design, build, and maintain shared infrastructure services such as caching layers, workflow orchestration (Temporal), metadata stores, and file storage servic",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/21bfde35-ffec-42d2-a2c6-8a03dad789d5",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.241Z",
+    "updatedAt": "2026-08-05T08:17:41.241Z",
+    "proofProjects": [],
+    "whyFit": "No strong portfolio keyword hit — lead with sticky pitch + Asema as general fullstack proof."
+  },
+  {
+    "id": "job_8eef5261",
+    "company": "openai",
+    "role": "Software Engineer, Inference - Multi Modal",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nOpenAI’s Inference team powers the deployment of our most advanced models - including our GPT models, 4o Image Generation, and Whisper - across a variety of platforms. Our work ensures these models are available, performant, and scalable in production, and we partner closely with Research to bring the next generation of models into the world. We're a small, fast-moving team of engineers focused on delivering a world-class developer experience while pushing the boundaries of what AI can do.\n\nWe’re expanding into multimodal inference, building the infrastructure needed to serve models that handle image, audio, and other non-text modalities. These workloads are inherently more heterogeneous and experimental, involving diverse model sizes and interactions, more complex input/output formats, and tighter coordination with product and research.\n\nAbout the Role\n\nWe’re looking for a software engineer to help us serve OpenAI’s multimodal models at scale. You’ll be part of a small team responsible for building reliable, high-performance infrastructure for serving real-time audio, image, and other MM workloads in production.\n\nThis work is inherently cross-functional: you’ll col",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/4d14449e-5e7f-45d4-b103-8776a6c87086",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.240Z",
+    "updatedAt": "2026-08-05T08:17:41.240Z",
+    "proofProjects": [],
+    "whyFit": "No strong portfolio keyword hit — lead with sticky pitch + Asema as general fullstack proof."
+  },
+  {
+    "id": "job_8a865cf1",
+    "company": "openai",
+    "role": "Backend Software Engineer, GTM Innovation",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nThe GTM (Go-To-Market) Innovation team is an internal powerhouse revolutionizing how we engage customers through groundbreaking applications of our technology. As an incubator, we amplify the impact of Sales, Technical Success, Enablement, and Revenue Operations by deploying our technology at scale. This team applies advanced capabilities to real-world interactions — reshaping conversations with customers, learning from every exchange, and finding novel ways to show the value of our technology.\n\n\nAbout the Role\n\nWe’re looking for backend software engineers with a product mindset to join the GTM Innovation team.\n\n\nYou’ll help OpenAI meet the world at scale. You’ll partner closely with go-to-market teams to understand their workflows, identify leverage points, and ship novel solutions using OpenAI’s API platform.\n\n\nYou’ll move quickly from prototype to production, and your work will directly shape how customers experience our technology in the field. This role is ideal for engineers who want to be close to users, own end-to-end outcomes, and help define entirely new categories of enterprise software.\n\n\n\nIn this role, you will:\n\n - Build high-impact applications and to",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/43174eb6-0ffe-4744-9323-c7969e7ea2e1",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.240Z",
+    "updatedAt": "2026-08-05T08:17:41.240Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      }
+    ],
+    "whyFit": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+  },
+  {
+    "id": "job_2782cdad",
+    "company": "openai",
+    "role": "Software Engineer, Full Stack (People Innovation)",
+    "region": "europe",
+    "location": "Remote - US",
+    "remote": true,
+    "description": "About the Team\n\nAt OpenAI, we’re building the connective tissue between our mission and our people. People Innovation Labs is a fast-moving engineering team embedded in the People organization, focused on rethinking how we find and retain the best talent and empower everyone to do their best work. From recruiting to culture, we’re designing systems that give our People Team a significant edge by infusing OpenAI’s models and first-principles thinking into every aspect of our work. Our projects range from greenfield 0-1 products like OpenHouse (our internal knowledge hub) to AI-powered automations and scalable recruiting tools. We’re defining the future of work at OpenAI, creating a blueprint for how AI can supercharge productivity, culture, and innovation.\n\nAbout the Role\n\nWe are looking for a self-starter engineer who loves building new products in an iterative and fast-moving environment. This team is for full stack product engineers who are deeply curious about culture, recruiting and people development, and want to know everything from the business strategy and metrics down through the code that gets us there. In this role, you will work with members of the People Team and leade",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/d4780eac-03ad-4dae-861f-99af22b4287e",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.240Z",
+    "updatedAt": "2026-08-05T08:17:41.240Z",
+    "proofProjects": [
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches automation, lead → Outreach ops console — queue, parsers, templates."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Lead Desk as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_b5aa09fa",
+    "company": "openai",
+    "role": "Software Engineer, Developer Productivity",
+    "region": "europe",
+    "location": "San Francisco",
+    "remote": null,
+    "description": "About the Team\n\nThe Applied AI team safely brings OpenAI's technology to the world. We released ChatGPT, Plugins, DALL·E, and the APIs for GPT-4, GPT-3, embeddings, and fine-tuning. We also operate inference infrastructure at scale. There's a lot more on the immediate horizon.\n\n\n\nWe seek to learn from deployment and distribute the benefits of AI, while ensuring that this powerful tool is used responsibly and safely. Safety is more important to us than unfettered growth. We serve end-users directly through ChatGPT, and serve developers through our APIs, which power product features that were never before possible. \n\n\n\nAbout the Role\n\nThe Engineering Acceleration team designs, builds and maintains the foundational systems that engineers use to build ChatGPT and the API. This is a fast-growing team and you will get a chance to own and define the strategy, vision, and plan for how to increase developer productivity.\n\n\n\nIn this role, you will:\n\n - Drive the design, development, and implementation of tools, systems, and processes that accelerate engineering velocity, reduce manual effort, and increase the quality of output.\n\n - Use our latest AI tools to re-think how we can be the most p",
+    "salary": null,
+    "url": "https://jobs.ashbyhq.com/openai/2cba0d45-7a4f-4f38-ac73-3f8633bf0349",
+    "channel": "ashby",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:ashby:openai",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.240Z",
+    "updatedAt": "2026-08-05T08:17:41.240Z",
+    "proofProjects": [
+      {
+        "projectId": "apex",
+        "name": "APEX / Leads Club",
+        "demoUrl": "https://leads-club.vercel.app",
+        "why": "Matches growth → Product packaging + lead ops ecosystem (Leads Club)."
+      }
+    ],
+    "whyFit": "Matches growth → Product packaging + lead ops ecosystem (Leads Club)."
+  },
+  {
+    "id": "job_31672bcf",
+    "company": "vercel",
+    "role": "Site Engineer",
+    "region": "europe",
+    "location": "Remote - United States",
+    "remote": true,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;h2&gt;About Vercel:&lt;/h2&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;Vercel is the agentic infrastructure company. We free people and agents to ship what’s next.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;For more than a decade, Vercel has shaped how the web is built. As the team behind Next.js, v0, and AI SDK, we create products that help builders move from idea to production with speed, security, and exceptional developer experience.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;Now, software is entering a new era, and the next generation of products will not just be used by people. They will be built, extended, and operated by agents.&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;&lt;span data-sheets-root=&quot;1&quot;&gt;We are building the platform for that future, trusted by companies like&amp;nbsp;&lt;strong&gt;OpenAI, PayPal, Ramp, Supreme, and millions of developers worldwide&lt;/strong&gt;. Whether you’re building our products, supporting our customers, growing our community, or shaping our story, you’ll help define what comes next.&lt;/span&gt;&lt;/p&gt;&lt;/div&gt",
+    "salary": null,
+    "url": "https://job-boards.greenhouse.io/vercel/jobs/5732855004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:vercel",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.239Z",
+    "updatedAt": "2026-08-05T08:17:41.239Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      }
+    ],
+    "whyFit": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+  },
+  {
+    "id": "job_69a1a0ac",
+    "company": "figma",
+    "role": "Software Engineer, Data Infrastructure",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;section page-centered&quot;&gt;\n&lt;p&gt;The Data Platform team at Figma builds and operates the foundational systems that power analytics, AI/ML, and data-driven decision-making across the company. We serve a diverse set of stakeholders, including AI researchers, machine learning engineers, data scientists, product engineers, and business teams that rely on data for insights and strategy. Our team owns and scales critical platforms such as the Snowflake data warehouse, ML Datalake, orchestration and pipeline infrastructure, and large-scale data ingestion and processing systems, managing all data flowing into an",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/5551686004?gh_jid=5551686004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.239Z",
+    "updatedAt": "2026-08-05T08:17:41.239Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches pipeline → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_d23a6da5",
+    "company": "figma",
+    "role": "Software Engineer, AI Product (London, United Kingdom)",
+    "region": "europe",
+    "location": "London, England",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p&gt;At Figma we believe design doesn’t end in a file or with your designer — it includes everything that goes into the product you ship: the production code that ties it all together, the systems and developer tools that make that code reliable, the context you provide to our AI agents, and the documentation that keeps everyone on the same page.&lt;/p&gt;\n&lt;p&gt;The Code Area at Figma is redefining how Designers, PMs and Engineers collaborate. We are responsible for agentic workflows enabling ideation and prototyping on production codebases as well as accelerating the journey from design to code. In 2023,&lt;a href=&quot;htt",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/5551697004?gh_jid=5551697004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.228Z",
+    "updatedAt": "2026-08-05T08:17:41.228Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Matches mission → Live orbital HUD — realtime 3D ops console."
+  },
+  {
+    "id": "job_2efa5c5b",
+    "company": "figma",
+    "role": "Software Engineer, AI Product",
+    "region": "europe",
+    "location": "San Francisco, CA • New York, NY • United States",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;section page-centered&quot;&gt;\n&lt;div&gt;\n&lt;p&gt;As Figma’s customer base continues to expand and diversify, and new technological advancements in AI and generative design emerge, the opportunity for AI experience engineering is greater than ever. You’ll collaborate closely with a cutting edge AI Research team and your work will help raise the ceiling of what’s possible for designers and lower the floor of who can design. We are seeking an accomplished and experienced AI Product Engineer who has built generative AI products to join our team and lead our AI efforts from inception to implementation. Join us in",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/5551730004?gh_jid=5551730004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.226Z",
+    "updatedAt": "2026-08-05T08:17:41.226Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches lead → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_f2140655",
+    "company": "figma",
+    "role": "Manager, Software Engineering - AI Product (London, United Kingdom)",
+    "region": "europe",
+    "location": "London, England",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p&gt;We’re looking for an Engineering Manager to join the Developer Tools team at Figma. This team is building solutions targeting mainly frontend and full stack developers, helping them bring products from idea to production faster than ever. As a manager on the Developer tools team you will lead teams working across Dev Mode, MCP, Code Connect, and more. You’ll also be responsible for helping define the future of our developer offering, very likely helping incubate and lead new product development. Developer tools is a major initiative at Figma and is spearheaded from the London office. You’ll be working on one of the most ex",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/6099616004?gh_jid=6099616004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.226Z",
+    "updatedAt": "2026-08-05T08:17:41.226Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches lead → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_63c69480",
+    "company": "figma",
+    "role": "Designer Advocate (São Paulo, Brazil)",
+    "region": "europe",
+    "location": "São Paulo, Brazil",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;At Figma, we&#39;re building a vibrant community where designers and product builders come together to learn, grow, and connect around their shared passion. Our Advocacy team is central to this mission - empowering our users through engaging content, meaningful interactions, and genuine advocacy.&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;We&#39;re looking for a Designer Advocate to partner closely with our Marketing, Sales, and Product teams. You&#39;ll bring deep design expertise, strong product int",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/6022151004?gh_jid=6022151004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.226Z",
+    "updatedAt": "2026-08-05T08:17:41.226Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches spa → Beauty booking vertical SaaS — end-to-end product."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Art of Look as secondary angle."
+  },
+  {
+    "id": "job_bcb543a4",
+    "company": "figma",
+    "role": "Designer Advocate",
+    "region": "europe",
+    "location": "San Francisco, CA",
+    "remote": null,
+    "description": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you&#39;re brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move faster, and work together in real time from anywhere in the world. If you&#39;re excited to shape the future of design and collaboration, join us!&lt;/p&gt;&lt;/div&gt;&lt;p&gt;At Figma, we&#39;re building a vibrant community where designers and product builders come together to learn, grow, and connect around their shared passion. Our Advocacy team is central to this mission—empowering our users through engaging content, meaningful interactions, and genuine advocacy.&lt;/p&gt;\n&lt;p&gt;We&#39;re looking for a Designer Advocate to partner closely with our Marketing, Sales, and Product teams. You&#39;ll bring deep design expertise, strong product intuition, and a genuine love for the design community into our go-to-market strategies. You&#39;ll also champion our users&#39; voices internally, ensur",
+    "salary": null,
+    "url": "https://boards.greenhouse.io/figma/jobs/6014530004?gh_jid=6014530004",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:figma",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.226Z",
+    "updatedAt": "2026-08-05T08:17:41.226Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Matches mission → Live orbital HUD — realtime 3D ops console."
+  },
+  {
+    "id": "job_f3a29482",
+    "company": "stripe",
+    "role": "Technical Program Manager, Service Infrastructure",
+    "region": "europe",
+    "location": "Seattle, San Francisco, Remote in the US",
+    "remote": true,
+    "description": "&lt;h2&gt;Who we are&lt;/h2&gt;\n&lt;h3&gt;About Stripe&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world&#39;s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone&#39;s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;About the team&lt;/h3&gt;\n&lt;p&gt;The infrastructure teams provide efficient and optimized infrastructure for Stripe to build secure, reliable, and differentiated products, while enabling Stripe developers to achieve their highest potential. Stripe makes it easy for any developer to access and manage the capabilities of the financial system while maintaining the least regulatory friction. We work to enable developers to have the most productive results of their entire career from the very first days they join Stripe through years of developing new systems and products.&lt;/p&gt;\n&lt;h2&gt;What",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7985196",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.225Z",
+    "updatedAt": "2026-08-05T08:17:41.225Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_60ee3a21",
+    "company": "stripe",
+    "role": "Staff Software Engineer, Service Infrastructure",
+    "region": "europe",
+    "location": "AMER",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;The Service Infrastructure team is responsible for empowering teams to build highly reliable and performant services, backing our payment systems, fraud detection, and a multitude of other products. As an infrastructure team, you will build and expand the service frameworks to make complex systems easy to use, resilient, and scalable. We build powerful interfaces for engineers that depend on these systems—deployment, load balancers, web framework, databases, Kafka, and Kubernetes—wh",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8090141",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.225Z",
+    "updatedAt": "2026-08-05T08:17:41.225Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_526e917f",
+    "company": "stripe",
+    "role": "Staff Software Engineer, API Platform",
+    "region": "europe",
+    "location": "San Francisco, Seattle",
+    "remote": null,
+    "description": "&lt;h2&gt;Who we are&lt;/h2&gt;\n&lt;h3&gt;About Stripe&lt;/h3&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/span&gt;&lt;/p&gt;\n&lt;h3&gt;About the team&lt;/h3&gt;\n&lt;p&gt;The API Platform team is responsible for empowering teams to build highly reliable and performant services, backing our payment systems, fraud detection, and a multitude of other products. As an infrastructure team, you will build and expand the service frameworks to make complex systems easy to use, resilient, and scalable. We build powerful interfaces for engineers that depend on these systems—deployment, load balancers, web framework, databases, Kafka, and Kubernetes—while keeping them highly available an",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8055701",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.225Z",
+    "updatedAt": "2026-08-05T08:17:41.225Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_524d7e06",
+    "company": "stripe",
+    "role": "Staff Fullstack Engineer, User Auth Experience",
+    "region": "europe",
+    "location": "Toronto, Chicago, Atlanta",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Large, complex businesses on Stripe have historically had to create a new Stripe account for each global entity or business unit—making it difficult to unify reporting and manage payment operations across all accounts. Our customers want a way to manage these accounts under one umbrella so they can operate at scale more efficiently.&amp;nbsp;&lt;/p&gt;\n&lt;p&gt;We are responsible for building Organizations, which allows merchants to effectively and centrally manage their businesses ",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8030628",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.225Z",
+    "updatedAt": "2026-08-05T08:17:41.225Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_a2232853",
+    "company": "stripe",
+    "role": "Solutions Engineer, Privy",
+    "region": "europe",
+    "location": "LOCATION",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are &lt;/strong&gt;&lt;/h2&gt;\n&lt;h3 id=&quot;about-privy&quot;&gt;About Privy&lt;/h3&gt;\n&lt;p&gt;Our mission is to make privacy and user ownership the default online. To do so, we build simple, flexible APIs and tools for developers that make it easy to build new products on crypto rails.&lt;/p&gt;\n&lt;p&gt;Privy owns the abstractions and infrastructure layer above wallets, integrating across chains, third-party providers, and Stripe products like Treasury and Link. We get to solve hard technical problems while leveraging Stripe&#39;s distribution to reach customers like Ramp, Klarna, Deel, Kraken, Hyperliquid, and Fomo — powering experiences for both mainstream users and crypto natives.&lt;/p&gt;\n&lt;h2&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h2&gt;\n&lt;p&gt;At Privy, Solutions Engineering owns the technical customer journey from evaluation through launch and beyond.&lt;/p&gt;\n&lt;p&gt;They are the primary technical DRI throughout the entire customer lifecycle (pre-sales, integration, and post-launch support). They help customers move fast, stay unblocked, and get to production with confidence.&lt;/p&gt;\n&lt;p&gt;This is a high-leverage",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7975567",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.223Z",
+    "updatedAt": "2026-08-05T08:17:41.223Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Matches mission → Live orbital HUD — realtime 3D ops console."
+  },
+  {
+    "id": "job_d4f50557",
+    "company": "stripe",
+    "role": "Solutions Architect, Startup & SMB (German fluency)",
+    "region": "europe",
+    "location": "Dublin",
+    "remote": null,
+    "description": "&lt;h2&gt;Who we are&lt;/h2&gt;\n&lt;h3&gt;About Stripe&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies - from the world&#39;s largest enterprises to the most ambitious startups - use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone&#39;s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;About the team&lt;/h3&gt;\n&lt;p&gt;The Solutions Architecture team works with our largest, most complex users to understand their technical requirements and map those to Stripe technology.&lt;/p&gt;\n&lt;p&gt;As a Solutions Architect, you&#39;ll partner with Sales to technically qualify new business opportunities, demonstrate the art of the possible with the Stripe Platform, and design robust technical solutions to enable payment transactions, manage money movements, and simplify financial operational processes.&lt;/p&gt;\n&lt;h2&gt;What you&#39;ll do&lt;/h2&gt;\n&lt;p&gt;You&#39;re an experie",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7442995",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.222Z",
+    "updatedAt": "2026-08-05T08:17:41.222Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_f0d0f0ff",
+    "company": "stripe",
+    "role": "Solutions Architect, SMB (Pre-sales)",
+    "region": "europe",
+    "location": "Chicago, IL",
+    "remote": null,
+    "description": "&lt;h2&gt;Who we are&lt;/h2&gt;\n&lt;h3&gt;About Stripe&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;About the team&lt;/h3&gt;\n&lt;p&gt;Stripe’s SMB Solutions Architecture (SA) team works with technical and business leaders (CTO/ CIO/ CEO/ Founders etc.), payments leaders and product engineering teams in the SMB segment to evangelize Stripe’s solutions in the market. A solutions architect’s role is to build relationships with decision makers and think strategically about the business needs of Stripe’s customers. Solution Architects identify and propose Stripe solutions to solve complex business challenges and drive growth for our customers. SMB&amp;nbsp;SAs establish and prescribe best practices aroun",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8049099",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.221Z",
+    "updatedAt": "2026-08-05T08:17:41.221Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_10fe4016",
+    "company": "stripe",
+    "role": "Software Engineer, Machine Learning Infrastructure",
+    "region": "europe",
+    "location": "Toronto, Canada",
+    "remote": null,
+    "description": "&lt;h2&gt;Who we are&lt;/h2&gt;\n&lt;h3&gt;About Stripe&lt;/h3&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/span&gt;&lt;/p&gt;\n&lt;h3&gt;About the team&lt;/h3&gt;\n&lt;p&gt;Stripe processes over $1T in payments volume per year, which is roughly 1% of the world’s GDP. The tremendous amount of data makes Stripe one of the best places to do machine learning. The ML Infra team builds services and tools that power every step in the ML lifecycle, including data exploration, feature generation, experimentation, training, deploying, serving ML models, and building LLM applications. With the phenomenal developments happening in the field of AI, we are positioned to accelerate the adopti",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8084476",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.220Z",
+    "updatedAt": "2026-08-05T08:17:41.220Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_75fb723e",
+    "company": "stripe",
+    "role": "Internal Product Engineer, Developer Productivity AI",
+    "region": "europe",
+    "location": "Toronto, Canada ",
+    "remote": null,
+    "description": "&lt;p&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;We are a brand new team, working quickly to accelerate Stripes engineering productivity by effectively deploying LLM agents and tools to automate large swaths of the engineering workflow.&amp;nbsp; We’re a cross-continent team, spanning North America and Europe - filled with high agency engineers with strong product perspectives.&amp;nbsp; Some examples of what we work on: &lt;a href=&quot;https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;https://stripe.dev/blog/minions-stripes-",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7896151",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.220Z",
+    "updatedAt": "2026-08-05T08:17:41.220Z",
+    "proofProjects": [
+      {
+        "projectId": "apex",
+        "name": "APEX / Leads Club",
+        "demoUrl": "https://leads-club.vercel.app",
+        "why": "Matches agency, brand → Product packaging + lead ops ecosystem (Leads Club)."
+      },
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      }
+    ],
+    "whyFit": "APEX / Leads Club as primary proof; FOAMCORE as secondary angle."
+  },
+  {
+    "id": "job_fa4c8750",
+    "company": "stripe",
+    "role": "Fullstack Engineer, Privy",
+    "region": "europe",
+    "location": "NYC-Privy, US-Remote ",
+    "remote": true,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Privy&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Our mission is to make privacy and user ownership the default online. To do so, we build simple, flexible APIs and tools for developers that make it easy to build new products on crypto rails.&lt;/p&gt;\n&lt;p&gt;Privy owns the abstractions and infrastructure layer above wallets, integrating across chains, third-party providers, and Stripe products like Treasury and Link. We get to solve hard technical problems while leveraging Stripe&#39;s distribution to reach customers like Ramp, Klarna, Deel, Kraken, Hyperliquid, and Fomo — powering experiences for both mainstream users and crypto natives.&lt;/p&gt;\n&lt;p&gt;Learn more about Privy:&amp;nbsp;&lt;a class=&quot;\n    Link\n    \n  &quot; href=&quot;https://privy.io/blog/announcing-our-acquisition-by-stripe&quot; data-js-controller=&quot;AnalyticsButton&quot; data-analytics-category=&quot;Links&quot; data-analytics-action=&quot;Clicked&quot; data-analytics-label=&quot;Related content&quot;&gt;Privy and Stripe: Bringing crypto to everyone&lt;/a&gt;&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7091959",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.219Z",
+    "updatedAt": "2026-08-05T08:17:41.219Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Matches mission → Live orbital HUD — realtime 3D ops console."
+  },
+  {
+    "id": "job_71ea7801",
+    "company": "stripe",
+    "role": "Engineering Manager, Startup Products",
+    "region": "europe",
+    "location": "N/A",
+    "remote": null,
+    "description": "&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;h3&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;The Startup Products team builds Stripe Atlas and other products that help founders start and run a company, from anywhere in the world. We believe that startups are one of the most effective ways to solve the world&#39;s problems, and we want to give founders a running start — and keep them running. We help founders form their company, raise capital, execute critical legal agreements, access the internet&#39;s best tools, and automate operations while feeling ambitious, smart, and ",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=8090147",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.219Z",
+    "updatedAt": "2026-08-05T08:17:41.219Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_05dc2438",
+    "company": "stripe",
+    "role": "Backend Engineer, Payments and Risk",
+    "region": "europe",
+    "location": "US",
+    "remote": null,
+    "description": "&lt;p&gt;&lt;strong&gt;&lt;em&gt;Note:&amp;nbsp;&lt;/em&gt;&lt;/strong&gt;&lt;em&gt;if you are an intern, new grad, staff, frontend or fullstack applicant, please do not apply using this link and visit our &lt;/em&gt;&lt;a href=&quot;https://stripe.com/jobs/search&quot;&gt;&lt;em&gt;jobs page&lt;/em&gt;&lt;/a&gt;&lt;em&gt; for those specific postings.&lt;/em&gt;&lt;/p&gt;\n&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;&lt;strong&gt;Stripe is a financial infrastructure platform for businesses.&lt;/strong&gt;&amp;nbsp;Millions of companies — from the world&#39;s largest enterprises to the most ambitious startups — use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone&#39;s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;hr&gt;\n&lt;p&gt;&lt;strong&gt;About the Organization&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;Payments and Risk&lt;/p&gt;\n&lt;p&gt;Sub-orgs",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=7232592",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.217Z",
+    "updatedAt": "2026-08-05T08:17:41.217Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_1300c48c",
+    "company": "stripe",
+    "role": "Backend Engineer, Payments and Risk",
+    "region": "europe",
+    "location": "US",
+    "remote": null,
+    "description": "&lt;p&gt;&lt;strong&gt;&lt;em&gt;Note:&amp;nbsp;&lt;/em&gt;&lt;/strong&gt;&lt;em&gt;if you are an intern, new grad, staff, frontend or fullstack applicant, please do not apply using this link and visit our &lt;/em&gt;&lt;a href=&quot;https://stripe.com/jobs/search&quot;&gt;&lt;em&gt;jobs page&lt;/em&gt;&lt;/a&gt;&lt;em&gt; for those specific postings.&lt;/em&gt;&lt;/p&gt;\n&lt;h2&gt;&lt;strong&gt;Who we are&lt;/strong&gt;&lt;/h2&gt;\n&lt;h3&gt;&lt;strong&gt;About Stripe&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world&#39;s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone&#39;s reach while doing the most important work of your career.&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;About the team&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;The Payments organization focuses on developing products and platforms that enable users to accept payment",
+    "salary": null,
+    "url": "https://stripe.com/jobs/search?gh_jid=6163230",
+    "channel": "greenhouse",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:greenhouse:stripe",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.217Z",
+    "updatedAt": "2026-08-05T08:17:41.217Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_f9f26b37",
+    "company": "STRATOS Technologies Ltd.",
+    "role": "Product Engineer",
+    "region": "europe",
+    "location": "London",
+    "remote": false,
+    "description": " We’re looking for a passionate  Product Engineer  to join our team at STRATOS – someone excited to sit at the intersection of product thinking, data engineering, and applied AI. \n Your work will enable STRATOS to support a wide variety of enterprise applications of the platform with marginal effort, turning insight into durable product leverage. In a world where competitive advantage is created by adaptable platforms rather than bespoke solutions, you’ll help shape the foundations that allow STRATOS to scale across industries, geographies, and operating models \n  About Us  \n At STRATOS Technologies, we are transforming how companies make data-driven decisions with our innovative Strategy Operating System. Our software integrates complex datasets into a unified solution, enabling businesses to strengthen their long-term strategies through clear and actionable insights. \n Our founders, former business and tech executives who led a $1B division at a Fortune 500 industrial company, originally built a digital twin of their enterprise to drive synchronized planning and execution. Seeing the market’s lack of such a system, they launched STRATOS in 2022 with a bold mission: to build the w",
+    "salary": null,
+    "url": "https://www.arbeitnow.co.uk/jobs/companies/stratos-technologies-ltd/product-engineer-london-487334",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:arbeitnow",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.217Z",
+    "updatedAt": "2026-08-05T08:17:41.217Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches industrial, erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches mission → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_a6744867",
+    "company": "Aptura",
+    "role": "Member of Technical Staff (SWE/Product)",
+    "region": "europe",
+    "location": "London",
+    "remote": false,
+    "description": "  About Aptura   We build the evaluation datasets and RL environments that make AI reliable in domains where mistakes are expensive: finance, healthcare, and legal. Our team designs expert-curated training data, calibrated rubrics, and verifiable task environments for AI labs and startups pushing the frontier of what models can do in regulated industries.  We're a small, lean, London based team that moves fast and takes the work seriously. Everyone contributes directly. Initiative is rewarded, and ownership is the default. If you want to shape how frontier AI learns to operate in the real world, we'd like to hear from you.   About the Role   As a Member of Technical Staff on our Software Engineering team, you will build the platform that powers how Aptura operates and scales — the annotation tooling, workflow systems, quality control pipelines, and internal infrastructure that sit behind every dataset and environment we ship.  Day to day, that looks like: designing expert task creation flows, building task assignment and review interfaces, writing the data pipelines that move outputs from domain experts into structured training sets, and integrating LLM-powered tooling directly int",
+    "salary": null,
+    "url": "https://www.arbeitnow.co.uk/jobs/companies/aptura/member-of-technical-staff-swe-product-london-407575",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:arbeitnow",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.217Z",
+    "updatedAt": "2026-08-05T08:17:41.217Z",
+    "proofProjects": [
+      {
+        "projectId": "asema",
+        "name": "Asema Trading",
+        "demoUrl": "https://demo-trading-one.vercel.app/",
+        "why": "Matches finance → Trading-school SaaS — fullstack product from ops to learner UI."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches pipeline → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Asema Trading as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_b2242cb2",
+    "company": "Camunda",
+    "role": "Senior Product Builder-Connectors Experience- EMEA",
+    "region": "europe",
+    "location": "Remote",
+    "remote": true,
+    "description": "      Register Here!      Camunda is  the enterprise platform for agentic orchestration , enabling organizations to coordinate  AI agents, people, and systems  across complex, end-to-end business processes. With built-in governance, auditability, and human oversight, Camunda gives enterprises the control they need to move AI from pilots to production — safely and at scale.  Trusted by over 700 organizations worldwide , including 9 of top 10 US banks, Camunda helps enterprises boost operational efficiency, accelerate time-to-value, and deliver better customer experiences.   Fully remote and global,  we are in the middle of something bigger:  transforming into an AI-first organisation, built on our own platform . We use Agentic AI to automate, orchestrate intelligent processes, and elevate human contribution across every team.  Named   GP Bullhound’s Top 100 Next Unicorn list,    2025 Great Place to Work certified.    Visionary     in    2025 Gartner® Magic Quadrant™      for Business Orchestration and Automation Technologies. ranked  3rd in Flexa's 2026    Most Flexible Companies  , We’re growing fast and looking for top talent to join our team.  If you want meaningful work, visible",
+    "salary": null,
+    "url": "https://www.arbeitnow.com/jobs/companies/camunda/remote-senior-product-builder-connectors-experience-emea-365474",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:arbeitnow",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.216Z",
+    "updatedAt": "2026-08-05T08:17:41.216Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches automation → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_85eeb8e2",
+    "company": "LawnStarter",
+    "role": "Staff Product Engineer (Florianópolis)",
+    "region": "europe",
+    "location": "Brazil",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in   Florianópolis, Brazil  \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineeri",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/product/staff-product-engineer-florianopolis-2091051",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.213Z",
+    "updatedAt": "2026-08-05T08:17:41.213Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_20c8ce9c",
+    "company": "LawnStarter",
+    "role": "Staff Product Engineer (Belo Horizonte)",
+    "region": "europe",
+    "location": "Brazil",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in Belo Horizonte, Brazil.  \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineeri",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/product/staff-product-engineer-belo-horizonte-2091052",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.208Z",
+    "updatedAt": "2026-08-05T08:17:41.208Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_8ab339cf",
+    "company": "LawnStarter",
+    "role": "Staff Product Engineer (Campinas)",
+    "region": "europe",
+    "location": "Brazil",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in Campinas, Brazil.  \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineering pee",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/product/staff-product-engineer-campinas-2091053",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.208Z",
+    "updatedAt": "2026-08-05T08:17:41.208Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_7282b056",
+    "company": "LawnStarter",
+    "role": "Staff Product Engineer (Montevideo)",
+    "region": "europe",
+    "location": "Uruguay",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in Montevideo, Uruguay.  \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineering ",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/product/staff-product-engineer-montevideo-2091054",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.201Z",
+    "updatedAt": "2026-08-05T08:17:41.201Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_a0064b55",
+    "company": "LawnStarter",
+    "role": "Staff Product Engineer (Mexico City)",
+    "region": "europe",
+    "location": "Mexico",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in Mexico City, Mexico.  \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineering ",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/product/staff-product-engineer-mexico-city-2091057",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.196Z",
+    "updatedAt": "2026-08-05T08:17:41.196Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_618b6953",
+    "company": "LawnStarter",
+    "role": "Staff Software Engineer, Product (Florianópolis)",
+    "region": "europe",
+    "location": "Brazil",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in Florianópolis, Brazil.  \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineerin",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/software-development/staff-software-engineer-product-florianopolis-2091059",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.195Z",
+    "updatedAt": "2026-08-05T08:17:41.195Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_d143f995",
+    "company": "LawnStarter",
+    "role": "Staff Software Engineer, Product (Campinas)",
+    "region": "europe",
+    "location": "Brazil",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in   Campinas, Brazil.  \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineering p",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/software-development/staff-software-engineer-product-campinas-2091049",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.195Z",
+    "updatedAt": "2026-08-05T08:17:41.195Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_be403022",
+    "company": "LawnStarter",
+    "role": "Staff Software Engineer, Product (Mexico City)",
+    "region": "europe",
+    "location": "Mexico",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in Mexico City, Mexico.  \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineering ",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/software-development/staff-software-engineer-product-mexico-city-2091050",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.195Z",
+    "updatedAt": "2026-08-05T08:17:41.195Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_ce72e99a",
+    "company": "LawnStarter",
+    "role": "Staff Software Engineer, Product (São Paulo)",
+    "region": "europe",
+    "location": "Brazil",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in São Paulo, Brazil.  \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineering pe",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/software-development/staff-software-engineer-product-sao-paulo-2091055",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.194Z",
+    "updatedAt": "2026-08-05T08:17:41.194Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_e8386615",
+    "company": "LawnStarter",
+    "role": "Staff Software Engineer, Product (Montevideo)",
+    "region": "europe",
+    "location": "Uruguay",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in    Montevideo, Uruguay.    \n   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside enginee",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/software-development/staff-software-engineer-product-montevideo-2091058",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.194Z",
+    "updatedAt": "2026-08-05T08:17:41.194Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_0c6a380a",
+    "company": "LawnStarter",
+    "role": "Staff Software Engineer, Product (Belo Horizonte)",
+    "region": "europe",
+    "location": "Brazil",
+    "remote": true,
+    "description": "  This is a remote role for candidates located in Belo Horizonte, Brazil.   \n  About LawnStarter  \n LawnStarter is the nation's leading on-demand marketplace for lawn care and outdoor services, with over $100M in annual bookings. We're expanding beyond lawn care to become the one-stop shop for all home services — operating across three brands (LawnStarter, Lawn Love, Home Gnome) on a single shared platform. \n  About Engineering at LawnStarter  \n We build in small, focused initiative teams: a Product Engineer working alongside a PM and a designer, supported by an Engineering Manager who helps you grow. You'll also work shoulder-to-shoulder with engineering peers across initiatives in a shared codebase. The whole team owns whether the work moves its metric. \n AI coding agents are a force multiplier here — they give a small, senior team the leverage to ship more, faster, and at a higher bar for quality. We hire engineers who are wired for ownership and energized by shipping to a real marketplace with customers and pros on both sides. \n   \n  The Role  \n You're the engineering anchor of an initiative — working as part of a tight team with your PM and designer, and alongside engineering ",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/software-development/staff-software-engineer-product-belo-horizonte-2091056",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.194Z",
+    "updatedAt": "2026-08-05T08:17:41.194Z",
+    "proofProjects": [
+      {
+        "projectId": "art_of_look",
+        "name": "Art of Look",
+        "demoUrl": "https://demo-beautymaster.vercel.app/",
+        "why": "Matches booking, marketplace → Beauty booking vertical SaaS — end-to-end product."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches three → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Art of Look as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "job_53e04bd4",
+    "company": "Clipster",
+    "role": "Senior Product Engineer (Fullstack)",
+    "region": "europe",
+    "location": "Europe, UK, Germany, France, European timezones",
+    "remote": true,
+    "description": "  About Clipster   Clipster is where brands and creators connect to turn views into profits. Clippers (Creators) clip, remix, and post branded content on TikTok, YouTube, Instagram, X, and beyond — earning money for every view they deliver. Brands get a significantly better influencer marketing experience thanks to scale, simplicity, and reliable performance tracking.  We started as an influencer marketing agency. While clients loved our results, delivering them was a pain. So we started automating everything we did — and it paid off.  2025 was a great year for us:   We launched our platform in early 2025  We grew our team to 35 members  We scaled from 0 to more than 100,000 creators and paid out more than $5M to them  We acquired more than 120 clients solely through word of mouth. Our growth has been 100% organic  We ran campaigns for companies such as Telegram, UFC, Universal Music Group and artists such as Elton John, Ed Sheeran, Playboi Carti, and Kendrick Lamar  We're profitable and have secured our first investor    The role   We are looking for a Backend-Heavy Senior Engineer who isn't afraid to touch the full stack. While your primary domain will be our Golang services and ",
+    "salary": null,
+    "url": "https://remotive.com/remote-jobs/software-development/senior-product-engineer-fullstack-2091062",
+    "channel": "other",
+    "contact": null,
+    "status": "new",
+    "notes": null,
+    "source": "max:europe_product:remotive",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-05T08:17:41.183Z",
+    "updatedAt": "2026-08-05T08:17:41.183Z",
+    "proofProjects": [
+      {
+        "projectId": "apex",
+        "name": "APEX / Leads Club",
+        "demoUrl": "https://leads-club.vercel.app",
+        "why": "Matches agency, brand, growth → Product packaging + lead ops ecosystem (Leads Club)."
+      }
+    ],
+    "whyFit": "Matches agency, brand, growth → Product packaging + lead ops ecosystem (Leads Club)."
+  },
+  {
+    "id": "job_eu_founding",
+    "company": "Nordic Ops Labs",
+    "role": "Founding Engineer — Internal Tools",
+    "region": "europe",
+    "location": "Remote EU",
+    "remote": true,
+    "description": "Early startup building a SaaS ops console for logistics teams. Need a product engineer who ships full-stack (Next.js, TypeScript, realtime) and owns rapid prototyping with AI-native workflows. Series A product-led company.",
+    "salary": {
+      "min": 70000,
+      "max": 95000,
+      "currency": "EUR",
+      "period": "year"
+    },
+    "url": "https://jobs.ashbyhq.com/nordic-ops/founding",
+    "channel": "ashby",
+    "contact": {
+      "name": "Elena Markovic",
+      "role": "Hiring Manager",
+      "channel": "linkedin",
+      "handle": "elena-markovic"
+    },
+    "status": "new",
+    "notes": null,
+    "source": "sample",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-04T10:00:00.000Z",
+    "updatedAt": "2026-08-05T06:14:37.109Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches realtime, ops console → Live orbital HUD — realtime 3D ops console."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches ops, internal tool → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "Orbital C2 as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_us_product",
+    "company": "Foamline Systems",
+    "role": "Full-stack Product Engineer",
+    "region": "america",
+    "location": "Remote US",
+    "remote": true,
+    "description": "Industrial B2B portal for manufacturing plants — order cabinets, partner access, factory ops. React/Next platform. Looking for someone who has shipped a vertical product end-to-end.",
+    "salary": {
+      "min": 110000,
+      "max": 140000,
+      "currency": "USD",
+      "period": "year"
+    },
+    "url": "https://job-boards.greenhouse.io/foamline/jobs/123",
+    "channel": "greenhouse",
+    "contact": {
+      "name": "Chris Ortega",
+      "role": "Recruiter",
+      "channel": "email",
+      "handle": "chris@foamline.example"
+    },
+    "status": "queued",
+    "notes": null,
+    "source": "sample",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-03T15:30:00.000Z",
+    "updatedAt": "2026-08-05T06:14:37.109Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches industrial, b2b, factory → B2B industrial portal — orders, partners, ops for a real factory."
+      },
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches ops → Outreach ops console — queue, parsers, templates."
+      }
+    ],
+    "whyFit": "FOAMCORE as primary proof; Lead Desk as secondary angle."
+  },
+  {
+    "id": "job_skip_java",
+    "company": "LegacyBank Corp",
+    "role": "Backend Software Engineer",
+    "region": "america",
+    "location": "NYC hybrid",
+    "remote": false,
+    "description": "Pure backend Java only. 5+ years Java required. Leetcode must. Large enterprise consulting boutique / outstaff style delivery for clients.",
+    "salary": {
+      "min": 130000,
+      "max": 160000,
+      "currency": "USD",
+      "period": "year"
+    },
+    "url": null,
+    "channel": "none",
+    "contact": null,
+    "status": "new",
+    "notes": "Anti-filter expected",
+    "source": "sample",
+    "appliedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-01T09:00:00.000Z",
+    "updatedAt": "2026-08-05T06:14:37.109Z",
+    "proofProjects": [
+      {
+        "projectId": "foamcore",
+        "name": "FOAMCORE",
+        "demoUrl": "https://demo-foamcore.vercel.app/",
+        "why": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+      }
+    ],
+    "whyFit": "Matches erp → B2B industrial portal — orders, partners, ops for a real factory."
+  }
+]

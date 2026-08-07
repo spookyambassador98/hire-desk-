@@ -11,6 +11,12 @@ import type { Individual, Job } from "@/lib/types";
 const DATA_DIR = path.join(process.cwd(), "data");
 const JOBS_FILE = path.join(DATA_DIR, "jobs.json");
 const INDIVIDUALS_FILE = path.join(DATA_DIR, "individuals.json");
+const SEED_JOBS_FILE = path.join(DATA_DIR, "recovery", "seed-jobs.json");
+const SEED_INDIVIDUALS_FILE = path.join(
+  DATA_DIR,
+  "recovery",
+  "seed-individuals.json",
+);
 
 const FS_JOBS = "hire_jobs";
 const FS_INDIVIDUALS = "hire_individuals";
@@ -61,8 +67,20 @@ function canTouchFirebase() {
   return firebaseConfigured() && !isFirebaseExhausted();
 }
 
-async function ensureDataDir() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
+async function readJobsWithFallback(memory: Job[] | null): Promise<Job[]> {
+  const primary = await readJsonFile<Job[]>(JOBS_FILE, []);
+  if (primary.length) return primary;
+  if (memory && memory.length) return memory;
+  return readJsonFile<Job[]>(SEED_JOBS_FILE, []);
+}
+
+async function readIndividualsWithFallback(
+  memory: Individual[] | null,
+): Promise<Individual[]> {
+  const primary = await readJsonFile<Individual[]>(INDIVIDUALS_FILE, []);
+  if (primary.length) return primary;
+  if (memory && memory.length) return memory;
+  return readJsonFile<Individual[]>(SEED_INDIVIDUALS_FILE, []);
 }
 
 async function readJsonFile<T>(file: string, fallback: T): Promise<T> {
@@ -96,10 +114,26 @@ async function readJobsFirestore(): Promise<Job[]> {
 }
 
 async function writeJobsFirestore(jobs: Job[]) {
+  // Never wipe the cloud collection with an empty/near-empty replace.
+  if (jobs.length === 0) {
+    console.error(
+      "[persistence] REFUSED writeJobsFirestore([]) — would delete all hire_jobs",
+    );
+    throw new Error("Refused empty Firebase jobs write (wipe guard)");
+  }
   const db = firestore();
   const keep = new Set(jobs.map((j) => j.id));
   try {
     const existing = await db.collection(FS_JOBS).get();
+    // If we're replacing with a tiny set vs a large cloud DB, refuse mass-delete
+    if (existing.size >= 20 && jobs.length < Math.floor(existing.size * 0.25)) {
+      console.error(
+        `[persistence] REFUSED writeJobsFirestore shrink ${existing.size}→${jobs.length}`,
+      );
+      throw new Error(
+        `Refused Firebase jobs shrink ${existing.size}→${jobs.length} (wipe guard)`,
+      );
+    }
     let writes = 0;
     let batch = db.batch();
     let ops = 0;
@@ -252,34 +286,72 @@ async function upsertIndividualsFirestore(rows: Individual[]) {
 export type ReadOpts = { fresh?: boolean };
 
 /**
- * Prefer memory → Firestore → local JSON.
+ * Prefer memory → Firestore → local JSON → bundled recovery seed.
  * Never throw RESOURCE_EXHAUSTED up to the homepage — serve stale / empty.
  */
 export async function readRawJobs(opts: ReadOpts = {}): Promise<Job[]> {
   const c = cache();
   if (!opts.fresh && jobsFresh(c)) return c.jobs!;
   // Stale cache beats crashing the desk while quota is dead
-  if (isFirebaseExhausted() && c.jobs) return c.jobs;
+  if (isFirebaseExhausted() && c.jobs && c.jobs.length) return c.jobs;
+  if (isFirebaseExhausted()) {
+    const rescued = await readJobsWithFallback(c.jobs);
+    c.jobs = rescued;
+    c.jobsAt = Date.now();
+    return rescued;
+  }
 
   try {
     const jobs = canTouchFirebase()
       ? await readJobsFirestore()
-      : await readJsonFile<Job[]>(JOBS_FILE, c.jobs ?? []);
+      : await readJobsWithFallback(c.jobs);
+    // Never clobber a fat local mirror with an empty cloud read
+    if (
+      Array.isArray(jobs) &&
+      jobs.length === 0 &&
+      c.jobs &&
+      c.jobs.length > 0
+    ) {
+      console.error(
+        "[persistence] ignoring empty Firestore jobs — keeping memory cache",
+      );
+      return c.jobs;
+    }
+    const local = await readJobsWithFallback(c.jobs);
+    if (Array.isArray(jobs) && jobs.length === 0 && local.length > 0) {
+      console.error(
+        `[persistence] empty Firestore vs local/seed ${local.length} — serving recovery`,
+      );
+      c.jobs = local;
+      c.jobsAt = Date.now();
+      if (canTouchFirebase()) {
+        try {
+          await upsertJobsFirestore(local);
+        } catch (err) {
+          noteFirestoreError(err);
+        }
+      }
+      return local;
+    }
     c.jobs = jobs;
     c.jobsAt = Date.now();
     // Mirror to local so Render disk can serve if Firebase dies mid-day
-    if (canTouchFirebase()) {
+    if (canTouchFirebase() && jobs.length > 0) {
       void writeJsonFile(JOBS_FILE, jobs).catch(() => undefined);
     }
     return jobs;
   } catch (err) {
     noteFirestoreError(err);
-    if (c.jobs) return c.jobs;
-    return readJsonFile<Job[]>(JOBS_FILE, []);
+    if (c.jobs && c.jobs.length) return c.jobs;
+    return readJobsWithFallback(null);
   }
 }
 
 export async function writeRawJobs(jobs: Job[]) {
+  if (jobs.length === 0) {
+    console.error("[persistence] REFUSED writeRawJobs([])");
+    throw new Error("Refused empty jobs write");
+  }
   // Always keep a local mirror for outage mode
   await writeJsonFile(JOBS_FILE, jobs).catch(() => undefined);
   if (canTouchFirebase()) {
@@ -353,25 +425,41 @@ export async function readRawIndividuals(
 ): Promise<Individual[]> {
   const c = cache();
   if (!opts.fresh && individualsFresh(c)) return c.individuals!;
-  if (isFirebaseExhausted() && c.individuals) return c.individuals;
+  if (isFirebaseExhausted() && c.individuals && c.individuals.length) {
+    return c.individuals;
+  }
+  if (isFirebaseExhausted()) {
+    const rescued = await readIndividualsWithFallback(c.individuals);
+    c.individuals = rescued;
+    c.individualsAt = Date.now();
+    return rescued;
+  }
 
   try {
     const rows = canTouchFirebase()
       ? await readIndividualsFirestore()
-      : await readJsonFile<Individual[]>(
-          INDIVIDUALS_FILE,
-          c.individuals ?? [],
-        );
+      : await readIndividualsWithFallback(c.individuals);
+    if (
+      Array.isArray(rows) &&
+      rows.length === 0
+    ) {
+      const local = await readIndividualsWithFallback(c.individuals);
+      if (local.length > 0) {
+        c.individuals = local;
+        c.individualsAt = Date.now();
+        return local;
+      }
+    }
     c.individuals = rows;
     c.individualsAt = Date.now();
-    if (canTouchFirebase()) {
+    if (canTouchFirebase() && rows.length > 0) {
       void writeJsonFile(INDIVIDUALS_FILE, rows).catch(() => undefined);
     }
     return rows;
   } catch (err) {
     noteFirestoreError(err);
-    if (c.individuals) return c.individuals;
-    return readJsonFile<Individual[]>(INDIVIDUALS_FILE, []);
+    if (c.individuals && c.individuals.length) return c.individuals;
+    return readIndividualsWithFallback(null);
   }
 }
 

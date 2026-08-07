@@ -1,0 +1,85 @@
+[
+  {
+    "id": "ind_elena",
+    "name": "Elena Markovic",
+    "kind": "hiring_manager",
+    "title": "Head of Product Engineering",
+    "company": "Nordic Ops Labs",
+    "region": "europe",
+    "email": "elena@nordicops.example",
+    "linkedin": "https://linkedin.com/in/elena-markovic",
+    "linkedJobId": "job_eu_founding",
+    "targetRole": "Founding Engineer — Internal Tools",
+    "notes": "Found via team page. Owns hiring for ops console.",
+    "status": "new",
+    "source": "sample",
+    "emailedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-04T11:00:00.000Z",
+    "updatedAt": "2026-08-05T06:32:09.290Z",
+    "proofProjects": [
+      {
+        "projectId": "lead_desk",
+        "name": "Lead Desk",
+        "demoUrl": null,
+        "why": "Matches ops, internal tool → Outreach ops console — queue, parsers, templates."
+      },
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches ops console → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Lead Desk as primary proof; Orbital C2 as secondary angle."
+  },
+  {
+    "id": "ind_chris",
+    "name": "Chris Ortega",
+    "kind": "recruiter",
+    "title": "Technical Recruiter",
+    "company": "Foamline Systems",
+    "region": "america",
+    "email": "chris@foamline.example",
+    "linkedin": "https://linkedin.com/in/chris-ortega",
+    "linkedJobId": "job_us_product",
+    "targetRole": "Full-stack Product Engineer",
+    "notes": "Posted the Greenhouse role. Direct email on careers page.",
+    "status": "new",
+    "source": "sample",
+    "emailedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-03T16:00:00.000Z",
+    "updatedAt": "2026-08-05T06:32:09.290Z",
+    "proofProjects": [],
+    "whyFit": "No strong portfolio keyword hit — lead with sticky pitch + Asema as general fullstack proof."
+  },
+  {
+    "id": "ind_maya",
+    "name": "Maya Chen",
+    "kind": "senior_eng",
+    "title": "Staff Engineer",
+    "company": "Orbital Stack",
+    "region": "america",
+    "email": "maya@orbitalstack.example",
+    "linkedin": null,
+    "linkedJobId": null,
+    "targetRole": "Creative Technologist / realtime HUD",
+    "notes": "No open req posted — warm referral angle via realtime 3D work.",
+    "status": "queued",
+    "source": "sample",
+    "emailedAt": null,
+    "followUpAt": null,
+    "createdAt": "2026-08-02T09:00:00.000Z",
+    "updatedAt": "2026-08-05T06:32:09.290Z",
+    "proofProjects": [
+      {
+        "projectId": "orbital",
+        "name": "Orbital C2",
+        "demoUrl": "https://demo-cosmo.vercel.app/",
+        "why": "Matches 3d, hud, realtime → Live orbital HUD — realtime 3D ops console."
+      }
+    ],
+    "whyFit": "Matches 3d, hud, realtime → Live orbital HUD — realtime 3D ops console."
+  }
+]
