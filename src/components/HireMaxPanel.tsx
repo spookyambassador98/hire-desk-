@@ -481,6 +481,7 @@ export function HireMaxPanel({ onFilled }: Props) {
     status?.harvestBufferCount ?? 0,
   );
   const expectedTotal = stackTotal + bufferTotal;
+  const engineOn = !stopping && (running || !!live?.running);
   const canFlush = bufferTotal > 0 && !engineOn && !flushing;
   const flushAvailable = canFlush && !readsBlocked;
   const flushWaitingReads = canFlush && readsBlocked;
@@ -490,7 +491,6 @@ export function HireMaxPanel({ onFilled }: Props) {
     flushAvailable ||
     flushWaitingReads ||
     (running && live?.mode === "write_harvest");
-  const engineOn = !stopping && (running || !!live?.running);
   const maxDisabled = engineOn || readsBlocked;
 
   const regionRows = (["europe", "america", "asia"] as Region[]).map((r) => {
