@@ -39,6 +39,8 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
+const SOURCE_GUARD = `(function(){function b(e){var k=(e.key||"").toLowerCase(),c=e.ctrlKey||e.metaKey,s=e.shiftKey,a=e.altKey;if(e.key==="F12")return!0;if(c&&s&&(k==="i"||k==="j"||k==="c"||k==="k"))return!0;if(e.metaKey&&a&&(k==="i"||k==="j"||k==="c"))return!0;if(c&&!s&&!a&&(k==="u"||k==="s"))return!0;return!1}document.addEventListener("contextmenu",function(e){e.preventDefault();e.stopPropagation()},!0);document.addEventListener("keydown",function(e){if(b(e)){e.preventDefault();e.stopPropagation()}},!0);document.addEventListener("dragstart",function(e){e.preventDefault()},!0)})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,6 +48,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SOURCE_GUARD }} />
+      </head>
       <body className={`${display.variable} ${body.variable} ${mono.variable}`}>
         <DisableContextMenu />
         {children}
