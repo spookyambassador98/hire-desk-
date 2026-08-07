@@ -50,6 +50,14 @@ const RAILS: Array<{ id: Region; titleKey: string; cls: string }> = [
   { id: "asia", titleKey: "rail.asia", cls: "asia" },
 ];
 
+function isRemoteJob(job: ScoredJob): boolean {
+  if (job.remote === true) return true;
+  const blob = `${job.location || ""}\n${job.role}\n${job.description || ""}`;
+  return /\bremote\b|\bdistributed\b|\bwork\s+from\s+home\b|\bwfh\b|\banywhere\b/i.test(
+    blob,
+  );
+}
+
 export function HireDesk({
   initialJobs,
   initialIndividuals,
@@ -58,6 +66,7 @@ export function HireDesk({
   const { t, locale, setLocale } = useI18n();
   const [view, setView] = useState<AppView>("queue");
   const [activeRail, setActiveRail] = useState<Region>("europe");
+  const [remoteRail, setRemoteRail] = useState<Region>("europe");
   const [jobs, setJobs] = useState(initialJobs);
   const [individuals, setIndividuals] = useState(initialIndividuals);
   const [quota, setQuota] = useState(initialQuota);
@@ -67,11 +76,7 @@ export function HireDesk({
   const [toast, setToast] = useState<string | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [selectedIndId, setSelectedIndId] = useState<string | null>(null);
-  const [sortOpen, setSortOpen] = useState(false);
-  const [queueSort, setQueueSort] = useState<"priority" | "fit" | "age">(
-    "priority",
-  );
-  const [sortAck, setSortAck] = useState(false);
+  const [remoteMode, setRemoteMode] = useState(false);
 
   const selectedJob = useMemo(
     () => jobs.find((j) => j.id === selectedJobId) || null,
@@ -227,43 +232,21 @@ export function HireDesk({
     [queueJobs, activeRail],
   );
 
-  const sortedRailJobs = useMemo(() => {
-    const list = [...railJobs];
-    if (queueSort === "fit") {
-      list.sort((a, b) => b.scores.fit.score - a.scores.fit.score);
-    } else if (queueSort === "age") {
-      list.sort(
-        (a, b) =>
-          Date.parse(b.postedAt || b.createdAt) -
-          Date.parse(a.postedAt || a.createdAt),
-      );
-    } else {
-      list.sort(
-        (a, b) =>
-          b.scores.priority.score - a.scores.priority.score ||
-          b.scores.fit.score - a.scores.fit.score,
-      );
-    }
-    return list;
-  }, [railJobs, queueSort]);
+  const remoteQueueJobs = useMemo(
+    () => queueJobs.filter((j) => isRemoteJob(j)),
+    [queueJobs],
+  );
 
-  const railStatus = useMemo(() => {
-    let today = 0;
-    let queue = 0;
-    let maybe = 0;
-    for (const j of railJobs) {
-      if (j.scores.fit.band === "today") today += 1;
-      else if (j.scores.fit.band === "queue") queue += 1;
-      else maybe += 1;
-    }
-    return { today, queue, maybe, n: railJobs.length };
-  }, [railJobs]);
-
-  function applySort(mode: "priority" | "fit" | "age") {
-    setQueueSort(mode);
-    setSortAck(true);
-    flash(t("sort.ok"));
-  }
+  /** Left pane: remotes on remoteRail, highest Fit first */
+  const remoteRailJobs = useMemo(() => {
+    return remoteQueueJobs
+      .filter((j) => j.region === remoteRail)
+      .sort(
+        (a, b) =>
+          b.scores.fit.score - a.scores.fit.score ||
+          b.scores.priority.score - a.scores.priority.score,
+      );
+  }, [remoteQueueJobs, remoteRail]);
 
   const visibleJobs = useMemo(() => {
     if (view === "applied") {
@@ -275,9 +258,9 @@ export function HireDesk({
         ),
       );
     }
-    if (view === "queue") return sortedRailJobs;
+    if (view === "queue") return railJobs;
     return [];
-  }, [jobs, view, sortedRailJobs]);
+  }, [jobs, view, railJobs]);
 
   const euQueue = queueJobs.filter((j) => j.region === "europe").length;
   const usQueue = queueJobs.filter((j) => j.region === "america").length;
@@ -289,6 +272,10 @@ export function HireDesk({
     return asiaQueue;
   }
 
+  function remoteRailCount(id: Region) {
+    return remoteQueueJobs.filter((j) => j.region === id).length;
+  }
+
   function railQuotaLeft(id: Region) {
     if (id === "europe") return quota.europe.remaining;
     if (id === "america") return quota.america.remaining;
@@ -298,6 +285,45 @@ export function HireDesk({
   function selectRail(id: Region) {
     setActiveRail(id);
     setView("queue");
+  }
+
+  function selectRemoteRail(id: Region) {
+    setRemoteRail(id);
+    setView("queue");
+  }
+
+  function renderRails(
+    selected: Region,
+    onSelect: (id: Region) => void,
+    countFn: (id: Region) => number,
+  ) {
+    return (
+      <div className="hd-dual hd-rails">
+        {RAILS.map((rail) => {
+          const active = selected === rail.id;
+          return (
+            <button
+              key={rail.id}
+              type="button"
+              className={`hd-rail ${rail.cls} hd-rail--btn${active ? " is-active" : ""}`}
+              onClick={() => onSelect(rail.id)}
+              aria-pressed={active}
+            >
+              <h2>{t(rail.titleKey)}</h2>
+              <p>
+                {t("rail.jobs_quota", {
+                  jobs: countFn(rail.id),
+                  left: railQuotaLeft(rail.id),
+                })}
+              </p>
+              <span className="hd-rail__hint">
+                {active ? t("rail.active") : t("rail.tap")}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    );
   }
 
   function openJob(id: string) {
@@ -358,75 +384,18 @@ export function HireDesk({
           </button>
         </nav>
         <div className="hd-top-tools">
-          <div className="hd-sort-wrap">
-            <AnimatePresence>
-              {sortOpen && (
-                <motion.aside
-                  className="hd-sort-panel"
-                  initial={{ opacity: 0, x: 12, scale: 0.96 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: 8, scale: 0.98 }}
-                  transition={{ duration: 0.22, ease: EASE }}
-                  aria-label={t("sort.title")}
-                >
-                  <div className="hd-sort-panel__kicker">{t("sort.status")}</div>
-                  <p className="hd-sort-panel__line">
-                    {t("sort.line", {
-                      rail: t(`region.${activeRail}`),
-                      n: railStatus.n,
-                    })}
-                  </p>
-                  <p className="hd-sort-panel__bands">
-                    {t("sort.bands", {
-                      today: railStatus.today,
-                      queue: railStatus.queue,
-                      maybe: railStatus.maybe,
-                    })}
-                  </p>
-                  <p className="hd-sort-panel__hint">{t("sort.hint")}</p>
-                  <div className="hd-sort-panel__modes" role="group">
-                    {(
-                      [
-                        ["priority", "sort.by_pri"],
-                        ["fit", "sort.by_fit"],
-                        ["age", "sort.by_age"],
-                      ] as const
-                    ).map(([mode, key]) => (
-                      <button
-                        key={mode}
-                        type="button"
-                        className={queueSort === mode ? "active" : ""}
-                        onClick={() => applySort(mode)}
-                      >
-                        {t(key)}
-                      </button>
-                    ))}
-                  </div>
-                  {sortAck && (
-                    <motion.div
-                      className="hd-sort-panel__ok"
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                    >
-                      {t("sort.ok")}
-                    </motion.div>
-                  )}
-                </motion.aside>
-              )}
-            </AnimatePresence>
-            <button
-              type="button"
-              className={`hd-sort-btn${sortOpen ? " is-open" : ""}`}
-              aria-expanded={sortOpen}
-              aria-label={t("sort.title")}
-              onClick={() => {
-                setSortOpen((v) => !v);
-                setSortAck(false);
-              }}
-            >
-              {t("sort.btn")}
-            </button>
-          </div>
+          <button
+            type="button"
+            className={`hd-remote-btn${remoteMode ? " is-on" : ""}`}
+            aria-pressed={remoteMode}
+            aria-label={t("remote.btn")}
+            onClick={() => {
+              setRemoteMode((v) => !v);
+              setView("queue");
+            }}
+          >
+            {t("remote.btn")}
+          </button>
           <div className="hd-lang" role="group" aria-label="Language">
             <button
               type="button"
@@ -468,127 +437,149 @@ export function HireDesk({
         </div>
       </motion.header>
 
-      <main className={`hd-main${view === "harvest" ? " hd-main--harvest" : ""}`}>
+      <main
+        className={`hd-main${view === "harvest" ? " hd-main--harvest" : ""}${
+          remoteMode && view === "queue" ? " hd-main--remote-split" : ""
+        }`}
+      >
         <AnimatePresence mode="wait">
           <motion.div
-            key={view}
+            key={view + (remoteMode && view === "queue" ? "-remote" : "")}
             initial={{ opacity: 0, y: 14, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
             transition={{ duration: 0.32, ease: EASE }}
           >
-            {view === "queue" && (
-              <div className="hd-dual hd-rails">
-                {RAILS.map((rail) => {
-                  const active = activeRail === rail.id;
-                  return (
-                    <button
-                      key={rail.id}
-                      type="button"
-                      className={`hd-rail ${rail.cls} hd-rail--btn${active ? " is-active" : ""}`}
-                      onClick={() => selectRail(rail.id)}
-                      aria-pressed={active}
-                    >
-                      <h2>{t(rail.titleKey)}</h2>
-                      <p>
-                        {t("rail.jobs_quota", {
-                          jobs: railCount(rail.id),
-                          left: railQuotaLeft(rail.id),
-                        })}
-                      </p>
-                      <span className="hd-rail__hint">
-                        {active ? t("rail.active") : t("rail.tap")}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {view === "harvest" ? (
-              <HarvestPanel
-                onImported={() => void reload()}
-                onFlash={flash}
-              />
-            ) : view === "templates" ? (
-              <div className="tpl-list">
-                {TEMPLATES.map((tpl) => (
-                  <div key={tpl.id} className="tpl-card">
-                    <h4>
-                      {tpl.name}
-                      {tpl.kind === "individual" ? " · direct" : ""}
-                    </h4>
-                    <pre>{tpl.body}</pre>
-                    <div
-                      className="job-actions"
-                      style={{ border: "none", paddingTop: "0.75rem" }}
-                    >
-                      <button
-                        type="button"
-                        className="primary"
-                        onClick={() => onCopy(tpl.body, tpl.name)}
-                      >
-                        {t("templates.copy")}
-                      </button>
-                    </div>
+            {view === "queue" && remoteMode ? (
+              <div className="hd-remote-split">
+                <section className="hd-remote-pane hd-remote-pane--left">
+                  <div className="hd-remote-pane__kicker">{t("remote.left")}</div>
+                  {renderRails(remoteRail, selectRemoteRail, remoteRailCount)}
+                  <div className="hd-list">
+                    {remoteRailJobs.map((job, i) => (
+                      <JobCardFace
+                        key={job.id}
+                        job={job}
+                        index={i}
+                        rank={i + 1}
+                        onOpen={() => openJob(job.id)}
+                      />
+                    ))}
+                    {remoteRailJobs.length === 0 && (
+                      <div className="empty">{t("remote.empty")}</div>
+                    )}
                   </div>
-                ))}
+                </section>
+                <section className="hd-remote-pane hd-remote-pane--right">
+                  <div className="hd-remote-pane__kicker">{t("remote.right")}</div>
+                  {renderRails(activeRail, selectRail, railCount)}
+                  <div className="hd-list">
+                    {railJobs.map((job, i) => (
+                      <JobCardFace
+                        key={job.id}
+                        job={job}
+                        index={i}
+                        rank={i + 1}
+                        onOpen={() => openJob(job.id)}
+                      />
+                    ))}
+                    {railJobs.length === 0 && (
+                      <div className="empty">{t("empty.queue")}</div>
+                    )}
+                  </div>
+                </section>
               </div>
-            ) : view === "history" ? (
-              <HistoryPanel
-                activities={activities}
-                jobs={jobs}
-                individuals={individuals}
-              />
-            ) : view === "admin" ? (
-              <AdminPanel
-                jobs={jobs}
-                individuals={individuals}
-                quota={quota}
-              />
-            ) : view === "individuals" ? (
-              <div className="hd-list">
-                {individuals.map((ind, i) => (
-                  <IndividualCardFace
-                    key={ind.id}
-                    individual={ind}
-                    index={i}
-                    onOpen={() => openInd(ind.id)}
-                  />
-                ))}
-                {individuals.length === 0 && (
-                  <div className="empty">{t("empty.individuals")}</div>
-                )}
-              </div>
-            ) : view === "queue" ? (
-              <div className="hd-list">
-                {sortedRailJobs.map((job, i) => (
-                  <JobCardFace
-                    key={job.id}
-                    job={job}
-                    index={i}
-                    rank={i + 1}
-                    onOpen={() => openJob(job.id)}
-                  />
-                ))}
-                {sortedRailJobs.length === 0 && (
-                  <div className="empty">{t("empty.queue")}</div>
-                )}
-              </div>
-            ) : visibleJobs.length === 0 ? (
-              <div className="empty">{t("empty.applied")}</div>
             ) : (
-              <div className="hd-list">
-                {visibleJobs.map((job, i) => (
-                  <JobCardFace
-                    key={job.id}
-                    job={job}
-                    index={i}
-                    showFollowUp={view === "applied"}
-                    onOpen={() => openJob(job.id)}
+              <>
+                {view === "queue" &&
+                  renderRails(activeRail, selectRail, railCount)}
+
+                {view === "harvest" ? (
+                  <HarvestPanel
+                    onImported={() => void reload()}
+                    onFlash={flash}
                   />
-                ))}
-              </div>
+                ) : view === "templates" ? (
+                  <div className="tpl-list">
+                    {TEMPLATES.map((tpl) => (
+                      <div key={tpl.id} className="tpl-card">
+                        <h4>
+                          {tpl.name}
+                          {tpl.kind === "individual" ? " · direct" : ""}
+                        </h4>
+                        <pre>{tpl.body}</pre>
+                        <div
+                          className="job-actions"
+                          style={{ border: "none", paddingTop: "0.75rem" }}
+                        >
+                          <button
+                            type="button"
+                            className="primary"
+                            onClick={() => onCopy(tpl.body, tpl.name)}
+                          >
+                            {t("templates.copy")}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : view === "history" ? (
+                  <HistoryPanel
+                    activities={activities}
+                    jobs={jobs}
+                    individuals={individuals}
+                  />
+                ) : view === "admin" ? (
+                  <AdminPanel
+                    jobs={jobs}
+                    individuals={individuals}
+                    quota={quota}
+                  />
+                ) : view === "individuals" ? (
+                  <div className="hd-list">
+                    {individuals.map((ind, i) => (
+                      <IndividualCardFace
+                        key={ind.id}
+                        individual={ind}
+                        index={i}
+                        onOpen={() => openInd(ind.id)}
+                      />
+                    ))}
+                    {individuals.length === 0 && (
+                      <div className="empty">{t("empty.individuals")}</div>
+                    )}
+                  </div>
+                ) : view === "queue" ? (
+                  <div className="hd-list">
+                    {railJobs.map((job, i) => (
+                      <JobCardFace
+                        key={job.id}
+                        job={job}
+                        index={i}
+                        rank={i + 1}
+                        onOpen={() => openJob(job.id)}
+                      />
+                    ))}
+                    {railJobs.length === 0 && (
+                      <div className="empty">{t("empty.queue")}</div>
+                    )}
+                  </div>
+                ) : visibleJobs.length === 0 ? (
+                  <div className="empty">{t("empty.applied")}</div>
+                ) : (
+                  <div className="hd-list">
+                    {visibleJobs.map((job, i) => (
+                      <JobCardFace
+                        key={job.id}
+                        job={job}
+                        index={i}
+                        showFollowUp={view === "applied"}
+                        onOpen={() => openJob(job.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </motion.div>
         </AnimatePresence>
